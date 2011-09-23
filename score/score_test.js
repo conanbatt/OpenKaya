@@ -81,4 +81,61 @@ test("Should count territory for both", function(){
     equal(japanese_score(board).white_points,10);
 });
 
+test("SEKI: should count 0 for both (Japanese)", function(){
+
+   var board = [
+                    ["B","B","*","W","W","W"],
+                    ["B","B","B","W","W","W"],
+                    ["B","B","B","W","W","W"],
+                    ["B","B","B","W","W","W"],
+                    ["B","B","B","W","W","W"],
+                    ["*","B","B","W","W","*"]
+                ];
+    equal(japanese_score(board).black_points,0);
+    equal(japanese_score(board).white_points,0);
+});
+
+test("SEKI: should count 0 for both (Japanese)", function(){
+
+   var board = [
+                    ["B","B","*","W","*","B"],
+                    ["B","B","B","W","B","B"],
+                    ["B","B","B","W","B","B"],
+                    ["B","B","B","W","B","B"],
+                    ["B","B","B","W","B","B"],
+                    ["*","B","B","W","B","*"]
+               ];
+    equal(japanese_score(board).black_points,0);
+    equal(japanese_score(board).white_points,0);
+});
+
+test("CAPTURES: should count dead stones double (Japanese)", function(){
+
+   var board = [
+                    ["B","B","*","W","W","N"],
+                    ["B","B","*","W","W","N"],
+                    ["B","B","*","W","W","N"],
+                    ["B","B","*","W","W","N"],
+                    ["B","B","*","W","W","N"],
+                    ["B","B","*","W","W","*"]
+               ];
+    equal(japanese_score(board).black_points,0);
+    equal(japanese_score(board).white_points,11);
+});
+
+test("CAPTURES: should count dead stones double (Japanese)", function(){
+
+   var board = [
+                   ["*","E","B","*","*","*"],
+                   ["*","E","B","*","*","*"],
+                   ["*","E","B","*","*","*"],
+                   ["*","E","B","W","*","*"],
+                   ["*","E","B","*","*","*"],
+                   ["*","E","B","*","*","*"]
+               ];
+    equal(japanese_score(board).black_points,18);
+    equal(japanese_score(board).white_points,0);
+});
+
+
 
