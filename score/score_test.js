@@ -8,8 +8,8 @@ var WHITE_DEAD = "E"
 
 //STANDARD TEST BOARD SIZE IS 6x6
 
-var japanese_score = new Score("Japanese");
-var chinese_score = new Score("Chinese"); //TBD later ?. Main difference is that each stone is counted for territory
+var japanese_score = new Score("Japanese").score;
+var chinese_score = new Score("Chinese").score; //TBD later ?. Main difference is that each stone is counted for territory
 
 test("Should count 0 points for both without stones on the board", function(){
 
@@ -51,7 +51,7 @@ test("Should count 0 points as all is neutral", function(){
 
     equal(japanese_score(board).black_points,0);
     equal(japanese_score(board).white_points,0);
-};
+});
 
 test("Should count territory for black", function(){
 
@@ -63,9 +63,9 @@ test("Should count territory for black", function(){
                     ["*","B","*","*","*","*"],
                     ["*","B","*","*","*","*"]
                 ];
-    equal(score(board).black_points,5);
-    equal(score(board).white_points,0);
-};
+    equal(japanese_score(board).black_points,5);
+    equal(japanese_score(board).white_points,0);
+});
 
 test("Should count territory for both", function(){
 
@@ -77,8 +77,8 @@ test("Should count territory for both", function(){
                     ["*","B","*","W","*","*"],
                     ["*","B","*","W","*","*"]
                 ];
-    equal(score(board).black_points,5);
-    equal(score(board).white_points,10);
-};
+    equal(japanese_score(board).black_points,5);
+    equal(japanese_score(board).white_points,10);
+});
 
 
