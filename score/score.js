@@ -1,10 +1,10 @@
 function Score(ruleset){
 
     if(ruleset == "Japanese"){
-        //ruleset tweakeing
+        //ruleset tweaking
     }
     if(ruleset == "Chinese"){
-        //ruleset tweakeing
+        //ruleset tweaking
     }
 
     this.score = function(score){
