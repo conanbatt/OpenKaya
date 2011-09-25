@@ -54,7 +54,7 @@ Inside the rating folder there is a structure of files.
 
 System : the mock of an application that would use the rating system. It is fairly straight-forward: it takes (game) results and holds the information of all players, which in turn is passed to the rating strategy.
 
-Strategies : Inside the folder there is a ridicolously simple system as a demonstration to how to make a system. It is absolutely state-less. Systems that require other information such as date or such can be easily changed and accessed from the passed on array. Having a more comprehensive history can also be done by Just extending the Player model under system.rb.
+Strategies : Inside the folder there is a ridicolously simple system as a demonstration to how to make a system. It is absolutely state-less. Systems that require other information such as date or such can be easily changed and accessed from the passed on hash. Having a more comprehensive history can also be done by Just extending the Player model under system.rb.
 
 Runner: The script that runs the simulation. It will run with a sample data-set and simple point system and write to a file the final rating of all players, rank and a benchmark on how long the process took.
 
