@@ -20,6 +20,8 @@ The algorithm has to spit out an object with the score of each player. A "painte
 
 Some caveats: be careful with Seki! it is counted as no points under japanese rules, regardless of eyes. There is a test case that will likely fail with any intuitive algorithm for determining score.
 
+This will probably be extended for Score estimation.
+
 Rating FAQ
 ======
 
