@@ -38,7 +38,7 @@ We dont know yet and this is a vital part on deciding what are we going to use i
 What else besides Accuracy and Performance matters?
 --------------------------------------------------
 
-The impression and subjectivity players get from the system. An accurate system that leaves people unhappy by any reason is a bad system.
+The impression and subjectivity players get from the system. An accurate system that leaves people unhappy by any reason has a negative impact.
 
 Examples of the psychological aspect of a system.
 
