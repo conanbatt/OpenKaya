@@ -1,4 +1,0 @@
-Benchmark results(seconds) :   0.000000   0.000000   0.000000 (  0.000082)
-
-pepe rating: 7 rank: kyu
-carlos rating: -7 rank: kyu
