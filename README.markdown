@@ -8,7 +8,13 @@ Open-source code is subject to as rigorous standards as the server. Code must ha
 Dependencies & tools
 ====================
 
+Javascript
+----------
 Current code is pure Javascript and can be run from within the browser without any installation.
+
+Ruby
+----
+Code utilizes ruby 1.9.2.  
 
 Score
 =====
