@@ -2,6 +2,16 @@ require File.expand_path("system", File.dirname(__FILE__))
 require File.expand_path("strategies/simplepoint", File.dirname(__FILE__))
 require 'benchmark'
 
+=begin
+
+  To add a new rating system simulation:
+    1. write the algorithm in a #{algorithms name}.rb inside "strategies"
+    2. add corresponding require as seen for simple point at the top of this file
+    3. call method run_simulation
+  That's it!
+
+=end
+
 def sample_data_set
   set = []
   set << {:white_player => "pepe",:black_player => "carlos",:winner => "W"}
@@ -33,8 +43,8 @@ def read_data_set(filename)
       set << {:white_player => w, :black_player => b, :winner => winner.chomp}
     end
   end
-  p set
-  return set
+  
+return set
 end
 
 run_simulation(SimplePoint, read_data_set("data/sample_data.txt"))
