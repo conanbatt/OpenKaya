@@ -43,7 +43,7 @@ The impression and subjectivity players get from the system. An accurate system 
 Examples of the psychological aspect of a system.
 
 * If the system makes players have a very heavy rating, it will push them into constantly making new accounts, worsening the whole experience.(KGS)
-* If must not be frustrating to achieve the proper rank on an account, for example, by having to play too many games to get a confident rank. (Wbaduk/Tygem)
+* It must not be frustrating to achieve the proper rank on an account, for example, by having to play too many games to get a confident rank. (Wbaduk/Tygem)
 * Unrated accounts (new players) shouldnt be uninteresting to play with, due to risk/benefit of playing them.(KGS)
 * Unfair Handicaps or uneven probabilities causing different rating values on game results. Kaya will disencourage playing with imbalanced handicap and that effect can be considered to be avoided within the same category. (i.e. Strong 5d gives komi to weak 5d, to prevent the former to have to win many more games than the latter).
 
