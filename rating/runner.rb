@@ -12,7 +12,7 @@ def assert(boolean)
 end
 
 def run_simulation(strategy, data_set)
-  system = System.new(SimplePoint)
+  system = System.new(strategy)
 
   time = Benchmark.measure {
                             data_set.each do |result|
