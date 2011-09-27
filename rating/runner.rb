@@ -59,11 +59,13 @@ def even_test()
   return set
 end
 
-def ten_to_one_test()
+def stronger_player_test()
   set = []
-  set << {:white_player => "c", :black_player => "d", :winner => "B", :datetime => DateTime.parse("2011-09-24")}
-  10.times do
-    set << {:white_player => "c", :black_player => "d", :winner => "W", :datetime => DateTime.parse("2011-09-24")}
+  5.times do
+    set << {:white_player => "c", :black_player => "d", :winner => "B", :datetime => DateTime.parse("2011-09-24")}
+    20.times do
+      set << {:white_player => "c", :black_player => "d", :winner => "W", :datetime => DateTime.parse("2011-09-24")}
+    end
   end
   return set
 end
@@ -71,5 +73,5 @@ end
 set = read_data_set("data/sample_data.txt")
 #run_simulation(SimplePoint, set)
 run_simulation(Glicko, set)
-#run_simulation(Glicko, even_test() + ten_to_one_test())
+#run_simulation(Glicko, even_test() + stronger_player_test())
 
