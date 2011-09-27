@@ -1,7 +1,7 @@
 class Player
 
-  attr_reader :rating, :rd, :time_last_played, :id
-  attr_writer :rating, :rd, :time_last_played
+  attr_reader :rating, :id
+  attr_writer :rating
 
   def initialize(id,rating)
     @rating = rating
