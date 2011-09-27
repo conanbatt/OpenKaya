@@ -72,4 +72,9 @@ Tests
 
 To make sure the rating systems do what they intended, unit tests must be implemented. After adding a rating system, you can add code under tests/#{rating_system}_test.rb that verifies its not giving crazy results. This is a vital requirement to merge rating systems into master, as it is the only way i have to know the code works without going deep into the details of each implementation.
 
+To run tests:
+
+    gem install cutest
+
+    ruby tests/#{rating_system}_test.rb
 
