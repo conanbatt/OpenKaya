@@ -53,6 +53,14 @@ Examples of the psychological aspect of a system.
 * Unrated accounts (new players) shouldnt be uninteresting to play with, due to risk/benefit of playing them.(KGS)
 * Unfair Handicaps or uneven probabilities causing different rating values on game results. Kaya will disencourage playing with imbalanced handicap and that effect can be considered to be avoided within the same category. (i.e. Strong 5d gives komi to weak 5d, to prevent the former to have to win many more games than the latter).
 
+Notes
+-----
+
+Remember that there will be a handicap! The rating system must support that to some degree. There are basically 2 strategies to deal with this (and their mix):
+
+* Making the rating impact differently if two players of different rating play even
+* Making all games have equal importance for both players by adjusting the probabilities of winning with handicap (to any degree, including in the same rank)
+
 Rating Documentation
 ====================
 
