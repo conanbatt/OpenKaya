@@ -1,6 +1,5 @@
 require File.expand_path("system", File.dirname(__FILE__))
-require File.expand_path("strategies/simplepoint", File.dirname(__FILE__))
-require File.expand_path("strategies/glicko", File.dirname(__FILE__))
+Dir[File.dirname(__FILE__) + "/strategies/*.rb"].each {|file| require file }
 require 'benchmark'
 require 'date'
 
@@ -8,16 +7,22 @@ require 'date'
 
   To add a new rating system simulation:
     1. write the algorithm in a #{algorithms name}.rb inside "strategies"
-    2. add corresponding require as seen for simple point at the top of this file
+    2. add tests to verify its running correctly
+    3. make sure you implemented validate method, to be able tu run the runner with validate flag
     3. call method run_simulation
   That's it!
+
+  Remember to pass on the argument to run the Rating system!
 
 =end
 VALIDATION_MODE = false
 
+SYSTEMS_TO_RUN = []
+
 ARGV.each do|a|
   puts "Called with: #{a}"
-  VALIDATION_MODE = true if a=="validate"
+  VALIDATION_MODE = true if a=="Validate"
+  SYSTEMS_TO_RUN << Kernel.const_get(a) if Kernel.const_defined?(a)
 end
 
 def sample_data_set
@@ -78,6 +83,9 @@ end
 
 set = read_data_set("data/sample_data.txt")
 #run_simulation(SimplePoint, set)
-run_simulation(Glicko, set)
+
+SYSTEMS_TO_RUN.each do |rating_system|
+  run_simulation(rating_system, set)
+end
 #run_simulation(Glicko, even_test() + stronger_player_test())
 

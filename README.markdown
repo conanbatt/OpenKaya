@@ -64,7 +64,8 @@ Strategies : Inside the folder there is a ridicolously simple system as a demons
 
 Runner: The script that runs the simulation. It will run with a sample data-set and simple point system and write to a file the final rating of all players, rank and a benchmark on how long the process took.
 
-**new** Added arguments parsing on runner. Use "validate" argument to make the system validate users rating after each result is added. Good to check consistency at any point.
+**new** Added arguments parsing on runner. Use "Validate" argument to make the system validate users rating after each result is added. Good to check consistency at any point.
+Also, you need to specify which rating system to use through the args (more than one possible). i.e. ruby runner.rb Glicko
 
 Tests 
 =====
