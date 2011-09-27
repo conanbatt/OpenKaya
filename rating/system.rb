@@ -45,7 +45,7 @@ class System
     File.open("Rating_results_#{@strategy}.txt", 'w') do |f|
       f.write("Benchmark results(seconds) : #{time}\n")
       @players.values.each do |player|
-        line = "#{player.id} rating: #{player.rating} rank: #{@strategy.rank(player.rating)}\n"
+        line = "#{player.id} rating: #{player.rating} rank: #{@strategy.rank(player)}\n"
         f.write(line)
       end
     end 

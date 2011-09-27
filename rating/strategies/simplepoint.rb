@@ -8,7 +8,7 @@ module SimplePoint
 
   def self.add_result(input, players)
     raise "Invalid arguments #{input}" unless input[:white_player] && input[:black_player] && input[:winner]
-    if(input[:winner])
+    if(input[:winner]=="W")
       players.call(input[:white_player]).rating += 1
       players.call(input[:black_player]).rating -= 1
     else
@@ -17,10 +17,10 @@ module SimplePoint
     end
   end
 
-  def self.rank(rating)
-    return "kyu" if rating < 20
-    return "dan" if rating.between?(20,40)
-    return "pro" if rating > 40
+  def self.rank(player)
+    return "kyu" if player.rating < 20
+    return "dan" if player.rating.between?(20,40)
+    return "pro" if player.rating > 40
   end
 
 end
