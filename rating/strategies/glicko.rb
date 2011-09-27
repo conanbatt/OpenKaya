@@ -30,6 +30,25 @@ require File.expand_path("../system", File.dirname(__FILE__))
 
 module Glicko 
 
+  #TODO
+=begin
+ I think this rating class can be made a module. We can do :
+ def e(opp) => def self.e(a, b)
+ This way its stateless, which is more appropiate to a Math module like calculating rating.
+ Attributes that are tied to a player, like :rd, :time_last_played.. etc can be added to the player model.
+
+ If you fear it might collide with future system implementations you can add this code:
+
+ class Player
+    attr_accessor :r, :rd, :time_last_played
+ end
+
+ This will reopen the Player class, add this attributes and leave them intact. You can attach this code somewhere here, and this way Player class is only modified when Glicko is loaded.
+
+ Otherwise just add them to the Player model in system : thats how its going to happen in Kaya eventually.  
+
+=end
+
   class Rating < DelegateClass(Float)
     MAX_RD = 350.0            # maximum rating deviation for new/inactive players
     MIN_RD = 30.0             # minimum rating deviation for very active players
@@ -42,8 +61,7 @@ module Glicko
     FIVE_KYU = (A/2.0)*((-4.0)**2) + (B*-4.0)    # ~ 695.2 -- Glicko rating of the strongest 5k
     TWO_DAN  = (A/2.0)*(( 1.0)**2) + (B* 1.0)    # ~ 217.3 -- Glicko rating of the weakest 2d
 
-    attr_reader :r, :rd, :time_last_played
-    attr_writer :r, :rd, :time_last_played
+    attr_accessor :r, :rd, :time_last_played
 
     def initialize(rating)
       @r  = rating
@@ -153,5 +171,18 @@ module Glicko
       return "%0.1fd" % [(r*10.0).floor/10.0]
     end
   end
+
+  class GlickoError < StandardError; end
+
+  def self.validate(rating)
+
+    #TODO: write validation rules. i.e.
+    # raise GlickoError, "Rating must be positive" if rating < 0
+    raise RuntimeError, "Unimplemented"
+
+ 
+  end
+
+  
 
 end

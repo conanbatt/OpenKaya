@@ -13,6 +13,12 @@ require 'date'
   That's it!
 
 =end
+VALIDATION_MODE = false
+
+ARGV.each do|a|
+  puts "Called with: #{a}"
+  VALIDATION_MODE = true if a=="validate"
+end
 
 def sample_data_set
   set = []
@@ -24,7 +30,7 @@ def assert(boolean)
 end
 
 def run_simulation(strategy, data_set)
-  system = System.new(strategy)
+  system = System.new(strategy, VALIDATION_MODE)
 
   time = Benchmark.measure {
                             data_set.each do |result|
