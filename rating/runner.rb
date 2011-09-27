@@ -1,6 +1,6 @@
 require File.expand_path("system", File.dirname(__FILE__))
 require File.expand_path("strategies/simplepoint", File.dirname(__FILE__))
-require File.expand_path("strategies/Glicko", File.dirname(__FILE__))
+require File.expand_path("strategies/glicko", File.dirname(__FILE__))
 require 'benchmark'
 require 'date'
 
@@ -69,7 +69,7 @@ def ten_to_one_test()
 end
 
 set = read_data_set("data/sample_data.txt")
-run_simulation(SimplePoint, set)
+#run_simulation(SimplePoint, set)
 run_simulation(Glicko, set)
 #run_simulation(Glicko, even_test() + ten_to_one_test())
 
