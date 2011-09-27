@@ -1,7 +1,7 @@
 require 'date'
+require File.expand_path("../system", File.dirname(__FILE__))
 
 module Glicko 
-#class Glicko   # Why pick module vs class?
 
   INITIAL_RATING = 0.0
   MAX_RD = 350.0
@@ -10,7 +10,11 @@ module Glicko
   C_SQUARED = (MAX_RD**2.0-MIN_RD**2.0)/180.0  # Set RD to decay from MIN to MAX in 180 days
   KGS_KYU_TRANSFORM = 139.0  # kgs 5k-
   KGS_DAN_TRANSFORM = 226.0  # kgs 2d+
-  DEBUG = nil
+  DEBUG = false
+  A = (KGS_DAN_TRANSFORM - KGS_KYU_TRANSFORM) / (1.0 - -4.0) # ~ 17.4
+  B = KGS_KYU_TRANSFORM + 4.0*A                              # ~ 208.6
+  FIVE_KYU = (A/2.0)*((-4.0)**2) + (B*-4.0)    # ~ 695.2
+  TWO_DAN  = (A/2.0)*(( 1.0)**2) + (B* 1.0)    # ~ 217.3
 
   def self.win_probability(player, opp)
     return e(player, opp)
@@ -30,7 +34,7 @@ module Glicko
   end
  
   def self.add_result(input, players)
-    self.initialize_stuff() if not @five_kyu
+    self.initialize_stuff() if not @initialized
     raise "Invalid arguments #{input}" unless input[:white_player] && input[:black_player] && input[:winner] && input[:datetime]
     white = players[input[:white_player]]
     black = players[input[:black_player]]
@@ -64,36 +68,34 @@ module Glicko
     print "\n" if DEBUG
   end
 
-  def self.kyu_dan_to_rating_middle_transform(dan_kyu_rating)
-    return @a*(dan_kyu_rating**2) + @b*dan_kyu_rating
-  end
-
-  def self.rating_to_kyu_dan_transform(rating)
-    return -4.0 + (rating-@five_kyu)/KGS_KYU_TRANSFORM if rating < @five_kyu
-    return  1.0 + (rating- @two_dan)/KGS_DAN_TRANSFORM if rating >  @two_dan
-    return (Math.sqrt(4.0*@a*rating+@b**2.0)-@b)/(2.0*@a)
+  def self.rating_to_kyudan_transform(rating)
+    return -4.0 + (rating-FIVE_KYU)/KGS_KYU_TRANSFORM if rating < FIVE_KYU
+    return  1.0 + (rating- TWO_DAN)/KGS_DAN_TRANSFORM if rating >  TWO_DAN
+    return (Math.sqrt(2.0*A*rating+B**2.0)-B)/A
   end
 
   def self.initialize_stuff()
-    @a = (KGS_DAN_TRANSFORM - KGS_KYU_TRANSFORM) / (1.0 + 4.0) / 2   # ~8.7
-    @b = KGS_KYU_TRANSFORM + 4.0*@a*1.0                              # ~173.8
-    @five_kyu = self.kyu_dan_to_rating_middle_transform(-4.0)
-    @two_dan  = self.kyu_dan_to_rating_middle_transform(1.0)
-    print 'a=', @a, ' b=', @b, ' five_kyu=', @five_kyu, ' two_dan=', @two_dan, "\n" if DEBUG
-    print '5k=', self.rank(@five_kyu), "\n" if DEBUG
-    print '2d=', self.rank(@two_dan), "\n" if DEBUG
+    if DEBUG
+      print 'a=', A, ' b=', B, ' five_kyu=', FIVE_KYU, ' two_dan=', TWO_DAN, "\n"
+      puts rank(FIVE_KYU + 1.0)
+      puts rank(FIVE_KYU - 1.0)
+      puts rank(TWO_DAN + 1.0)
+      puts rank(TWO_DAN - 1.0)
+      puts rank(1.0)
+      puts rank(-1.0)
+    end
+    @initialized = true
   end
 
   def self.rank(rating)
-    r = self.rating_to_kyu_dan_transform(rating)
+    r = self.rating_to_kyudan_transform(rating)
     if r < 0
       r -= 1.0
-      return "%0.1fk %0.9fk" % [(r*10.0).ceil/10.0, r]
+      return "%0.1fk" % [(r*10.0).ceil/10.0]
     else
       r += 1.0
-      return "%0.1fd %0.9fd" % [(r*10.0).floor/10.0, r]
+      return "%0.1fd" % [(r*10.0).floor/10.0]
     end
   end
 
 end
-

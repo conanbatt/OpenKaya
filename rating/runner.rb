@@ -50,6 +50,26 @@ def read_data_set(filename)
 return set
 end
 
+def even_test()
+  set = []
+  10.times do
+    set << {:white_player => "a", :black_player => "b", :winner => "W", :datetime => DateTime.parse("2011-09-24")}
+    set << {:white_player => "a", :black_player => "b", :winner => "B", :datetime => DateTime.parse("2011-09-24")}
+  end
+  return set
+end
+
+def ten_to_one_test()
+  set = []
+  set << {:white_player => "c", :black_player => "d", :winner => "B", :datetime => DateTime.parse("2011-09-24")}
+  10.times do
+    set << {:white_player => "c", :black_player => "d", :winner => "W", :datetime => DateTime.parse("2011-09-24")}
+  end
+  return set
+end
+
 set = read_data_set("data/sample_data.txt")
 run_simulation(SimplePoint, set)
 run_simulation(Glicko, set)
+#run_simulation(Glicko, even_test() + ten_to_one_test())
+
