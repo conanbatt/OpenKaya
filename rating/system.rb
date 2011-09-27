@@ -25,13 +25,12 @@ class System
     for player in [white, black] do
       players[player] = Player.new(player, @strategy::INITIAL_RATING) if not players[player]
     end
-    strategy.add_result(input, players) 
-    #strategy.add_result(input, fetch_or_create) 
+    strategy.add_result(input, fetch_or_create) 
   end
 
-  #def fetch_or_create
-  #  ->(id) { players[id] || players[id] = Player.new(id, @strategy::INITIAL_RATING) }
-  #end
+  def fetch_or_create
+    ->(id) { players[id] || players[id] = Player.new(id, @strategy::INITIAL_RATING) }
+  end
 
   def results_to_file(time="")
     File.open("Rating_results_#{@strategy}.txt", 'w') do |f|
