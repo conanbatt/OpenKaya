@@ -64,6 +64,11 @@ Strategies : Inside the folder there is a ridicolously simple system as a demons
 
 Runner: The script that runs the simulation. It will run with a sample data-set and simple point system and write to a file the final rating of all players, rank and a benchmark on how long the process took.
 
+**new** Added arguments parsing on runner. Use "validate" argument to make the system validate users rating after each result is added. Good to check consistency at any point.
 
+Tests 
+=====
+
+To make sure the rating systems do what they intended, unit tests must be implemented. After adding a rating system, you can add code under tests/#{rating_system}_test.rb that verifies its not giving crazy results. This is a vital requirement to merge rating systems into master, as it is the only way i have to know the code works without going deep into the details of each implementation.
 
 
