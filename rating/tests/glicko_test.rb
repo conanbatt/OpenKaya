@@ -57,4 +57,55 @@ test "Calculate win probability between 2 players" do
   assert Glicko.win_probability(player_a, player_b) < 0.75-0.1  # Higher RD means less confidence, so ratings tend toward 0.5
 end
 
+# TODO: Add actual checking to some of these
+# For now just running them
+test "Even strength test" do
+  set = []
+  10.times do
+    set << {:white_player => "a", :black_player => "b", :rules => "aga", :handicap => 0, :komi => 7.5, :winner => "W", :datetime => DateTime.parse("2011-09-24")}
+    set << {:white_player => "a", :black_player => "b", :rules => "aga", :handicap => 0, :komi => 7.5, :winner => "B", :datetime => DateTime.parse("2011-09-24")}
+  end
+  system = System.new(Glicko)
+  set.each do |result|
+    system.add_result(result)
+  end
+end
+
+test "No komi test" do
+  set = []
+  10.times do
+    set << {:white_player => "a", :black_player => "b", :rules => "aga", :handicap => 0, :komi => 0.5, :winner => "W", :datetime => DateTime.parse("2011-09-24")}
+    set << {:white_player => "a", :black_player => "b", :rules => "aga", :handicap => 0, :komi => 0.5, :winner => "B", :datetime => DateTime.parse("2011-09-24")}
+  end
+  system = System.new(Glicko)
+  set.each do |result|
+    system.add_result(result)
+  end
+end
+
+test "Six stone handicap test" do
+  set = []
+  10.times do
+    set << {:white_player => "a", :black_player => "b", :rules => "aga", :handicap => 6, :komi => 0.5, :winner => "W", :datetime => DateTime.parse("2011-09-24")}
+    set << {:white_player => "a", :black_player => "b", :rules => "aga", :handicap => 6, :komi => 0.5, :winner => "B", :datetime => DateTime.parse("2011-09-24")}
+  end
+  system = System.new(Glicko)
+  set.each do |result|
+    system.add_result(result)
+  end
+end
+
+test "Stronger player test" do
+  set = []
+  5.times do
+    set << {:white_player => "c", :black_player => "d", :rules => "aga", :handicap => 0, :komi => 7.5, :winner => "B", :datetime => DateTime.parse("2011-09-24")}
+    20.times do
+      set << {:white_player => "c", :black_player => "d", :rules => "aga", :handicap => 0, :komi => 7.5, :winner => "W", :datetime => DateTime.parse("2011-09-24")}
+    end
+  end
+  system = System.new(Glicko)
+  set.each do |result|
+    system.add_result(result)
+  end
+end
 
