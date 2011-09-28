@@ -42,6 +42,16 @@ test "Check rating conversion at key boundaries" do
   assert(Glicko::aga_rank_str(Glicko::set_aga_rating(Player.new("a", nil), -1.001)) == "-1.0k")  # Strongest 1k
 end
 
+test "Handicap/Komi advantage" do
+  assert(Glicko::advantage_in_stones(0,  7.5, 7.5) == 0.0)
+  assert(Glicko::advantage_in_stones(0,  0.5, 7.5) == 0.5)
+  assert(Glicko::advantage_in_stones(0, -6.5, 7.5) == 1.0)
+  assert_raise(Glicko::GlickoError) do 
+    assert(Glicko::advantage_in_stones(1,  0.5, 7.5))
+  end
+  assert(Glicko::advantage_in_stones(6,  0.5, 7.5) == 5.5)
+end
+
 # Just print the table for now, no actual tests
 test "Ratings table" do
   puts

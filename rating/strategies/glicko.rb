@@ -51,6 +51,8 @@ module Glicko
   TWO_DAN  = (A/2.0)*((KD_TWO_DAN )**2) + (B*KD_TWO_DAN )    # ~ 217.3 -- Glicko rating of the weakest 2d
   EVEN_KOMI = { "aga" => 7, "jpn" => 6 }    # even komi, after doing floor()
 
+  class GlickoError < StandardError; end
+
   def self.g(player)
     return 1.0/Math.sqrt(1.0 + 3.0*(Q**2.0)*(player.rd**2.0)/Math::PI**2.0)
   end
@@ -98,14 +100,22 @@ module Glicko
   end
 
   def self.set_aga_rating(player, aga_rating)
-    raise "Illegal aga_rating #{aga_rating}" unless aga_rating.abs >= 1.0  # Ratings in (-1.0,1.0) are illegal
+    raise GlickoError, "Illegal aga_rating #{aga_rating}" unless aga_rating.abs >= 1.0  # Ratings in (-1.0,1.0) are illegal
     kyudan_rating = aga_rating < 0.0 ? aga_rating + 1.0 : aga_rating - 1.0   # Close the (-1.0,1.0) gap
     set_kyudan_rating(player, kyudan_rating)
     return player
   end
 
+  def self.advantage_in_stones(handi, komi, even_komi)
+    raise GlickoError, "Handi=1 is illegal" if handi == 1
+    komi = komi.floor
+    even_komi = even_komi.floor
+    handi -= 1 if handi > 2
+    return handi + (even_komi-komi)/(even_komi*2.0)
+  end
+
   def self.handi_komi_advantage(white, black, rules, handi, komi)
-    advantage_in_stones = handi + (EVEN_KOMI[rules]-komi)/(EVEN_KOMI[rules]*2.0)
+    advantage_in_stones = advantage_in_stones(handi, komi, EVEN_KOMI[rules])
     avg_kyudan_rating = (get_kyudan_rating(white) + get_kyudan_rating(black)) / 2.0
     # Creating tmp player objects is weird, would be nicer if there was a Rating object
     r1 = set_kyudan_rating(Player.new("", nil), avg_kyudan_rating + advantage_in_stones*0.5)
@@ -121,7 +131,7 @@ module Glicko
   end
 
   def self.add_result(input, players)
-    raise "Invalid arguments #{input}" unless input[:white_player] && input[:black_player] && input[:winner] && input[:datetime] && input[:rules] && input[:handicap] && input[:komi]
+    raise GlickoError, "Invalid arguments #{input}" unless input[:white_player] && input[:black_player] && input[:winner] && input[:datetime] && input[:rules] && input[:handicap] && input[:komi]
     white = players[input[:white_player]]
     black = players[input[:black_player]]
     handi = input[:handicap]
@@ -166,8 +176,6 @@ module Glicko
       "%0.1fk" % [(r*10.0).ceil/10.0] : 
       "%0.1fd" % [(r*10.0).floor/10.0]
   end
-
-  class GlickoError < StandardError; end
 
   def self.validate(player)
     aga_rating = get_aga_rating(player)
