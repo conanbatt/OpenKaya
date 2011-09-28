@@ -42,6 +42,16 @@ test "Check rating conversion at key boundaries" do
   assert(Glicko::aga_rank_str(Glicko::set_aga_rating(Player.new("a", nil), -1.001)) == "-1.0k")  # Strongest 1k
 end
 
+test "Ratings table test" do
+  puts
+  for aga_rating in ((-30.999..-1.99).step(1.0).to_a+(1.001..10.001).step(1.0).to_a).reverse
+    next if aga_rating > -1.0 && aga_rating < 1.0
+    p_low  = Glicko::set_aga_rating(Player.new("a", nil), aga_rating     )
+    p_high = Glicko::set_aga_rating(Player.new("a", nil), aga_rating+0.998)
+    puts "%7.3f %7.3f %3s %5.0f %5.0f" % [aga_rating, aga_rating+0.998, Glicko::rank(p_low), p_low.rating, p_high.rating]
+  end
+end
+
 test "Calculate win probability between 2 players" do
   player_a.rating = 0.0
   player_b.rating = 0.0
@@ -108,4 +118,6 @@ test "Stronger player test" do
     system.add_result(result)
   end
 end
+
+puts
 

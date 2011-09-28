@@ -41,8 +41,8 @@ module Glicko
   MIN_RD = 30.0             # minimum rating deviation for very active players
   Q = Math.log(10)/400.0    # Convert from classic Elo to natural scale
   C_SQUARED = (MAX_RD**2.0-MIN_RD**2.0)/180.0  # Set RD to decay from MIN to MAX in 180 days
-  KGS_KYU_TRANSFORM = 139.0  # kgs 5k-
-  KGS_DAN_TRANSFORM = 226.0  # kgs 2d+
+  KGS_KYU_TRANSFORM = 0.85/Q  # kgs 5k-
+  KGS_DAN_TRANSFORM = 1.30/Q  # kgs 2d+
   KD_FIVE_KYU = -4.0         # Strongest 5k on the kyudan scale
   KD_TWO_DAN  =  1.0         # Weakest   2d on the kyudan scale
   A = (KGS_DAN_TRANSFORM - KGS_KYU_TRANSFORM) / (KD_TWO_DAN - KD_FIVE_KYU) # ~ 17.4    Intermediate constant for conversions
@@ -120,7 +120,7 @@ module Glicko
     komi  = (input[:komi]).floor
     hka = handi_komi_advantage(white, black, input[:rules], handi, komi)
     white_won = input[:winner] == 'W'
-    print "%sw=%s %sb=%s h=%d k=%d hka=%0.0f " % [white_won ? "+":" ", white.id, white_won ? " ":"+", black.id, handi, komi, hka]
+    print "%sw=%s %sb=%s h=%d k=%d hka=%0.0f " % [white_won ? "+":" ", white.id, white_won ? " ":"+", black.id, handi, komi, hka] if DEBUG
     # Initial update on RD based on how long it has been since the player's last game
     for player in [white, black] do
       initial_rd_update(player, input[:datetime])
