@@ -32,8 +32,8 @@ class System
     end
     strategy.add_result(input, fetch_or_create)
     if @validate
-      @strategy.validate(players[white].rating)
-      @strategy.validate(players[black].rating)
+      @strategy.validate(players[white])
+      @strategy.validate(players[black])
     end
   end
 
