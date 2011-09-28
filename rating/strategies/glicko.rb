@@ -38,7 +38,7 @@ module Glicko
   INITIAL_RATING = 0.0
   DEBUG = false
   MAX_RD = 350.0            # maximum rating deviation for new/inactive players
-  MIN_RD = 30.0             # minimum rating deviation for very active players
+  MIN_RD = 60.0             # minimum rating deviation for very active players
   Q = Math.log(10)/400.0    # Convert from classic Elo to natural scale
   C_SQUARED = (MAX_RD**2.0-MIN_RD**2.0)/180.0  # Set RD to decay from MIN to MAX in 180 days
   KGS_KYU_TRANSFORM = 0.85/Q  # kgs 5k-
@@ -98,6 +98,7 @@ module Glicko
   end
 
   def self.set_aga_rating(player, aga_rating)
+    raise "Illegal aga_rating #{aga_rating}" unless aga_rating.abs >= 1.0  # Ratings in (-1.0,1.0) are illegal
     kyudan_rating = aga_rating < 0.0 ? aga_rating + 1.0 : aga_rating - 1.0   # Close the (-1.0,1.0) gap
     set_kyudan_rating(player, kyudan_rating)
     return player
@@ -110,6 +111,13 @@ module Glicko
     r1 = set_kyudan_rating(Player.new("", nil), avg_kyudan_rating + advantage_in_stones*0.5)
     r2 = set_kyudan_rating(Player.new("", nil), avg_kyudan_rating - advantage_in_stones*0.5)
     return r1.rating-r2.rating
+  end
+
+  def self.rating_to_s(player)
+    p_min = Player.new("", player.rating - player.rd*2)
+    p_max = Player.new("", player.rating + player.rd*2)
+    #return "%5.0f [%5.0f %5.0f] %5.2f [%5.2f %5.2f]" % [player.rating, p_min.rating, p_max.rating, get_aga_rating(player), get_aga_rating(p_min), get_aga_rating(p_max)]
+    return "%5.0f [+-%3.0f] %5.2f [+-%5.2f]" % [player.rating, (p_max.rating-p_min.rating)/2.0, get_aga_rating(player), (get_aga_rating(p_max)-get_aga_rating(p_min))/2.0]
   end
 
   def self.add_result(input, players)
@@ -135,7 +143,7 @@ module Glicko
       g_term = g(opp)
       s_term = score - e
       new_r[player]  = player.rating + q_term*g_term*s_term
-      new_rd[player] = Math.sqrt(1.0/((1.0/player.rd**2.0)+1.0/d_squared))
+      new_rd[player] = [MIN_RD, Math.sqrt(1.0/((1.0/player.rd**2.0)+1.0/d_squared))].max
     end
     # Apply updates
     for player in [white, black]

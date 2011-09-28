@@ -42,8 +42,10 @@ test "Check rating conversion at key boundaries" do
   assert(Glicko::aga_rank_str(Glicko::set_aga_rating(Player.new("a", nil), -1.001)) == "-1.0k")  # Strongest 1k
 end
 
-test "Ratings table test" do
+# Just print the table for now, no actual tests
+test "Ratings table" do
   puts
+  puts "Ratings table"
   for aga_rating in ((-30.999..-1.99).step(1.0).to_a+(1.001..10.001).step(1.0).to_a).reverse
     next if aga_rating > -1.0 && aga_rating < 1.0
     p_low  = Glicko::set_aga_rating(Player.new("a", nil), aga_rating     )
@@ -116,6 +118,33 @@ test "Stronger player test" do
   system = System.new(Glicko)
   set.each do |result|
     system.add_result(result)
+  end
+end
+
+test "Ratings response" do
+  puts
+  puts "Ratings response"
+  puts "New person playing all even games against solid opponents with same rating as the new person"
+  system = System.new(Glicko)
+  for days_rest in [0, 7, 30] do
+    for init_aga_rating in [5.0, -30.0] do
+      puts "init_aga_rating=#{init_aga_rating} days_rest=#{days_rest}"
+      puts "  #  newR   95%   newAGA    95%      dR  dKD  (1/dKD)"
+      plr_anchor = system.players["anchor"] = Glicko.set_aga_rating(Player.new("anchor", nil), init_aga_rating)
+      plr_b      = system.players["b"]      = Glicko.set_aga_rating(Player.new("b"     , nil), init_aga_rating)
+      datetime = DateTime.parse("2011-09-24")
+      for i in 1..40 do
+        prev_plr_b      = plr_b.dup
+        prev_plr_anchor = plr_anchor.dup
+        system.players["anchor"].rating = system.players["b"].rating  # Keep reseting the anchor to be same rating as the player
+        system.players["anchor"].rd     = Glicko::MIN_RD              # Also assume the anchor plays a lot and has high confidence rating
+        system.add_result({:white_player => "anchor", :black_player => "b", :rules => "aga", :handicap => 0, :komi => 7.5, :winner => "B", :datetime => datetime})
+        dKD = Glicko.get_kyudan_rating(plr_b)-Glicko.get_kyudan_rating(prev_plr_b)
+        puts "%3d %s   %3.0f  %4.2f  (%4.1f)" % [i, Glicko.rating_to_s(plr_b), plr_b.rating-prev_plr_b.rating, dKD, 1/dKD]
+        datetime += days_rest  # new person waits this many days before playing again
+      end
+      puts
+    end
   end
 end
 
