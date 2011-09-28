@@ -82,10 +82,8 @@ def stronger_player_test()
 end
 
 set = read_data_set("data/sample_data.txt")
-#run_simulation(SimplePoint, set)
 
 SYSTEMS_TO_RUN.each do |rating_system|
   run_simulation(rating_system, set)
 end
-#run_simulation(Glicko, even_test() + stronger_player_test())
 
