@@ -8,13 +8,17 @@ Open-source code is subject to as rigorous standards as the server. Code must ha
 Dependencies & tools
 ====================
 
-Javascript
+Score
 ----------
 Current code is pure Javascript and can be run from within the browser without any installation.
 
-Ruby
+Rating
+-----
+Code utilizes ruby 1.9.2 which is the version used by the server.  
+
+Bot
 ----
-Code utilizes ruby 1.9.2.  
+Ruby 1.8.7 as required by mechanize. 
 
 Score
 =====
@@ -92,3 +96,9 @@ To run tests:
 
     ruby tests/#{rating_system}_test.rb
 
+Kaya Bot Interface
+--------
+
+Working on an interface to run bots remotely as if they were users. Bots will have a special dedicated api for simplicity, easy maintenance and increased performance.
+
+WARNING: Current code is highly unstable and subject to big changes, depending on the implementation of the routes in the server. 
