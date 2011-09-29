@@ -110,7 +110,7 @@ module Glicko
     raise GlickoError, "Handi=1 is illegal" if handi == 1
     komi = komi.floor
     even_komi = even_komi.floor
-    handi -= 1 if handi > 2
+    handi -= 1 if handi > 0
     return handi + (even_komi-komi)/(even_komi*2.0)
   end
 
@@ -126,8 +126,7 @@ module Glicko
   def self.rating_to_s(player)
     p_min = Player.new("", player.rating - player.rd*2)
     p_max = Player.new("", player.rating + player.rd*2)
-    #return "%5.0f [%5.0f %5.0f] %5.2f [%5.2f %5.2f]" % [player.rating, p_min.rating, p_max.rating, get_aga_rating(player), get_aga_rating(p_min), get_aga_rating(p_max)]
-    return "%5.0f [+-%3.0f] %5.2f [+-%5.2f]" % [player.rating, (p_max.rating-p_min.rating)/2.0, get_aga_rating(player), (get_aga_rating(p_max)-get_aga_rating(p_min))/2.0]
+    return "%5.0f [+-%3.0f] %6.2f [+-%5.2f]" % [player.rating, (p_max.rating-p_min.rating)/2.0, get_aga_rating(player), (get_aga_rating(p_max)-get_aga_rating(p_min))/2.0]
   end
 
   def self.add_result(input, players)

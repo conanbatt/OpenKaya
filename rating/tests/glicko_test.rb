@@ -46,13 +46,16 @@ test "Handicap/Komi advantage" do
   assert(Glicko::advantage_in_stones(0,  7.5, 7.5) == 0.0)
   assert(Glicko::advantage_in_stones(0,  0.5, 7.5) == 0.5)
   assert(Glicko::advantage_in_stones(0, -6.5, 7.5) == 1.0)
-  assert_raise(Glicko::GlickoError) do 
-    assert(Glicko::advantage_in_stones(1,  0.5, 7.5))
-  end
+  print Glicko::advantage_in_stones(2,  0.5, 7.5)
+  assert(Glicko::advantage_in_stones(2,  0.5, 7.5) == 1.5)
   assert(Glicko::advantage_in_stones(6,  0.5, 7.5) == 5.5)
+  assert_raise(Glicko::GlickoError) do 
+    assert(Glicko::advantage_in_stones(1,  0.5, 7.5))  # handi=1 is illegal -- instead just set komi=0.5
+  end
 end
 
 # Just print the table for now, no actual tests
+# TODO: Add tests for this
 test "Ratings table" do
   puts
   puts "Ratings table"
@@ -79,42 +82,27 @@ test "Calculate win probability between 2 players" do
   assert Glicko.win_probability(player_a, player_b) < 0.75-0.1  # Higher RD means less confidence, so ratings tend toward 0.5
 end
 
-# TODO: Add actual checking to some of these
 # For now just running them
-test "Even strength test" do
-  set = []
-  10.times do
-    set << {:white_player => "a", :black_player => "b", :rules => "aga", :handicap => 0, :komi => 7.5, :winner => "W", :datetime => DateTime.parse("2011-09-24")}
-    set << {:white_player => "a", :black_player => "b", :rules => "aga", :handicap => 0, :komi => 7.5, :winner => "B", :datetime => DateTime.parse("2011-09-24")}
-  end
+test "Equal wins" do
+  puts
+  puts "Equal wins"
   system = System.new(Glicko)
-  set.each do |result|
-    system.add_result(result)
+  for init_aga_rating in [-25, -1, 5] do
+    for (handi, komi) in [[0, 7.5], [0, 0.5], [0, -6.5], [2, 0.5], [6, 0.5]]
+      plr_w = system.players["w"] = Glicko.set_aga_rating(Player.new("w", nil), init_aga_rating)
+      plr_b = system.players["b"] = Glicko.set_aga_rating(Player.new("b", nil), init_aga_rating)
+      40.times do
+        system.add_result({:white_player => "w", :black_player => "b", :rules => "aga", :handicap => handi, :komi => komi, :winner => "W", :datetime => DateTime.parse("2011-09-24")})
+        system.add_result({:white_player => "w", :black_player => "b", :rules => "aga", :handicap => handi, :komi => komi, :winner => "B", :datetime => DateTime.parse("2011-09-24")})
+      end
+      diff = Glicko.get_kyudan_rating(plr_w) - Glicko.get_kyudan_rating(plr_b) - Glicko.advantage_in_stones(handi, komi, 7.5)
+      puts "diff=%0.2f  %s  %s" % [diff, Glicko.rating_to_s(plr_w), Glicko.rating_to_s(plr_b)]
+      assert (diff.abs < 0.2)              # Ratings should almost match the handicap advantage
+      assert (plr_w.rd == Glicko::MIN_RD)  # rd should be smallest value with so many games
+      assert (plr_b.rd == Glicko::MIN_RD)
+    end
   end
-end
-
-test "No komi test" do
-  set = []
-  10.times do
-    set << {:white_player => "a", :black_player => "b", :rules => "aga", :handicap => 0, :komi => 0.5, :winner => "W", :datetime => DateTime.parse("2011-09-24")}
-    set << {:white_player => "a", :black_player => "b", :rules => "aga", :handicap => 0, :komi => 0.5, :winner => "B", :datetime => DateTime.parse("2011-09-24")}
-  end
-  system = System.new(Glicko)
-  set.each do |result|
-    system.add_result(result)
-  end
-end
-
-test "Six stone handicap test" do
-  set = []
-  10.times do
-    set << {:white_player => "a", :black_player => "b", :rules => "aga", :handicap => 6, :komi => 0.5, :winner => "W", :datetime => DateTime.parse("2011-09-24")}
-    set << {:white_player => "a", :black_player => "b", :rules => "aga", :handicap => 6, :komi => 0.5, :winner => "B", :datetime => DateTime.parse("2011-09-24")}
-  end
-  system = System.new(Glicko)
-  set.each do |result|
-    system.add_result(result)
-  end
+  puts
 end
 
 test "Stronger player test" do
