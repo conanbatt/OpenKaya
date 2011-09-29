@@ -1,6 +1,9 @@
 function Score(ruleset) {
   var _deadStonesMultiplier;
 
+
+
+  //TODO HDP. Hay una diferencia mas en las reglas chinas, que es que las piedras *no capturadas* cuentan como puntos. New tests included.
   if(ruleset == "Japanese"){
     _deadStonesMultiplier = 2
   }
@@ -9,6 +12,10 @@ function Score(ruleset) {
     _deadStonesMultiplier = 1
   }
 
+  //TODO always put var when you declare a variable(or function, which is the same for JS). 
+  //without var, objects are initialized in the global scope. 
+  //If you open up the test results, and go to the browser console, you will be able to see connectedComponent.
+  //With var, it is enclosed in this scope , and it is private.
   connectedComponent = function(board, x,y) {
     var size = board.length; // Localize length for better performance
     var stack_coord = [[x,y]];
