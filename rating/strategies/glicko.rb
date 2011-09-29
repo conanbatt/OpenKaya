@@ -37,10 +37,11 @@ end
 module Glicko 
   INITIAL_RATING = 0.0
   DEBUG = false
-  MAX_RD = 350.0            # maximum rating deviation for new/inactive players
-  MIN_RD = 60.0             # minimum rating deviation for very active players
+  MAX_RD = 240.0            # maximum rating deviation for new/inactive players
+  MIN_RD = 70.0             # minimum rating deviation for very active players
+  RD_DECAY = 2*365          # Number of days for RD to decay from MIN to MAX
+  C_SQUARED = (MAX_RD**2.0-MIN_RD**2.0)/RD_DECAY
   Q = Math.log(10)/400.0    # Convert from classic Elo to natural scale
-  C_SQUARED = (MAX_RD**2.0-MIN_RD**2.0)/180.0  # Set RD to decay from MIN to MAX in 180 days
   KGS_KYU_TRANSFORM = 0.85/Q  # kgs 5k-
   KGS_DAN_TRANSFORM = 1.30/Q  # kgs 2d+
   KD_FIVE_KYU = -4.0         # Strongest 5k on the kyudan scale
@@ -66,10 +67,10 @@ module Glicko
     return 1.0 / (Q**2.0 * g(opp)**2.0 * e * (1.0-e))
   end
 
-  def self.initial_rd_update(player, currTime)
+  def self.initial_rd_update(player, curr_time)
     if player.time_last_played
-      delta_days = (currTime-player.time_last_played).to_f
-      player.rd = [MIN_RD, [Math.sqrt(player.rd**2.0+C_SQUARED*delta_days), MAX_RD].min].max
+      delta_days = (curr_time-player.time_last_played).to_f
+      player.rd = [Math.sqrt(player.rd**2.0+C_SQUARED*delta_days), MAX_RD].min
     else
       player.rd = MAX_RD
     end
