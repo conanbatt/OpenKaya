@@ -139,6 +139,9 @@ test("SEKI: should count 0 for both (Japanese)", function(){
 });
 
 
+//TODO check this out : http://www.lifein19x19.com/forum/viewtopic.php?p=79204#p79204"
+
+
 var seki_board = [
                 ["B","B","*","W","*","B"],
                 ["B","B","B","W","B","B"],
