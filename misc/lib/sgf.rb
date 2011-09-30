@@ -45,8 +45,8 @@ class SGF
   def load_file(filename)
     File.open(filename, 'r') do |file|
       while (line = file.gets)
-        @metadata = line.split(";")[1]
-        @move_list = line.gsub(metadata, "")[2..-3]
+        @metadata = line.split(";")[1] #will process this later
+        @move_list = line.gsub(metadata, "")[2..-3] #chopping some extra characters
         
       end
     end
