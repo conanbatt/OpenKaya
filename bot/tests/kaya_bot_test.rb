@@ -22,7 +22,9 @@ end
 test "should give me the correct move according to the order" do
 
   replay_bot = ReplayBot.new
-  replay_bot.sgf = ";B[aa];W[bb];B[cc];W[dd]"
+  sgf = SGF.new
+  sgf.move_list = ";B[aa];W[bb];B[cc];W[dd]" 
+  replay_bot.sgf = sgf
 
   assert_equal replay_bot.input, ";B[aa]"
   assert_equal replay_bot.move_number, 1
