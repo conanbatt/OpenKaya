@@ -1,10 +1,12 @@
 require 'rubygems'
 require 'mechanize'
-
 require 'json'
-#agent = Mechanize.new
 
 class KayaBot
+
+  PLAY_URL = "/game/play"
+  OPEN_GAME_URL = "/bot/open_game"
+  RESIGN_URL = "/game/resign"
 
   attr_accessor :challenger, :status, :move
 
@@ -26,7 +28,6 @@ class KayaBot
 
   def connect
     page = @agent.get(@server_url+ "/login.html")
-    #status_page = page.links[0].click
     listener_loop
   end
 
@@ -35,28 +36,30 @@ class KayaBot
   def listener_loop
     while (true) do
       fetch_and_parse_data
-      accept_challenge(@challenger) if @challenger && @status=="connected"
+      open_game if @status=="connected"
       post_move if @move 
       sleep TIME_LAPSE #lets not explode in requests
     end
   end
 
   def fetch_and_parse_data
-     page = @agent.get(@server_url + "/status.html")
+     page = @agent.get(@server_url + "/bot/status.html")
      json = JSON.parse(page.body)
      @status = json["status"]
-     @challenger = json["challenger"]
      @move = json["move"]
   end
 
-  def accept_challenge(challenger)
-    @agent.post(@server_url+ "/accept.html", 
+  def open_game
+    @agent.post(@server_url+ OPEN_GAME_URL, 
                  :challenger => challenger)
   end
 
   def post_move
-    @agent.post(@server_url+ "/play",
+    @agent.post(@server_url+ PLAY_URL,
                   :move => @bot.input(@move))
+  end
+  def resign
+    @agent.post(@server_url+ RESIGN_URL)
   end
 
 end

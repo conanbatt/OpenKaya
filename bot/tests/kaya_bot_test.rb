@@ -14,6 +14,5 @@ end
 test "should fetch and parse data" do
   @kaya_bot.fetch_and_parse_data
   assert @kaya_bot.status == "connected"
-  assert @kaya_bot.challenger == "danigabi"
-  assert @kaya_bot.move == "B[aa]"
+  assert @kaya_bot.move == ";B[aa]"
 end
