@@ -19,9 +19,7 @@ class KayaBot
 
   
   #connect to server
-  #open game(same action as before? )
-  #check for challenge every time_lapse seconds
-  #accept
+  #open game(unify to previous action?)
   #read bot_url every time_lapse seconds
     #parse and pass to bot
     #read response and post

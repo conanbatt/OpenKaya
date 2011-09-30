@@ -8,9 +8,9 @@ class ReplayBot
     @move_number = 0
   end
 
-  def input(move)
+  def input(move="")
     @move_number += 1
-    return @sgf.split(";")[@move_number]
+    return ";"+@sgf.split(";")[@move_number]
   end 
 
   def load_sgf(filename)
