@@ -1,5 +1,7 @@
 require 'cutest'
 require File.expand_path("../kaya_bot", File.dirname(__FILE__))
+require File.expand_path("../bots/rando_bot", File.dirname(__FILE__))
+require File.expand_path("../bots/replay_bot", File.dirname(__FILE__))
 
 require 'ruby-debug'
 MOCK_SERVER_URL = "file:///home/conanbatt/Kaya.gs/OpenKaya/bot/tests"
