@@ -52,33 +52,23 @@ def read_data_set(filename)
     while (line = infile.gets)
       next if line =~ /^\s*#/  # Skip comments
       next if line =~ /^\s*$/  # Skip empty lines
-      w, b, winner, datetime = line.split(",")
-      datetime   = DateTime.parse(datetime)
-      set << {:white_player => w, :black_player => b, :winner => winner, :datetime => datetime}
+      w, b, rules, handicap, komi, winner, datetime = line.split(",")
+      handicap = handicap.to_i
+      komi     = komi.to_f
+      datetime = DateTime.parse(datetime)
+      set << {
+        :white_player => w, 
+        :black_player => b, 
+        :rules        => rules, 
+        :handicap     => handicap, 
+        :komi         => komi, 
+        :winner       => winner, 
+        :datetime     => datetime
+      }
     end
   end
   
 return set
-end
-
-def even_test()
-  set = []
-  10.times do
-    set << {:white_player => "a", :black_player => "b", :winner => "W", :datetime => DateTime.parse("2011-09-24")}
-    set << {:white_player => "a", :black_player => "b", :winner => "B", :datetime => DateTime.parse("2011-09-24")}
-  end
-  return set
-end
-
-def stronger_player_test()
-  set = []
-  5.times do
-    set << {:white_player => "c", :black_player => "d", :winner => "B", :datetime => DateTime.parse("2011-09-24")}
-    20.times do
-      set << {:white_player => "c", :black_player => "d", :winner => "W", :datetime => DateTime.parse("2011-09-24")}
-    end
-  end
-  return set
 end
 
 set = read_data_set("data/sample_data.txt")

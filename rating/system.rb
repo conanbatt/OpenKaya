@@ -24,12 +24,6 @@ class System
     white = input[:white_player]
     black = input[:black_player]
 
-    # fetch_or_create creates the player if it doesnt exist. It is implemented that way so when i include a rating system, i will only have
-    # to change how the players information is accessed (Internal model, DB, etc).
-    # TODO: remove this initialization.
-    for player in [white, black] do
-      players[player] = Player.new(player, @strategy::INITIAL_RATING) unless players[player] #fetch_or_create creates the player if it doesnt exist
-    end
     strategy.add_result(input, fetch_or_create)
     if @validate
       @strategy.validate(players[white])
