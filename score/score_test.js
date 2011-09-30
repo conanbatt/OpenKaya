@@ -95,7 +95,7 @@ test("Should count territory for black(Japanese)", function(){
 });
 
 test("Should count territory for black(Chinese)", function(){
-    var score = japanese_score(b_territory_board);
+    var score = chinese_score(b_territory_board);
     equal(score.black_points,12);
     equal(score.white_points,1);
 });
@@ -117,7 +117,7 @@ test("Should count territory for both(Japanese)", function(){
 });
 
 test("Should count territory for both(Chinese)", function(){
-    var score = japanese_score(both_territory_board);
+    var score = chinese_score(both_territory_board);
     equal(score.black_points,12);
     equal(score.white_points,18);
 });
@@ -202,7 +202,7 @@ test("CAPTURES: should count dead stones double (Japanese)", function(){
 test("CAPTURES: should not count dead stones double (Chinese)", function(){
     var score = chinese_score(w_dead_stones_board);
     equal(score.black_points,18);
-    equal(score.white_points,0);
+    equal(score.white_points,1);
 });
 
 

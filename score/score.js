@@ -2,8 +2,6 @@ function Score(ruleset) {
   var _deadStonesMultiplier;
 
 
-
-  //TODO HDP. Hay una diferencia mas en las reglas chinas, que es que las piedras *no capturadas* cuentan como puntos. New tests included.
   if(ruleset == "Japanese"){
     _deadStonesMultiplier = 2
   }
@@ -12,11 +10,51 @@ function Score(ruleset) {
     _deadStonesMultiplier = 1
   }
 
-  //TODO always put var when you declare a variable(or function, which is the same for JS). 
-  //without var, objects are initialized in the global scope. 
-  //If you open up the test results, and go to the browser console, you will be able to see connectedComponent.
-  //With var, it is enclosed in this scope , and it is private.
-  connectedComponent = function(board, x,y) {
+
+  /*
+   * Iterates over empty coordenates and count CC
+   */
+  this.score = function(board_original){
+    var board = cloneBoard(board_original);
+    var size = board.length; // Localize length for better performance
+    var cur_type;
+    var result = {
+      white_points: 0,
+      black_points: 0,
+      groups: []
+    };
+
+    for(var row=0; row < size; ++row) {
+      for(var col=0; col < size; ++col) {
+        cur_type = board[row][col];
+        if(cur_type == EMPTY)
+          result.groups = result.groups.concat(connectedComponent(board, row, col))
+        else if( ruleset == 'Chinese'){
+          if(cur_type == WHITE)
+            result.white_points++;
+          else if(cur_type == BLACK)
+            result.black_points++;
+        }
+      }
+    }
+
+    // Post process
+    for(var index in result.groups) {
+      item = result.groups[index];
+      if(item.owner == BLACK)
+        result.black_points += item.score + (item.deads * _deadStonesMultiplier);
+      else if(item.owner == WHITE)
+        result.white_points += item.score + (item.deads * _deadStonesMultiplier);
+    }
+
+    return result;
+  };
+
+  /*
+   *  Private
+   */
+
+  var connectedComponent = function(board, x,y) {
     var size = board.length; // Localize length for better performance
     var stack_coord = [[x,y]];
 
@@ -86,36 +124,14 @@ function Score(ruleset) {
     return conexa;
   }
 
+  // My own version for clone boards
+  var cloneBoard = function(board) {
+    var dup = [];
+    for(var i in board)
+      dup.push(board[i].slice());
 
-  /* Score function
-   * Iterates over empty coordenates and count CC
-   */
-  this.score = function(board){
-    //FIXME: I should clone board, but I need a clone function (jQuery)
-    // var board = board_original; //.clone()
-    var size = board.length; // Localize length for better performance
-    var result = {
-      white_points: 0,
-      black_points: 0,
-      groups: []
-    };
-
-    for(var row=0; row < size; ++row)
-      for(var col=0; col < size; ++col)
-        if(board[row][col] == EMPTY)
-          result.groups = result.groups.concat(connectedComponent(board, row, col))
-
-    // Post process
-    for(var index in result.groups) {
-      item = result.groups[index];
-      if(item.owner == BLACK)
-        result.black_points += item.score + (item.deads * _deadStonesMultiplier);
-      else if(item.owner == WHITE)
-        result.white_points += item.score + (item.deads * _deadStonesMultiplier);
-    }
-
-    return result;
-  };
+    return dup;
+  }
 
 };
 
