@@ -2,6 +2,8 @@ require 'rubygems'
 require 'mechanize'
 require 'json'
 
+Dir[File.dirname(__FILE__) + "/bots/*.rb"].each {|file| require file }
+
 class KayaBot
 
   PLAY_URL = "/game/play"
@@ -48,8 +50,7 @@ class KayaBot
   end
 
   def open_game
-    @agent.post(@server_url+ OPEN_GAME_URL, 
-                 :challenger => challenger)
+    @agent.post(@server_url+ OPEN_GAME_URL)
   end
 
   def post_move
@@ -61,4 +62,14 @@ class KayaBot
   end
 
 end
+
+@url = ""
+
+ARGV.each do|a|
+  puts "Called with: #{a}"
+  k = KayaBot.new(@url, Kernel.const_get(a))
+  k.connect
+end
+
+
 
