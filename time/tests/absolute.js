@@ -69,7 +69,7 @@ test("Configure Timer", function() {
 			equal(board1.time.actual_color, WHITE, "B1: Counting for White");
 			equal(board2.time.actual_color, WHITE, "B2: Counting for White");
 			start();
-		}, 6000);
+		}, 5900);
 	});
 
 	// Play and test
@@ -85,7 +85,7 @@ test("Configure Timer", function() {
 			equal(board1.time.actual_color, BLACK, "B1: Counting for Black");
 			equal(board2.time.actual_color, BLACK, "B2: Counting for Black");
 			start();
-		}, 10000);
+		}, 9900);
 	});
 
 	// Play and test
@@ -101,7 +101,7 @@ test("Configure Timer", function() {
 			equal(board1.time.actual_color, WHITE, "B1: Counting for White");
 			equal(board2.time.actual_color, WHITE, "B2: Counting for White");
 			start();
-		}, 12000);
+		}, 11900);
 	});
 
 	// Play and test
@@ -119,7 +119,7 @@ test("Configure Timer", function() {
 			equal(board1.time.actual_color, null, "B1: No actual color");
 			equal(board2.time.actual_color, null, "B2: No actual color");
 			start();
-		}, 22000);
+		}, 21900);
 	});
 
 });
