@@ -103,6 +103,10 @@ Working on an interface to run bots remotely as if they were users. Bots will ha
 
 WARNING: Current code is highly unstable and subject to big changes, depending on the implementation of the routes in the server. 
 
+Time Systems
+-----------
+http://en.wikipedia.org/wiki/Game_clock#Time_controls
+
 LICENSE
 -------
 
