@@ -21,13 +21,13 @@ test "Should add comment to a node" do
   sgf = SGF.new
   node = ";B[ab]"
   sgf.add_move(node)
-  sgf.add_comment("this guy sucks")
+  sgf.add_comment("This guy sucks")
 
-  assert sgf.move_list = ";B[ab]C[This guy sucks]"
+  assert sgf.move_list == ";B[ab]C[This guy sucks ]"
 
   sgf.add_comment("yeah")
 
-  assert sgf.move_list = ";B[ab]C[This guy sucks yeah]"
+  assert sgf.move_list == ";B[ab]C[This guy sucks yeah ]"
 
 end
 
