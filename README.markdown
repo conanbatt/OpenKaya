@@ -14,25 +14,23 @@ This modules have been opened and are ready to be forked:
 * Bot Interface
 * Time System
 
-===
+# Rating System
 
-## Rating System
-
-### Dependencies & tools
+## Dependencies & tools
 
 Code utilizes ruby 1.9.2 which is the version used by the server.
 
-### FAQ
+## FAQ
 
-#### Why is this open?
+### Why is this open?
 
 There are many rating systems, and even more implementations of each theoretical model. Although I (Gabriel) had an idea of a simple system, i concluded it would be better to compare options, and also making it open so it can be tweaked and improved by the community that wants to do so.
 
-#### What system will Kaya use?
+### What system will Kaya use?
 
 We dont know yet and this is a vital part on deciding what are we going to use in the end. This example is mean to be able to compare different systems under the same data. Our decision will be based mainly on the balance of Accuracy and Performance.
 
-#### What else besides Accuracy and Performance matters?
+### What else besides Accuracy and Performance matters?
 
 The impression and subjectivity players get from the system. An accurate system that leaves people unhappy by any reason has a negative impact.
 
@@ -43,14 +41,14 @@ Examples of the psychological aspect of a system.
 * Unrated accounts (new players) shouldnt be uninteresting to play with, due to risk/benefit of playing them.(KGS)
 * Unfair Handicaps or uneven probabilities causing different rating values on game results. Kaya will disencourage playing with imbalanced handicap and that effect can be considered to be avoided within the same category. (i.e. Strong 5d gives komi to weak 5d, to prevent the former to have to win many more games than the latter).
 
-### Notes
+## Notes
 
 Remember that there will be a handicap! The rating system must support that to some degree. There are basically 2 strategies to deal with this (and their mix):
 
 * Making the rating impact differently if two players of different rating play even
 * Making all games have equal importance for both players by adjusting the probabilities of winning with handicap (to any degree, including in the same rank)
 
-### Documentation
+## Documentation
 
 Inside the rating folder there is a structure of files.
 
@@ -69,7 +67,7 @@ Use "Validate" argument to make the system validate users rating after each resu
 
     ruby runner.rb Glicko Validate
 
-### Tests
+## Tests
 
 To make sure the rating systems do what they intended, unit tests must be implemented. After adding a rating system, you can add code under tests/#{rating_system}_test.rb that verifies its not giving crazy results. This is a vital requirement to merge rating systems into master, as it is the only way i have to know the code works without going deep into the details of each implementation.
 
@@ -79,15 +77,14 @@ To run tests:
 
     ruby tests/#{rating_system}_test.rb
 
----
 
-## Game Scoring
+# Game Scoring
 
-### Dependencies & tools
+## Dependencies & tools
 
 Current code is pure Javascript and can be run from within the browser without any installation.
 
-### Details
+## Details
 
 Score.js is the javascript that will calculate score based on an array of information of a Go Board. A first batch of tests is written that would cover most use cases of score.
 It is missing some more examples of chinese scoring which is secondary at this point.
@@ -98,29 +95,27 @@ Some caveats: be careful with Seki! it is counted as no points under japanese ru
 
 This will probably be extended for Score estimation.
 
----
 
-## Bot Interface
+# Bot Interface
 
-### Dependencies & tools
+## Dependencies & tools
 
 Ruby 1.8.7 as required by mechanize.
 
-### Details
+## Details
 
 Working on an interface to run bots remotely as if they were users. Bots will have a special dedicated api for simplicity, easy maintenance and increased performance.
 
 WARNING: Current code is highly unstable and subject to big changes, depending on the implementation of the routes in the server.
 
----
 
-## Time Systems
+# Time Systems
 
-### Dependencies & tools
+## Dependencies & tools
 
 Current code is pure Javascript and can be run from within the browser without any installation.
 
-### Details
+## Details
 
 A full interface wich supports time systems has been implemented. It's fully written in JavaScript and emulates the interaction between the board, the timesystem and the server. It's fully tested with QUnit. Further implementations must respect the interaction and testing structure.
 
@@ -130,7 +125,6 @@ You can see some time systems explained in the link ahead.
 
 http://en.wikipedia.org/wiki/Game_clock#Time_controls
 
-===
 
 # LICENSE
 
