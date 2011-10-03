@@ -14,11 +14,11 @@ Current code is pure Javascript and can be run from within the browser without a
 
 Rating
 -----
-Code utilizes ruby 1.9.2 which is the version used by the server.  
+Code utilizes ruby 1.9.2 which is the version used by the server.
 
 Bot
 ----
-Ruby 1.8.7 as required by mechanize. 
+Ruby 1.8.7 as required by mechanize.
 
 Score
 =====
@@ -38,12 +38,12 @@ Rating FAQ
 Why is this open?
 -----------------
 
-There are many rating systems, and even more implementations of each theoretical model. Although I (Gabriel) had an idea of a simple system, i concluded it would be better to compare options, and also making it open so it can be tweaked and improved by the community that wants to do so. 
+There are many rating systems, and even more implementations of each theoretical model. Although I (Gabriel) had an idea of a simple system, i concluded it would be better to compare options, and also making it open so it can be tweaked and improved by the community that wants to do so.
 
 What system will Kaya use?
 --------------------------
 
-We dont know yet and this is a vital part on deciding what are we going to use in the end. This example is mean to be able to compare different systems under the same data. Our decision will be based mainly on the balance of Accuracy and Performance. 
+We dont know yet and this is a vital part on deciding what are we going to use in the end. This example is mean to be able to compare different systems under the same data. Our decision will be based mainly on the balance of Accuracy and Performance.
 
 What else besides Accuracy and Performance matters?
 --------------------------------------------------
@@ -76,7 +76,7 @@ Strategies : Inside the folder there is a ridicolously simple system as a demons
 
 Runner: The script that runs the simulation. It will run with a sample data-set and simple point system and write to a file the final rating of all players, rank and a benchmark on how long the process took.
 
-**new** Added arguments parsing on runner. 
+**new** Added arguments parsing on runner.
 You need to specify which rating system to use through the args (more than one possible).
 
     ruby runner.rb Glicko SimplePoint
@@ -85,7 +85,7 @@ Use "Validate" argument to make the system validate users rating after each resu
 
     ruby runner.rb Glicko Validate
 
-Tests 
+Tests
 =====
 
 To make sure the rating systems do what they intended, unit tests must be implemented. After adding a rating system, you can add code under tests/#{rating_system}_test.rb that verifies its not giving crazy results. This is a vital requirement to merge rating systems into master, as it is the only way i have to know the code works without going deep into the details of each implementation.
@@ -101,10 +101,17 @@ Kaya Bot Interface
 
 Working on an interface to run bots remotely as if they were users. Bots will have a special dedicated api for simplicity, easy maintenance and increased performance.
 
-WARNING: Current code is highly unstable and subject to big changes, depending on the implementation of the routes in the server. 
+WARNING: Current code is highly unstable and subject to big changes, depending on the implementation of the routes in the server.
 
 Time Systems
------------
+============
+
+A full interface wich supports time systems has been implemented. It's fully written in JavaScript and emulates the interaction between the board, the timesystem and the server. It's fully tested with QUnit. Further implementations must respect the interaction and testing structure.
+
+Checkout the "time" folder if you're interested in working on this.
+
+You can see some time systems explained in the link ahead.
+
 http://en.wikipedia.org/wiki/Game_clock#Time_controls
 
 LICENSE
