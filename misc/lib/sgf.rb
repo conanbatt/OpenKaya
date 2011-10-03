@@ -29,6 +29,10 @@ class SGF
     @comment_buffer += comment+" " if comment
   end
 
+  def move_list
+    @move_list + (@comment_buffer.empty? ? "" : "C[#{@comment_buffer}]") #Best way to handle comment node? avoids string parsing
+  end
+
     #light validation to make sure the input is not totally bs. only makes sure the coordinate is in the board
   def validate_coordinate(x, y)
     lower_boundary = 97
