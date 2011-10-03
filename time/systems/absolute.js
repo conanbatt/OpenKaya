@@ -2,7 +2,7 @@ var ST_STOPED = 0;
 var ST_PAUSED = 1;
 var ST_COUNTING = 2;
 
-function AbsoluteTimer(game, time, div_b, div_w) {
+function AbsoluteTimer(game, time) {
 	// Game
 	this.game = game;
 
