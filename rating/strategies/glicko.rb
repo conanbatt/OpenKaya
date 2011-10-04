@@ -91,7 +91,7 @@ module Glicko
   MAX_RD = 300.0            # maximum rating deviation for new/inactive players
   MIN_RD = 80.0             # minimum rating deviation for very active players
   G_TERM_MOD = 2.0          # Reduce impact of players with large RD even more then standard Glicko calls for
-  RD_DECAY = 2*365          # Number of days for RD to decay from MIN to MAX
+  RD_DECAY = 3*365          # Number of days for RD to decay from MIN to MAX
   C_SQUARED = (MAX_RD**2.0-MIN_RD**2.0)/RD_DECAY
   EVEN_KOMI = { "aga" => 7, "jpn" => 6 }    # even komi, after doing floor()
 

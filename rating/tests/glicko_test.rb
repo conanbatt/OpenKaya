@@ -142,38 +142,49 @@ test "Ratings response" do
   MAX_GAMES = 30
   datetime = DateTime.parse("2011-09-24")
   system = System.new(Glicko)
-  puts "Measure time it takes for RD to decay"
-  puts "days rd"
-  for days_rest in (0..Glicko::RD_DECAY).step(30)
-    rat_b = Rating.new(0)
-    rat_b.rd = Glicko::MIN_RD
-    rat_b.time_last_played = datetime
-    datetime += days_rest
-    Glicko::initial_rd_update(rat_b, datetime)
-    puts "%3d %3d" % [days_rest, rat_b.rd]
+  anchor_rd = Glicko::MIN_RD
+  test_rd = Glicko::MIN_RD
+  for init_aga_rating in [8.0, -8.0]
+    puts "Measure time it takes for RD to decay, and results for one game with init_aga_rating=%0.2f" % [init_aga_rating]
+    puts "days rd  newR   95%   newAGA    95%      dR  dKD  (1/dKD)"
+    for days_rest in (0..30).step(1).to_a + (30..Glicko::RD_DECAY).step(30).to_a
+      plr_anchor = system.players["anchor"] = Player.new("anchor", Rating.new_aga(init_aga_rating))
+      plr_b      = system.players["b"]      = Player.new("b"     , Rating.new_aga(init_aga_rating))
+      plr_b.rating.rd = test_rd
+      plr_b.rating.time_last_played = datetime
+      datetime += days_rest
+      plr_anchor.rating.rd = anchor_rd  # Reset anchor's rd
+      plr_anchor.rating.time_last_played = datetime  # Avoid RD update logic
+      prev_rat_anchor = plr_anchor.rating.dup
+      prev_rat_b      = plr_b.rating.dup
+      Glicko::initial_rd_update(plr_b.rating, datetime)
+      # To avoid going across the weird 5k-2d transition area,
+      # do win streak for dans but loss streak for kyus
+      winner = init_aga_rating >=0 ? "B" : "W"
+      system.add_result({:white_player => "anchor", :black_player => "b", :rules => "aga", :handicap => 0, :komi => 7.5, :winner => winner, :datetime => datetime})
+      dKD = (plr_b.rating.kyudan-prev_rat_b.kyudan).abs
+      puts "%3d %3d %s   %3.0f  %4.2f  (%4.1f)" % [days_rest, plr_b.rating.rd, Glicko::rating_to_s(plr_b), (plr_b.rating.elo-prev_rat_b.elo).abs, dKD, 1/dKD]
+    end
   end
   for init_aga_rating in [8.0, -8.0]
   for anchor_rd in [Glicko::MIN_RD, Glicko::MAX_RD]  # Test against low rd and high rd opponents
     puts "Measure effect of rd on rating change for one game with init_aga_rating=%0.2f" % (init_aga_rating)
     print "  rd rd*2 newR   95%   newAGA    95%      dR  dKD  (1/dKD)"
     puts "   rd rd*2 newR   95%   newAGA    95%      dR  dKD  (1/dKD)"
-    for rd in (Glicko::MIN_RD..Glicko::MAX_RD).step(10)
+    for test_rd in (Glicko::MIN_RD..Glicko::MAX_RD).step(10)
       plr_anchor = system.players["anchor"] = Player.new("anchor", Rating.new_aga(init_aga_rating))
       plr_b      = system.players["b"]      = Player.new("b"     , Rating.new_aga(init_aga_rating))
       plr_anchor.rating.rd = anchor_rd  # Reset anchor's rd
       prev_rat_anchor = plr_anchor.rating.dup
-      plr_b.rating.rd = rd
+      plr_b.rating.rd = test_rd
       plr_b.rating.time_last_played = plr_anchor.rating.time_last_played = datetime  # Avoid RD update logic
       prev_rat_b      = plr_b.rating.dup
       # To avoid going across the weird 5k-2d transition area,
       # do win streak for dans but loss streak for kyus
-      if init_aga_rating >= 0
-        system.add_result({:white_player => "anchor", :black_player => "b", :rules => "aga", :handicap => 0, :komi => 7.5, :winner => "B", :datetime => datetime})
-      else
-        system.add_result({:white_player => "anchor", :black_player => "b", :rules => "aga", :handicap => 0, :komi => 7.5, :winner => "W", :datetime => datetime})
-      end
+      winner = init_aga_rating >= 0 ? "B" : "W"
+      system.add_result({:white_player => "anchor", :black_player => "b", :rules => "aga", :handicap => 0, :komi => 7.5, :winner => winner, :datetime => datetime})
       dKD = (plr_b.rating.kyudan-prev_rat_b.kyudan).abs
-      print "%3d %3d %s   %3.0f  %4.2f  (%4.1f)" % [rd, rd*2, Glicko::rating_to_s(plr_b), (plr_b.rating.elo-prev_rat_b.elo).abs, dKD, 1/dKD]
+      print "%3d %3d %s   %3.0f  %4.2f  (%4.1f)" % [test_rd, test_rd*2, Glicko::rating_to_s(plr_b), (plr_b.rating.elo-prev_rat_b.elo).abs, dKD, 1/dKD]
       dKD = (plr_anchor.rating.kyudan-prev_rat_anchor.kyudan).abs
       puts " %3d %3d %s   %3.0f  %4.2f  (%4.1f)" % [anchor_rd, anchor_rd*2, Glicko::rating_to_s(plr_anchor), (plr_anchor.rating.elo-prev_rat_anchor.elo).abs, dKD, 1/dKD]
     end
@@ -195,11 +206,8 @@ test "Ratings response" do
         plr_anchor.rating.time_last_played = datetime       # Avoid RD update logic
         # To avoid going across the weird 5k-2d transition area,
         # do win streak for dans but loss streak for kyus
-        if init_aga_rating >= 0
-          system.add_result({:white_player => "anchor", :black_player => "b", :rules => "aga", :handicap => 0, :komi => 7.5, :winner => "B", :datetime => datetime})
-        else
-          system.add_result({:white_player => "anchor", :black_player => "b", :rules => "aga", :handicap => 0, :komi => 7.5, :winner => "W", :datetime => datetime})
-        end
+        winner = init_aga_rating >= 0 ? "B" : "W"
+        system.add_result({:white_player => "anchor", :black_player => "b", :rules => "aga", :handicap => 0, :komi => 7.5, :winner => winner, :datetime => datetime})
         dKD = (plr_b.rating.kyudan-prev_rat_b.kyudan).abs
         puts "%3d %s   %3.0f  %4.2f  (%4.1f)" % [i, Glicko::rating_to_s(plr_b), (plr_b.rating.elo-prev_rat_b.elo).abs, dKD, 1/dKD]
         key_results[init_aga_rating][:dKD_init     ][days_rest] = dKD    if i==1
@@ -226,11 +234,17 @@ test "Ratings response" do
   assert (key_results[ 8.0][:dKD_init     ][0] < 1.0 )
   assert (key_results[ 8.0][:dKD_init     ][0] > 0.5 )
   assert (key_results[ 8.0][:numgame_minrd][0] > 15  )   # Takes this many games to get full confidence rank
+  # dKD_inv_final of a once-a-week player is ~75%(+-10%) of a many games a day player
+  assert (((key_results[ 8.0][:dKD_inv_final][7] / key_results[8.0][:dKD_inv_final][0]) - 0.75).abs < 0.10)
+
   # kyu stats
   assert (key_results[-8.0][:dKD_inv_final][0] >  6)   # need around this many games to move a rank
   assert (key_results[-8.0][:dKD_inv_final][0] < 10)
   assert (key_results[ 8.0][:dKD_init     ][0] < 1.0 )
   assert (key_results[ 8.0][:dKD_init     ][0] > 0.5 )
+  # dKD_inv_final of a once-a-week player is ~75%(+-10%) of a many games a day player
+  assert (((key_results[-8.0][:dKD_inv_final][0] / key_results[-8.0][:dKD_inv_final][0]) - 0.75).abs < 0.10)
+
   # relative dan - kyu stats
   assert (key_results[-8.0][:dKD_inv_final][0] <  key_results[8.0][:dKD_inv_final][0]) # kyus move faster
   assert (key_results[-8.0][:dKD_init     ][0] >  key_results[8.0][:dKD_init     ][0]) # kyus move faster
