@@ -1,32 +1,7 @@
-# Implementation of the Glicko rating system as described at
-# http://www.glicko.net/glicko/glicko.pdf
-# With support to transform from the classic Elo/Glicko scale to other scales such as the KGS dan/kyu scale
-
-# Rating scales:
-#
-# Glicko: Same as the classic Elo scale
-#
-# Natural: Glicko * Q -- not really used directly here
-#
-# Gamma: log(Natural) -- not used here at all
-#   Other algorithms such as Glicko2 and WHR use this scale.
-#
-# kyudan: 1.0 for each stone.  No gap around zero.
-#   0.0+epsilon = weakest   1d
-#   0.0-epsilon = strongest 1k
-#   Use this to do operations like determining correct handicap,
-#   because it will work correctly across the dan/kyu boundary
-#
-# aga: 1.0 for each stone.  Gap from (-1.0, 1.0)
-#   1.0+epsilon = weakest   1d
-#  -1.0-epsilon = strongest 1k
-# The aga scale is nice for displaying, because you can get the rank by chopping of the decimal portion.
-# Be careful of rounding errors (1.99d should not round up to 2.0d)
-#
+# Implementation of the Glicko rating system
+# See more info in README_glicko.markdown
 
 require 'date'
-require 'delegate'
-require File.expand_path("../system", File.dirname(__FILE__))
 
 # Abstract out what scale the ratings are on
 class Rating
@@ -62,6 +37,9 @@ class Rating
   def initialize(elo=0)
     @elo = elo
     return self
+  end
+  def to_s()
+    return "%s" % @elo
   end
   def gamma=(gamma)
     @elo = 400.0*Math::log10(gamma)
@@ -110,8 +88,9 @@ end
 module Glicko
   INITIAL_RATING = Rating.new()
   DEBUG = false
-  MAX_RD = 240.0            # maximum rating deviation for new/inactive players
+  MAX_RD = 300.0            # maximum rating deviation for new/inactive players
   MIN_RD = 70.0             # minimum rating deviation for very active players
+  G_TERM_MOD = 2.0          # Reduce impact of players with large RD even more then standard Glicko calls for
   RD_DECAY = 2*365          # Number of days for RD to decay from MIN to MAX
   C_SQUARED = (MAX_RD**2.0-MIN_RD**2.0)/RD_DECAY
   EVEN_KOMI = { "aga" => 7, "jpn" => 6 }    # even komi, after doing floor()
@@ -184,10 +163,15 @@ module Glicko
       e = win_probability(player.rating, opp.rating, hka)
       q_term = Rating::Q / ((1.0/player.rating.rd**2.0)+1.0/d_squared)
       g_term = g(opp.rating)
+      g_term_mod = g_term ** G_TERM_MOD
       s_term = score - e
-      new_r[player]  = player.rating.elo + q_term*g_term*s_term
+      #delta = q_term*g_term*s_term
+      delta = q_term*g_term_mod*s_term
+      new_r[player]  = player.rating.elo + delta
       new_rd[player] = [MIN_RD, Math.sqrt(1.0/((1.0/player.rating.rd**2.0)+1.0/d_squared))].max
+      #print "q=%6.2f g=%4.2f g_term_mod=%4.2f s=%5.2f d=%7.2f  " % [q_term, g_term, g_term_mod, s_term, delta]
     end
+    #puts
     # Apply updates
     for player in [white, black]
       player.rating.elo = new_r[player]
@@ -198,10 +182,31 @@ module Glicko
     print "\n" if DEBUG
   end
 
+  def self.rank(player)
+    return player.rating.rank
+  end
+
   def self.validate(player)
     aga_rating = player.rating.aga
     raise GlickoError, "Rating less than 35k" if aga_rating <= -36.0
     raise GlickoError, "Rating more than 12d" if aga_rating >= 13.0
+  end
+
+  def self.print_constants()
+    puts "MAX_RD            = %8.2f" % [ MAX_RD             ]
+    puts "MIN_RD            = %8.2f" % [ MIN_RD             ]
+    puts "G_TERM_MOD        = %8.2f" % [ G_TERM_MOD  ]
+    puts "RD_DECAY          = %8.2f" % [ RD_DECAY           ]
+    puts "C_SQUARED         = %8.2f" % [ C_SQUARED          ]
+    puts "Q                 = %8.2f" % [ Rating::Q                  ]
+    puts "KGS_KYU_TRANSFORM = %8.2f" % [ Rating::KGS_KYU_TRANSFORM  ]
+    puts "KGS_DAN_TRANSFORM = %8.2f" % [ Rating::KGS_DAN_TRANSFORM  ]
+    puts "KD_FIVE_KYU       = %8.2f" % [ Rating::KD_FIVE_KYU        ]
+    puts "KD_TWO_DAN        = %8.2f" % [ Rating::KD_TWO_DAN         ]
+    puts "A                 = %8.2f" % [ Rating::A                  ]
+    puts "B                 = %8.2f" % [ Rating::B                  ]
+    puts "FIVE_KYU          = %8.2f" % [ Rating::FIVE_KYU           ]
+    puts "TWO_DAN           = %8.2f" % [ Rating::TWO_DAN            ]
   end
 
 end

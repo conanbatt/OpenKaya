@@ -7,7 +7,12 @@ class Player
     @rating = rating
     @id = id
   end
+end
 
+class Rating
+  def to_s()
+    return "yoyo"
+  end
 end
 
 class System
