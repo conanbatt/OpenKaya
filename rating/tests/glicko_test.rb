@@ -220,6 +220,21 @@ test "Ratings response" do
       end
     end
   end
+  # dan stats
+  assert (key_results[ 8.0][:dKD_inv_final][0] > 12.0)   # need around this many games to move a rank
+  assert (key_results[ 8.0][:dKD_inv_final][0] < 15.0)
+  assert (key_results[ 8.0][:dKD_init     ][0] < 1.0 )
+  assert (key_results[ 8.0][:dKD_init     ][0] > 0.5 )
+  assert (key_results[ 8.0][:numgame_minrd][0] > 15  )   # Takes this many games to get full confidence rank
+  # kyu stats
+  assert (key_results[-8.0][:dKD_inv_final][0] >  6)   # need around this many games to move a rank
+  assert (key_results[-8.0][:dKD_inv_final][0] < 10)
+  assert (key_results[ 8.0][:dKD_init     ][0] < 1.0 )
+  assert (key_results[ 8.0][:dKD_init     ][0] > 0.5 )
+  # relative dan - kyu stats
+  assert (key_results[-8.0][:dKD_inv_final][0] <  key_results[8.0][:dKD_inv_final][0]) # kyus move faster
+  assert (key_results[-8.0][:dKD_init     ][0] >  key_results[8.0][:dKD_init     ][0]) # kyus move faster
+  assert (key_results[-8.0][:numgame_minrd][0] == key_results[8.0][:numgame_minrd][0]) # Takes same num games as dans
 end
 
 puts

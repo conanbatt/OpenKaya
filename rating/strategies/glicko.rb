@@ -89,7 +89,7 @@ module Glicko
   INITIAL_RATING = Rating.new()
   DEBUG = false
   MAX_RD = 300.0            # maximum rating deviation for new/inactive players
-  MIN_RD = 70.0             # minimum rating deviation for very active players
+  MIN_RD = 80.0             # minimum rating deviation for very active players
   G_TERM_MOD = 2.0          # Reduce impact of players with large RD even more then standard Glicko calls for
   RD_DECAY = 2*365          # Number of days for RD to decay from MIN to MAX
   C_SQUARED = (MAX_RD**2.0-MIN_RD**2.0)/RD_DECAY
