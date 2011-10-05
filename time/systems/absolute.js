@@ -2,7 +2,7 @@ var ST_STOPED = 0;
 var ST_PAUSED = 1;
 var ST_COUNTING = 2;
 
-function AbsoluteTimer(game, time, div_b, div_w) {
+function AbsoluteTimer(game, time) {
 	// Game
 	this.game = game;
 
@@ -32,7 +32,7 @@ AbsoluteTimer.prototype = {
 			this.actual_color = color;
 			this.status = ST_COUNTING;
 			this.last_resume = new Date();
-			this.clock = window.setInterval(binder(this.tick, this), 1000);
+			this.clock = window.setInterval(this.binder(this.tick, this), 100);
 		}
 	},
 
@@ -42,7 +42,7 @@ AbsoluteTimer.prototype = {
 			this.last_pause = new Date();
 			window.clearInterval(this.clock);
 			this.status = ST_PAUSED;
-			this.remain[this.actual_color] -= Math.round((this.last_pause - this.last_resume) / 1000);
+			this.remain[this.actual_color] -= (this.last_pause - this.last_resume) / 1000;
 			return this.remain;
 		}
 		return false;
@@ -67,7 +67,7 @@ AbsoluteTimer.prototype = {
 		var tmp_remain = {};
 		tmp_remain[BLACK] = this.remain[BLACK];
 		tmp_remain[WHITE] = this.remain[WHITE];
-		tmp_remain[this.actual_color] = this.remain[this.actual_color] - Math.round((new Date() - this.last_resume) / 1000);
+		tmp_remain[this.actual_color] = this.remain[this.actual_color] - (new Date() - this.last_resume) / 1000;
 		this.game.update_clocks(tmp_remain);
 		if (tmp_remain[this.actual_color] <= 0) {
 			this.remain[this.actual_color] = 0;
@@ -76,5 +76,7 @@ AbsoluteTimer.prototype = {
 		}
 	},
 
-
+	binder: function (method, object, args) {
+		return function(orig_args) { method.apply(object, [orig_args].concat(args)); };
+	},
 }

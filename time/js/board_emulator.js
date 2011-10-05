@@ -41,8 +41,8 @@ Board.prototype = {
 	},
 
 	update_clocks: function(remain) {
-		this.div_clocks[BLACK].innerHTML = remain[BLACK];
-		this.div_clocks[WHITE].innerHTML = remain[WHITE];
+		this.div_clocks[BLACK].innerHTML = Math.round(remain[BLACK]);
+		this.div_clocks[WHITE].innerHTML = Math.round(remain[WHITE]);
 	},
 
 	announce_loss: function(remain) {
