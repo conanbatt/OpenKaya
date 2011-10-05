@@ -21,8 +21,7 @@ class SGF
 
     @move_list += "C[#{@comment_buffer}]" unless @comment_buffer.empty?
     @comment_buffer = ""
-    @move_list += ";" 
-    @move_list += color+"[#{x+y}]"
+    @move_list += node
   end
 
   def add_comment(comment)
