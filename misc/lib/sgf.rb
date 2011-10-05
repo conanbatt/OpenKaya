@@ -27,6 +27,7 @@ class SGF
 
   def add_comment(comment)
     @comment_buffer += comment+" " if comment
+    move_list
   end
 
   def move_list
@@ -43,7 +44,11 @@ class SGF
   end
 
   def validate_node_format(node)
-    raise "#{node} is invalid node format" unless node.match(/;[BW]\[[a-z][a-z]\]/)
+    valid = node.match(/;[BW]\[[a-z][a-z]\]/)
+    if node.include?("BL") || node.include?("WL")
+      valid = valid && node.match(/[BW]L\[\d{3}.\d{3}\]/)
+    end
+    raise "#{node} is invalid node format" unless valid
   end
 
   def load_file(filename)
