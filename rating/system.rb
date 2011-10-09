@@ -9,12 +9,6 @@ class Player
   end
 end
 
-class Rating
-  def to_s()
-    return "yoyo"
-  end
-end
-
 class System
 
   attr_accessor :players,:strategy

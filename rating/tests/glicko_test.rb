@@ -243,7 +243,7 @@ test "Ratings response" do
   assert (key_results[ 8.0][:dKD_init     ][0] < 1.0 )
   assert (key_results[ 8.0][:dKD_init     ][0] > 0.5 )
   # dKD_inv_final of a once-a-week player is ~75%(+-10%) of a many games a day player
-  assert (((key_results[-8.0][:dKD_inv_final][0] / key_results[-8.0][:dKD_inv_final][0]) - 0.75).abs < 0.10)
+  assert (((key_results[-8.0][:dKD_inv_final][7] / key_results[-8.0][:dKD_inv_final][0]) - 0.75).abs < 0.10)
 
   # relative dan - kyu stats
   assert (key_results[-8.0][:dKD_inv_final][0] <  key_results[8.0][:dKD_inv_final][0]) # kyus move faster
