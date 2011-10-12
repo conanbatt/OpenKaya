@@ -99,4 +99,27 @@ test "should be able to add a time property to a node" do
 
 end
 
+#(;FF[4]GM[1]SZ[19]CA[UTF-8]SO[gokifu.com]BC[kr]WC[kr]EV[7th Korean Wonik Cup Siptan]PB[Ryu Chaehyeong]BR[9p]PW[Kang Dongyun]WR[9p]KM[6.5]DT[2011-09-30]RE[W+R]
+
+
+test "Should load a sgf metadata" do
+  filename = "mocks/mock.sgf"
+  sgf = SGF.new
+  sgf.load_file(filename)
+
+  assert_equal sgf.metadata(:white_player), "Kang Dongyun"
+  assert_equal sgf.metadata(:black_player), "Ryu Chaehyeong"
+  assert_equal sgf.metadata(:komi), "6.5"
+  assert_equal sgf.metadata(:date), "2011-09-30"
+  assert_equal sgf.metadata(:result), "W+R"
+  assert_equal sgf.metadata(:file_format), "4"
+  assert_equal sgf.metadata(:date), "2011-09-30"
+  assert_equal sgf.metadata(:source), "gokifu.com"
+  assert_equal sgf.metadata(:black_country), "kr"
+  assert_equal sgf.metadata(:white_country), "kr"
+  assert_equal sgf.metadata(:encoding), "UTF-8"
+  assert_equal sgf.metadata(:size), "19"
+  assert_equal sgf.metadata(:event), "7th Korean Wonik Cup Siptan"
+
+end
 

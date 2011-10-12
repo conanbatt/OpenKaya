@@ -10,13 +10,13 @@ class SGF
     @size = size
   end
 
-  def add_move(node)
+  def add_move(node) #TODO objetify node
     validate_node_format(node)
    
     color = node[1]
     x = node[3]
     y = node[4]
-
+ 
     validate_coordinate(x, y)
 
     @move_list += "C[#{@comment_buffer}]" unless @comment_buffer.empty?
@@ -45,7 +45,7 @@ class SGF
   def validate_node_format(node)
     valid = node.match(/;[BW]\[[a-z][a-z]\]/)
     if node.include?("BL") || node.include?("WL")
-      valid = valid && node.match(/[BW]L\[\d{3}.\d{3}\]/)
+      valid = valid && node.match(/[BW]L\[\d{0,6}.\d{3}\]/)
     end
     raise "#{node} is invalid node format" unless valid
   end
@@ -53,11 +53,28 @@ class SGF
   def load_file(filename)
     File.open(filename, 'r') do |file|
       while (line = file.gets)
-        @metadata = line.split(";")[1] #will process this later
-        @move_list = line.gsub(metadata, "")[2..-3] #chopping some extra characters
-        
+        load_from_string(line)
       end
     end
   end 
+  def load_from_string(input)
+    @metadata = input.split(";")[1] #will process this later
+    @move_list = input.gsub(@metadata, "")[2..-3] #chopping some extra characters
+  end
+
+  METALABELS= {:white_player => "PW", :black_player => "PB", 
+               :komi => "KM", :date => "DT", :result => "RE", 
+               :file_format => "FF", :black_country => "BC", 
+               :white_country => "WC", :event => "EV", :source => "SO",
+               :encoding => "CA", :size => "SZ"}
+
+  def metadata(symbol)
+    dup = @metadata.dup
+    dup.slice!(/.*#{METALABELS[symbol]}\[/)
+    dup.slice!(/\].*/)
+    return dup
+  end
+
 
 end
+
