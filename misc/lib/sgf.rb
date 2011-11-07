@@ -43,7 +43,7 @@ class SGF
   end
 
   def validate_node_format(node)
-    valid = node.match(/;[BW]\[[a-z][a-z]\]/)
+    valid = node.match(/;[BW]\[(|[a-z][a-z])\]/)
     if node.include?("BL") || node.include?("WL")
       valid = valid && node.match(/[BW]L\[\d{0,6}.\d{3}\]/)
     end
@@ -69,12 +69,12 @@ class SGF
                :encoding => "CA", :size => "SZ"}
 
   def metadata(symbol)
+    return @metadata if symbol == :all
     dup = @metadata.dup
     dup.slice!(/.*#{METALABELS[symbol]}\[/)
     dup.slice!(/\].*/)
     return dup
   end
-
 
 end
 
