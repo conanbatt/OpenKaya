@@ -123,6 +123,20 @@ test "Should load a sgf metadata" do
   assert_equal sgf.metadata(:rules), "Japanese"
   assert_equal sgf.metadata(:time_set), "5x30 byo-yomi"
 
-
 end
 
+test 'Should be able to write metadata' do 
+
+  sgf = SGF.new
+
+  sgf.write_metadata(:white_player, "Conan")
+  assert_equal sgf.metadata(:white_player), "Conan"
+
+  sgf.write_metadata(:white_player,"Conan2")
+  assert_equal sgf.metadata(:white_player), "Conan2"
+
+  assert_raise(RuntimeError) do
+    sgf.write_metadata(:total_bs, "bs")
+  end
+
+end

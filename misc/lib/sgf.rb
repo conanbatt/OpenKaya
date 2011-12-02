@@ -8,6 +8,7 @@ class SGF
     @move_list= moves || ""
     @comment_buffer = ""
     @size = size
+    @metadata =""
   end
 
   def add_move(node) #TODO objetify node
@@ -74,6 +75,13 @@ class SGF
     dup.slice!(/.*#{METALABELS[symbol]}\[/)
     dup.slice!(/\].*/)
     return dup
+  end
+
+  def write_metadata(symbol, value)
+    raise "Invalid metadata #{symbol}" unless METALABELS[symbol]
+    node = ";#{METALABELS[symbol]}[#{value}]"
+    @metadata.gsub!(/;#{METALABELS[symbol]}\[\w*\]/, "")
+    @metadata = node + @metadata
   end
 
 end
