@@ -66,7 +66,7 @@ class SGF
                :komi => "KM", :date => "DT", :result => "RE", 
                :file_format => "FF", :black_country => "BC", 
                :white_country => "WC", :event => "EV", :source => "SO",
-               :encoding => "CA", :size => "SZ"}
+               :encoding => "CA", :size => "SZ", :rules => "RU", :time_set => "OT"}
 
   def metadata(symbol)
     return @metadata if symbol == :all

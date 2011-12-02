@@ -120,6 +120,9 @@ test "Should load a sgf metadata" do
   assert_equal sgf.metadata(:encoding), "UTF-8"
   assert_equal sgf.metadata(:size), "19"
   assert_equal sgf.metadata(:event), "7th Korean Wonik Cup Siptan"
+  assert_equal sgf.metadata(:rules), "Japanese"
+  assert_equal sgf.metadata(:time_set), "5x30 byo-yomi"
+
 
 end
 
