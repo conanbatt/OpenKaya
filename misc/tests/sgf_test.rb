@@ -140,3 +140,12 @@ test 'Should be able to write metadata' do
   end
 
 end
+
+test 'Should be able to send a pass move' do
+
+  sgf = SGF.new
+  sgf.add_move(";B[]")
+
+  assert sgf.move_list =  ";B[]"
+
+end

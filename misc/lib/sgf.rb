@@ -14,12 +14,13 @@ class SGF
   def add_move(node) #TODO objetify node
     validate_node_format(node)
    
-    color = node[1]
-    x = node[3]
-    y = node[4]
+    if(node.size == 6)
+      color = node[1]
+      x = node[3]
+      y = node[4]
  
-    validate_coordinate(x, y)
-
+      validate_coordinate(x, y)
+    end
     @move_list += "C[#{@comment_buffer}]" unless @comment_buffer.empty?
     @comment_buffer = ""
     @move_list += node
