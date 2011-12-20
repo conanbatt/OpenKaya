@@ -142,6 +142,78 @@ module Glicko
     return "%5.0f [+-%3.0f] %6.2f [+-%5.2f]" % [player.rating.elo, (r_max.elo-r_min.elo)/2.0, player.rating.aga, (r_max.aga-r_min.aga)/2.0]
   end
 
+  def self.suggest_handicap(input, players)
+    # Right now this will also suggest the colors
+    raise GlickoError, "Invalid arguments #{input}" unless input[:p1] && input[:p2] && input[:rules]
+    #print "%s\n" % [input[:p1]]
+    #print "%s\n" % [input[:p2]]
+    p1 = players[input[:p1]]
+    p2 = players[input[:p2]]
+    if p1.rating.rd == nil then p1.rating.rd = MIN_RD end  # Super hack, should be initialized on construction
+    if p2.rating.rd == nil then p2.rating.rd = MIN_RD end
+    if p1.rating.kyudan > p2.rating.kyudan
+       white = p1
+       black = p2
+    else
+       white = p2
+       black = p1
+    end
+    diff = white.rating.kyudan - black.rating.kyudan
+    # traditional handicaps:
+    #if    diff < 0.50 then handi = 0; komi =  6.5
+    #elsif diff < 1.50 then handi = 0; komi =  0.5
+    #elsif diff < 2.50 then handi = 2; komi =  0.5
+    #elsif diff < 3.50 then handi = 3; komi =  0.5
+    #else                   handi = 4; komi =  0.5
+    #end
+    # 2X the granularity of traditional handicaps:
+    if    diff < 0.25 then handi = 0; komi =  6.5
+    elsif diff < 0.75 then handi = 0; komi =  0.5
+    elsif diff < 1.25 then handi = 0; komi = -5.5
+    elsif diff < 1.75 then handi = 2; komi =  0.5
+    elsif diff < 2.25 then handi = 2; komi = -5.5
+    elsif diff < 2.70 then handi = 3; komi =  0.5
+    elsif diff < 3.25 then handi = 3; komi = -5.5
+    elsif diff < 3.70 then handi = 4; komi =  0.5
+    elsif diff < 4.25 then handi = 4; komi = -5.5
+    elsif diff < 4.70 then handi = 5; komi =  0.5
+    elsif diff < 5.25 then handi = 5; komi = -5.5
+    elsif diff < 5.70 then handi = 6; komi =  0.5
+    elsif diff < 6.25 then handi = 6; komi = -5.5
+    elsif diff < 6.70 then handi = 7; komi =  0.5
+    elsif diff < 7.25 then handi = 7; komi = -5.5
+    elsif diff < 7.70 then handi = 8; komi =  0.5
+    elsif diff < 8.25 then handi = 8; komi = -5.5
+    elsif diff < 8.70 then handi = 9; komi =  0.5
+    else                   handi = 9; komi = -5.5
+    end
+    # 4X the granularity of traditional handicaps:
+    # not sure if I made the boundaries correct
+    #if    diff < 0.25 then handi = 0; komi =  6.5
+    #elsif diff < 0.50 then handi = 0; komi =  3.5
+    #elsif diff < 0.75 then handi = 0; komi =  0.5
+    #elsif diff < 1.00 then handi = 0; komi = -3.5
+    #elsif diff < 1.25 then handi = 0; komi = -5.5
+    #elsif diff < 1.50 then handi = 2; komi =  3.5
+    #elsif diff < 1.75 then handi = 2; komi =  0.5
+    #elsif diff < 2.00 then handi = 2; komi = -3.5
+    #elsif diff < 2.25 then handi = 2; komi = -5.5
+    #elsif diff < 2.50 then handi = 3; komi =  3.5
+    #elsif diff < 2.70 then handi = 3; komi =  0.5
+    #elsif diff < 3.00 then handi = 3; komi = -3.5
+    #elsif diff < 3.25 then handi = 3; komi = -5.5
+    #end
+    hka = advantage_in_elo(white, black, input[:rules], handi, komi)
+    e = win_probability(white.rating, black.rating, -hka)
+    print "white_rating=%0.2f black_rating=%0.2f diff=%0.2f H=%d K=%0.1f pwin=%0.2f\n" % [white.rating.kyudan, black.rating.kyudan, white.rating.kyudan-black.rating.kyudan, handi, komi, e]
+    output = {}
+    output[:white] = white
+    output[:black] = black
+    output[:handi] = handi
+    output[:komi]  = komi
+    return output
+  end
+
   def self.add_result(input, players)
     raise GlickoError, "Invalid arguments #{input}" unless input[:white_player] && input[:black_player] && input[:winner] && input[:datetime] && input[:rules] && input[:handicap] && input[:komi]
     white = players[input[:white_player]]

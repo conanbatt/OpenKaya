@@ -82,6 +82,38 @@ test "Calculate win probability between 2 players" do
   assert Glicko::win_probability(rating_a, rating_b) < 0.75-0.01  # Higher RD means less confidence, so ratings tend toward 0.5
 end
 
+test "" do
+  system = System.new(Glicko)
+  p1 = system.players["p1"] = Player.new("p1", Rating.new_aga(4.00))
+  p2 = system.players["p2"] = Player.new("p2", Rating.new())
+
+  p2.rating.aga = 5.24
+  output = Glicko.suggest_handicap({:p1 => "p1", :p2 => "p2", :rules => "jpn"}, system.players)
+  hka = Glicko.advantage_in_elo(output[:white], output[:black], "jpn", output[:handi], output[:komi])
+  e = Glicko.win_probability(output[:white].rating, output[:black].rating, -hka)
+  print "e=%f" % [e]
+  assert (e - 0.57).abs < 0.02
+
+  p2.rating.aga = 5.26 
+  output = Glicko.suggest_handicap({:p1 => "p1", :p2 => "p2", :rules => "jpn"}, system.players)
+  hka = Glicko.advantage_in_elo(output[:white], output[:black], "jpn", output[:handi], output[:komi])
+  e = Glicko.win_probability(output[:white].rating, output[:black].rating, -hka)
+  print "e=%f" % [e]
+  assert (e - 0.43).abs < 0.02
+
+  p2.rating.aga = 5.74
+  output = Glicko.suggest_handicap({:p1 => "p1", :p2 => "p2", :rules => "jpn"}, system.players)
+  hka = Glicko.advantage_in_elo(output[:white], output[:black], "jpn", output[:handi], output[:komi])
+  e = Glicko.win_probability(output[:white].rating, output[:black].rating, -hka)
+  assert (e - 0.57).abs < 0.02
+
+  p2.rating.aga = 5.75
+  output = Glicko.suggest_handicap({:p1 => "p1", :p2 => "p2", :rules => "jpn"}, system.players)
+  hka = Glicko.advantage_in_elo(output[:white], output[:black], "jpn", output[:handi], output[:komi])
+  e = Glicko.win_probability(output[:white].rating, output[:black].rating, -hka)
+  assert (e - 0.43).abs < 0.02
+end
+
 test "Equal wins" do
   #puts
   #puts "Equal wins"
