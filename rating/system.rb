@@ -7,7 +7,6 @@ class Player
     @rating = rating
     @id = id
   end
-
 end
 
 class System
