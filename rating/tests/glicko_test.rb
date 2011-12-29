@@ -4,23 +4,27 @@ require File.expand_path("../system", File.dirname(__FILE__))
 
 Glicko::print_constants()
 
+class Player
+  attr_accessor :rating, :rd, :time_last_played
+end
+
 test "Validate should raise error if rating is too small" do
-  player_a = Player.new("a", Glicko::INITIAL_RATING)
-  player_a.rating.aga = -36.01
+  player_a = Player.new("a")
+  player_a.rating = Rating.new_aga(-36.01).elo
   assert_raise(Glicko::GlickoError) do
     Glicko::validate(player_a)
   end
-  player_a.rating.aga = -35.99               # no problem here
+  player_a.rating = Rating.new_aga(-35.99).elo               # no problem here
   Glicko::validate(player_a)
 end
 
 test "Validate should raise error if rating is too large" do
-  player_a = Player.new("a", Glicko::INITIAL_RATING)
-  player_a.rating.aga = 13.01
+  player_a = Player.new("a")
+  player_a.rating = Rating.new_aga(13.01).elo
   assert_raise(Glicko::GlickoError) do
     Glicko::validate(player_a)
   end
-  player_a.rating.aga = 12.99  # no problem here
+  player_a.rating = Rating.new_aga(12.99).elo  # no problem here
   Glicko::validate(player_a)
 end
 
@@ -84,34 +88,25 @@ end
 
 test "" do
   system = System.new(Glicko)
-  p1 = system.players["p1"] = Player.new("p1", Rating.new_aga(4.00))
-  p2 = system.players["p2"] = Player.new("p2", Rating.new())
+  p1 = system.players["p1"] = Player.new("p1")
+  p2 = system.players["p2"] = Player.new("p2")
 
-  p2.rating.aga = 5.24
+  p1.rating = Rating.new_aga(4.00).elo
+  p2.rating = Rating.new_aga(5.24).elo
   output = Glicko.suggest_handicap({:p1 => "p1", :p2 => "p2", :rules => "jpn"}, system.players)
-  hka = Glicko.advantage_in_elo(output[:white], output[:black], "jpn", output[:handi], output[:komi])
-  e = Glicko.win_probability(output[:white].rating, output[:black].rating, -hka)
-  print "e=%f" % [e]
-  assert (e - 0.57).abs < 0.02
+  assert (output[:e] - 0.57).abs < 0.02
 
-  p2.rating.aga = 5.26 
+  p2.rating = Rating.new_aga(5.26).elo
   output = Glicko.suggest_handicap({:p1 => "p1", :p2 => "p2", :rules => "jpn"}, system.players)
-  hka = Glicko.advantage_in_elo(output[:white], output[:black], "jpn", output[:handi], output[:komi])
-  e = Glicko.win_probability(output[:white].rating, output[:black].rating, -hka)
-  print "e=%f" % [e]
-  assert (e - 0.43).abs < 0.02
+  assert (output[:e] - 0.43).abs < 0.02
 
-  p2.rating.aga = 5.74
+  p2.rating = Rating.new_aga(5.74).elo
   output = Glicko.suggest_handicap({:p1 => "p1", :p2 => "p2", :rules => "jpn"}, system.players)
-  hka = Glicko.advantage_in_elo(output[:white], output[:black], "jpn", output[:handi], output[:komi])
-  e = Glicko.win_probability(output[:white].rating, output[:black].rating, -hka)
-  assert (e - 0.57).abs < 0.02
+  assert (output[:e] - 0.57).abs < 0.02
 
-  p2.rating.aga = 5.75
+  p2.rating = Rating.new_aga(5.75).elo
   output = Glicko.suggest_handicap({:p1 => "p1", :p2 => "p2", :rules => "jpn"}, system.players)
-  hka = Glicko.advantage_in_elo(output[:white], output[:black], "jpn", output[:handi], output[:komi])
-  e = Glicko.win_probability(output[:white].rating, output[:black].rating, -hka)
-  assert (e - 0.43).abs < 0.02
+  assert (output[:e] - 0.43).abs < 0.02
 end
 
 test "Equal wins" do
@@ -120,17 +115,17 @@ test "Equal wins" do
   system = System.new(Glicko)
   for init_aga_rating in [-25, -1, 5]
     for (handi, komi) in [[0, 7.5], [0, 0.5], [0, -6.5], [2, 0.5], [6, 0.5]]
-      plr_w = system.players["w"] = Player.new("w", Rating.new_aga(init_aga_rating))
-      plr_b = system.players["b"] = Player.new("b", Rating.new_aga(init_aga_rating))
+      plr_w = system.players["w"] = Player.new("w", Rating.new_aga(init_aga_rating).elo)
+      plr_b = system.players["b"] = Player.new("b", Rating.new_aga(init_aga_rating).elo)
       80.times do
         system.add_result({:white_player => "w", :black_player => "b", :rules => "aga", :handicap => handi, :komi => komi, :winner => "W", :datetime => DateTime.parse("2011-09-24")})
         system.add_result({:white_player => "w", :black_player => "b", :rules => "aga", :handicap => handi, :komi => komi, :winner => "B", :datetime => DateTime.parse("2011-09-24")})
       end
-      diff = plr_w.rating.kyudan - plr_b.rating.kyudan - Glicko::advantage_in_stones(handi, komi, 7.5)
+      diff = Rating.new(plr_w.rating).kyudan - Rating.new(plr_b.rating).kyudan - Glicko::advantage_in_stones(handi, komi, 7.5)
       #puts "diff=%0.2f  %s  %s init_aga_rating=%0.1f handi=%d komi=%0.1f" % [diff, Glicko::rating_to_s(plr_w), Glicko::rating_to_s(plr_b), init_aga_rating, handi, komi]
       assert (diff.abs < 0.2)              # Ratings should almost match the handicap advantage
-      assert (plr_w.rating.rd == Glicko::MIN_RD)  # rd should be smallest value with so many games
-      assert (plr_b.rating.rd == Glicko::MIN_RD)
+      assert (plr_w.rd == Glicko::MIN_RD)  # rd should be smallest value with so many games
+      assert (plr_b.rd == Glicko::MIN_RD)
     end
   end
   #puts
@@ -143,20 +138,20 @@ test "winratio test" do
   for init_aga_rating in [-25, -1, 5]
     (handi, komi) = [0, 7.5]
     for win_ratio in 1..9
-      plr_w = system.players["w"] = Player.new("w", Rating.new_aga(init_aga_rating))
-      plr_b = system.players["b"] = Player.new("b", Rating.new_aga(init_aga_rating))
+      plr_w = system.players["w"] = Player.new("w", Rating.new_aga(init_aga_rating).elo)
+      plr_b = system.players["b"] = Player.new("b", Rating.new_aga(init_aga_rating).elo)
       80.times do
         win_ratio.times do # White wins win_ratio times
           system.add_result({:white_player => "w", :black_player => "b", :rules => "aga", :handicap => handi, :komi => komi, :winner => "W", :datetime => DateTime.parse("2011-09-24")})
         end
         system.add_result({:white_player => "w", :black_player => "b", :rules => "aga", :handicap => handi, :komi => komi, :winner => "B", :datetime => DateTime.parse("2011-09-24")})
       end
-      diff = plr_w.rating.elo - plr_b.rating.elo
+      diff = plr_w.rating - plr_b.rating
       exp_diff = Math::log(win_ratio) / Rating::Q
       #puts "diff=%0.2f  exp=%0.2f elos:%0.0f %0.0f agas:%0.2f %0.2f" % [diff, exp_diff, plr_w.rating.elo, plr_b.rating.elo, plr_w.rating.aga, plr_b.rating.aga]
       assert ((diff - exp_diff).abs < (0.2/Rating::Q)) # Diff should be close to expected diff
-      assert (plr_w.rating.rd == Glicko::MIN_RD)  # rd should be smallest value with so many games
-      assert (plr_b.rating.rd == Glicko::MIN_RD)
+      assert (plr_w.rd == Glicko::MIN_RD)  # rd should be smallest value with so many games
+      assert (plr_b.rd == Glicko::MIN_RD)
     end
   end
   #puts
@@ -180,22 +175,22 @@ test "Ratings response" do
     puts "Measure time it takes for RD to decay, and results for one game with init_aga_rating=%0.2f" % [init_aga_rating]
     puts "days rd  newR   95%   newAGA    95%      dR  dKD  (1/dKD)"
     for days_rest in (0..30).step(1).to_a + (30..Glicko::RD_DECAY).step(30).to_a
-      plr_anchor = system.players["anchor"] = Player.new("anchor", Rating.new_aga(init_aga_rating))
-      plr_b      = system.players["b"]      = Player.new("b"     , Rating.new_aga(init_aga_rating))
-      plr_b.rating.rd = test_rd
-      plr_b.rating.time_last_played = datetime
+      plr_anchor = system.players["anchor"] = Player.new("anchor", Rating.new_aga(init_aga_rating).elo)
+      plr_b      = system.players["b"]      = Player.new("b"     , Rating.new_aga(init_aga_rating).elo)
+      plr_b.rd = test_rd
+      plr_b.time_last_played = datetime
       datetime += days_rest
-      plr_anchor.rating.rd = anchor_rd  # Reset anchor's rd
-      plr_anchor.rating.time_last_played = datetime  # Avoid RD update logic
-      prev_rat_anchor = plr_anchor.rating.dup
-      prev_rat_b      = plr_b.rating.dup
-      Glicko::initial_rd_update(plr_b.rating, datetime)
+      plr_anchor.rd = anchor_rd  # Reset anchor's rd
+      plr_anchor.time_last_played = datetime  # Avoid RD update logic
+      prev_rat_anchor = plr_anchor.dup
+      prev_rat_b      = plr_b.dup
+      Glicko::initial_rd_update(plr_b, datetime)
       # To avoid going across the weird 5k-2d transition area,
       # do win streak for dans but loss streak for kyus
       winner = init_aga_rating >=0 ? "B" : "W"
       system.add_result({:white_player => "anchor", :black_player => "b", :rules => "aga", :handicap => 0, :komi => 7.5, :winner => winner, :datetime => datetime})
-      dKD = (plr_b.rating.kyudan-prev_rat_b.kyudan).abs
-      puts "%3d %3d %s   %3.0f  %4.2f  (%4.1f)" % [days_rest, plr_b.rating.rd, Glicko::rating_to_s(plr_b), (plr_b.rating.elo-prev_rat_b.elo).abs, dKD, 1/dKD]
+      dKD = (Rating.new(plr_b.rating).kyudan-Rating.new(prev_rat_b.rating).kyudan).abs
+      puts "%3d %3d %s   %3.0f  %4.2f  (%4.1f)" % [days_rest, plr_b.rd, Glicko::rating_to_s(plr_b), (plr_b.rating-prev_rat_b.rating).abs, dKD, 1/dKD]
     end
   end
   for init_aga_rating in [8.0, -8.0]
@@ -204,21 +199,21 @@ test "Ratings response" do
     print "  rd rd*2 newR   95%   newAGA    95%      dR  dKD  (1/dKD)"
     puts "   rd rd*2 newR   95%   newAGA    95%      dR  dKD  (1/dKD)"
     for test_rd in (Glicko::MIN_RD..Glicko::MAX_RD).step(10)
-      plr_anchor = system.players["anchor"] = Player.new("anchor", Rating.new_aga(init_aga_rating))
-      plr_b      = system.players["b"]      = Player.new("b"     , Rating.new_aga(init_aga_rating))
-      plr_anchor.rating.rd = anchor_rd  # Reset anchor's rd
-      prev_rat_anchor = plr_anchor.rating.dup
-      plr_b.rating.rd = test_rd
-      plr_b.rating.time_last_played = plr_anchor.rating.time_last_played = datetime  # Avoid RD update logic
-      prev_rat_b      = plr_b.rating.dup
+      plr_anchor = system.players["anchor"] = Player.new("anchor", Rating.new_aga(init_aga_rating).elo)
+      plr_b      = system.players["b"]      = Player.new("b"     , Rating.new_aga(init_aga_rating).elo)
+      plr_anchor.rd = anchor_rd  # Reset anchor's rd
+      prev_rat_anchor = plr_anchor.dup
+      plr_b.rd = test_rd
+      plr_b.time_last_played = plr_anchor.time_last_played = datetime  # Avoid RD update logic
+      prev_rat_b      = plr_b.dup
       # To avoid going across the weird 5k-2d transition area,
       # do win streak for dans but loss streak for kyus
       winner = init_aga_rating >= 0 ? "B" : "W"
       system.add_result({:white_player => "anchor", :black_player => "b", :rules => "aga", :handicap => 0, :komi => 7.5, :winner => winner, :datetime => datetime})
-      dKD = (plr_b.rating.kyudan-prev_rat_b.kyudan).abs
-      print "%3d %3d %s   %3.0f  %4.2f  (%4.1f)" % [test_rd, test_rd*2, Glicko::rating_to_s(plr_b), (plr_b.rating.elo-prev_rat_b.elo).abs, dKD, 1/dKD]
-      dKD = (plr_anchor.rating.kyudan-prev_rat_anchor.kyudan).abs
-      puts " %3d %3d %s   %3.0f  %4.2f  (%4.1f)" % [anchor_rd, anchor_rd*2, Glicko::rating_to_s(plr_anchor), (plr_anchor.rating.elo-prev_rat_anchor.elo).abs, dKD, 1/dKD]
+      dKD = (Rating.new(plr_b.rating).kyudan-Rating.new(prev_rat_b.rating).kyudan).abs
+      print "%3d %3d %s   %3.0f  %4.2f  (%4.1f)" % [test_rd, test_rd*2, Glicko::rating_to_s(plr_b), (plr_b.rating-prev_rat_b.rating).abs, dKD, 1/dKD]
+      dKD = (Rating.new(plr_anchor.rating).kyudan-Rating.new(prev_rat_anchor.rating).kyudan).abs
+      puts " %3d %3d %s   %3.0f  %4.2f  (%4.1f)" % [anchor_rd, anchor_rd*2, Glicko::rating_to_s(plr_anchor), (plr_anchor.rating-prev_rat_anchor.rating).abs, dKD, 1/dKD]
     end
     end
   end
@@ -229,25 +224,29 @@ test "Ratings response" do
       datetime = DateTime.parse("2011-09-24")
       puts "init_aga_rating=#{init_aga_rating} days_rest=#{days_rest}"
       puts "  #  newR   95%   newAGA    95%      dR  dKD  (1/dKD)"
-      plr_anchor = system.players["anchor"] = Player.new("anchor", Rating.new_aga(init_aga_rating))
-      plr_b      = system.players["b"]      = Player.new("b"     , Rating.new_aga(init_aga_rating))
+      plr_anchor = system.players["anchor"] = Player.new("anchor", Rating.new_aga(init_aga_rating).elo)
+      plr_b      = system.players["b"]      = Player.new("b"     , Rating.new_aga(init_aga_rating).elo)
       for i in 1..MAX_GAMES
-        prev_rat_b      = plr_b.rating.dup
-        plr_anchor.rating = system.players["b"].rating.dup  # Keep reseting the anchor to be same rating as the player
-        plr_anchor.rating.rd     = Glicko::MIN_RD           # Also assume the anchor plays a lot and has low RD
-        plr_anchor.rating.time_last_played = datetime       # Avoid RD update logic
+        prev_rat_b      = plr_b.dup
+        plr_anchor      = system.players["b"].dup  # Keep reseting the anchor to be same rating as the player
+        #print "anchor_rat = %0.2f rd=%0.2f time=%s b_rat = %0.2f\n" % [plr_anchor.rating, plr_anchor.rd==nil ? 0.0 : plr_anchor.rd, "", plr_b.rating]
+        plr_anchor.rd   = Glicko::MIN_RD           # Also assume the anchor plays a lot and has low RD
+        plr_anchor.time_last_played = datetime       # Avoid RD update logic
         # To avoid going across the weird 5k-2d transition area,
         # do win streak for dans but loss streak for kyus
         winner = init_aga_rating >= 0 ? "B" : "W"
         system.add_result({:white_player => "anchor", :black_player => "b", :rules => "aga", :handicap => 0, :komi => 7.5, :winner => winner, :datetime => datetime})
-        dKD = (plr_b.rating.kyudan-prev_rat_b.kyudan).abs
-        puts "%3d %s   %3.0f  %4.2f  (%4.1f)" % [i, Glicko::rating_to_s(plr_b), (plr_b.rating.elo-prev_rat_b.elo).abs, dKD, 1/dKD]
+        dKD = (Rating.new(plr_b.rating).kyudan-Rating.new(prev_rat_b.rating).kyudan).abs
+        puts "%3d %s   %3.0f  %4.2f  (%4.1f)" % [i, Glicko::rating_to_s(plr_b), (plr_b.rating-prev_rat_b.rating).abs, dKD, 1/dKD]
         key_results[init_aga_rating][:dKD_init     ][days_rest] = dKD    if i==1
-        if plr_b.rating.rd==Glicko::MIN_RD and key_results[init_aga_rating][:numgame_minrd][days_rest] == {}
+        if plr_b.rd==Glicko::MIN_RD and key_results[init_aga_rating][:numgame_minrd][days_rest] == {}
           key_results[init_aga_rating][:numgame_minrd][days_rest] = i
         end
         key_results[init_aga_rating][:dKD_final    ][days_rest] = dKD    if i==MAX_GAMES
         key_results[init_aga_rating][:dKD_inv_final][days_rest] = 1/dKD  if i==MAX_GAMES
+        if i==MAX_GAMES
+          print "dKD=%0.2f dKD_inv=%0.2f init_aga=%f days_rest=%d\n" % [dKD, 1/dKD, init_aga_rating, days_rest]
+        end
         datetime += days_rest  # new person waits this many days before playing again
       end
       puts
