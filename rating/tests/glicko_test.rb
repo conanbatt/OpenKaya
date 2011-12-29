@@ -228,7 +228,7 @@ test "Ratings response" do
       plr_b      = system.players["b"]      = Player.new("b"     , Rating.new_aga(init_aga_rating).elo)
       for i in 1..MAX_GAMES
         prev_rat_b      = plr_b.dup
-        plr_anchor      = system.players["b"].dup  # Keep reseting the anchor to be same rating as the player
+        plr_anchor.rating = system.players["b"].rating = plr_b.rating  # Keep reseting the anchor to be same rating as the player
         #print "anchor_rat = %0.2f rd=%0.2f time=%s b_rat = %0.2f\n" % [plr_anchor.rating, plr_anchor.rd==nil ? 0.0 : plr_anchor.rd, "", plr_b.rating]
         plr_anchor.rd   = Glicko::MIN_RD           # Also assume the anchor plays a lot and has low RD
         plr_anchor.time_last_played = datetime       # Avoid RD update logic
@@ -244,9 +244,6 @@ test "Ratings response" do
         end
         key_results[init_aga_rating][:dKD_final    ][days_rest] = dKD    if i==MAX_GAMES
         key_results[init_aga_rating][:dKD_inv_final][days_rest] = 1/dKD  if i==MAX_GAMES
-        if i==MAX_GAMES
-          print "dKD=%0.2f dKD_inv=%0.2f init_aga=%f days_rest=%d\n" % [dKD, 1/dKD, init_aga_rating, days_rest]
-        end
         datetime += days_rest  # new person waits this many days before playing again
       end
       puts
