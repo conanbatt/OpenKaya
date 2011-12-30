@@ -3,7 +3,7 @@ class Player
   attr_reader :rating, :id
   attr_writer :rating
 
-  def initialize(id,rating)
+  def initialize(id,rating=0)
     @rating = rating
     @id = id
   end

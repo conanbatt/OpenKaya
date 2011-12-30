@@ -3,20 +3,8 @@
 
 require 'date'
 
-# Abstract out what scale the ratings are on
-#TODO The use of the rating class has broken the how glicko was implemented on the server.
-=begin
-  This is due to the fact that the code expects player model to have a rating object.
-  If i were to move Rating object to my system, i would have to add things to it to be able to save it to the database, which means it wouldnt be abstract anymore for someone else to use it. Or i would have to duplicate the class and mantain it.
-  Lets keep the previous form, where my system doesnt know what a Rating object is, and let Glicko access the fields rating, rd and last_time_played directly from the user.
-
-  This doesnt mean Rating class should be erased, it just should be a completely internal thing of glicko. 
-
-  Otherwise i could test the handicap suggestion and it worked wonders, i just wasnt able to bypass the Rating object issue. I marked the two i found that gave me a headache.
-=end
-
 class Rating
-  attr_accessor :elo, :rd, :time_last_played
+  attr_accessor :elo, :rd, :time_last_played, :player_object
 
   Q = Math.log(10)/400.0    # Convert from classic Elo to natural scale
   KGS_KYU_TRANSFORM = 0.85/Q  # kgs 5k-
@@ -28,6 +16,14 @@ class Rating
   FIVE_KYU = (A/2.0)*((KD_FIVE_KYU)**2) + (B*KD_FIVE_KYU)    # ~ 695.2 -- Elo rating of the strongest 5k
   TWO_DAN  = (A/2.0)*((KD_TWO_DAN )**2) + (B*KD_TWO_DAN )    # ~ 217.3 -- Elo rating of the weakest 2d
 
+  def self.new_player_copy(player)
+    r = Rating.new()
+    r.elo = player.rating
+    r.rd  = player.rd
+    r.time_last_played = player.time_last_played
+    r.player_object    = player
+    return r
+  end
   def self.new_aga(aga_rating)
     r = Rating.new()
     r.aga = aga_rating
@@ -45,8 +41,10 @@ class Rating
     handi -= 1 if handi > 0
     return handi + (even_komi-komi)/(even_komi*2.0)
   end
-  def initialize(elo=0)
+  def initialize(elo=0, rd=Glicko::MIN_RD, time_last_played=nil)
     @elo = elo
+    @rd  = rd
+    @time_last_played = time_last_played
     return self
   end
   def to_s()
@@ -97,7 +95,7 @@ end
 
 
 module Glicko
-  INITIAL_RATING = Rating.new()
+  INITIAL_RATING = 0
   DEBUG = false
   MAX_RD = 300.0            # maximum rating deviation for new/inactive players
   MIN_RD = 80.0             # minimum rating deviation for very active players
@@ -139,18 +137,18 @@ module Glicko
     return handi + (even_komi-komi)/(even_komi*2.0)
   end
 
-  def self.advantage_in_elo(white, black, rules, handi, komi)
+  def self.advantage_in_elo(white_rating, black_rating, rules, handi, komi)
     advantage_in_stones = advantage_in_stones(handi, komi, EVEN_KOMI[rules])
-    avg_kyudan_rating = (white.rating.kyudan + black.rating.kyudan) / 2.0
+    avg_kyudan_rating = (white_rating.kyudan + black_rating.kyudan) / 2.0
     r1 = Rating.new_kyudan(avg_kyudan_rating + advantage_in_stones*0.5)
     r2 = Rating.new_kyudan(avg_kyudan_rating - advantage_in_stones*0.5)
     return r1.elo-r2.elo
   end
 
   def self.rating_to_s(player)
-    r_min = Rating.new(player.rating.elo - player.rating.rd*2)
-    r_max = Rating.new(player.rating.elo + player.rating.rd*2)
-    return "%5.0f [+-%3.0f] %6.2f [+-%5.2f]" % [player.rating.elo, (r_max.elo-r_min.elo)/2.0, player.rating.aga, (r_max.aga-r_min.aga)/2.0]
+    r_min = Rating.new(player.rating - player.rd*2)
+    r_max = Rating.new(player.rating + player.rd*2)
+    return "%5.0f [+-%3.0f] %6.2f [+-%5.2f]" % [player.rating, (r_max.elo-r_min.elo)/2.0, Rating.new(player.rating).aga, (r_max.aga-r_min.aga)/2.0]
   end
 
   def self.suggest_handicap(input, players)
@@ -160,17 +158,20 @@ module Glicko
     #print "%s\n" % [input[:p2]]
     p1 = players[input[:p1]]
     p2 = players[input[:p2]]
-    #TODO Rating object reference. Just go p1.rd to retrieve it.
-    if p1.rating.rd == nil then p1.rating.rd = MIN_RD end  # Super hack, should be initialized on construction
-    if p2.rating.rd == nil then p2.rating.rd = MIN_RD end
-    if p1.rating.kyudan > p2.rating.kyudan
-       white = p1
-       black = p2
+    if p1.rd == nil then p1.rd = MIN_RD end  # Super hack, should be initialized on construction
+    if p2.rd == nil then p2.rd = MIN_RD end
+    # TODO: Check that this is ok.
+    # yoyoma: I construct temporary rating objects.  Code calling this shouldn't need to worry about it.
+    p1_rating = Rating.new_player_copy(p1)
+    p2_rating = Rating.new_player_copy(p2)
+    if p1_rating.kyudan > p2_rating.kyudan
+       white_rating = p1_rating
+       black_rating = p2_rating
     else
-       white = p2
-       black = p1
+       white_rating = p2_rating
+       black_rating = p1_rating
     end
-    diff = white.rating.kyudan - black.rating.kyudan
+    diff = white_rating.kyudan - black_rating.kyudan
     # traditional handicaps:
     #if    diff < 0.50 then handi = 0; komi =  6.5
     #elsif diff < 1.50 then handi = 0; komi =  0.5
@@ -215,14 +216,15 @@ module Glicko
     #elsif diff < 3.00 then handi = 3; komi = -3.5
     #elsif diff < 3.25 then handi = 3; komi = -5.5
     #end
-    hka = advantage_in_elo(white, black, input[:rules], handi, komi)
-    e = win_probability(white.rating, black.rating, -hka)
-    print "white_rating=%0.2f black_rating=%0.2f diff=%0.2f H=%d K=%0.1f pwin=%0.2f\n" % [white.rating.kyudan, black.rating.kyudan, white.rating.kyudan-black.rating.kyudan, handi, komi, e]
+    hka = advantage_in_elo(white_rating, black_rating, input[:rules], handi, komi)
+    e = win_probability(white_rating, black_rating, -hka)
+    print "white_rating=%0.2f black_rating=%0.2f diff=%0.2f H=%d K=%0.1f pwin=%0.2f\n" % [white_rating.kyudan, black_rating.kyudan, white_rating.kyudan-black_rating.kyudan, handi, komi, e]
     output = {}
-    output[:white] = white
-    output[:black] = black
+    output[:white] = white_rating.player_object
+    output[:black] = black_rating.player_object
     output[:handi] = handi
     output[:komi]  = komi
+    output[:e]     = e     # e included in output for information only
     return output
   end
 
@@ -232,36 +234,42 @@ module Glicko
     black = players[input[:black_player]]
     handi = input[:handicap]
     komi  = (input[:komi]).floor
-    hka = advantage_in_elo(white, black, input[:rules], handi, komi)
+    # TODO: Check that this is ok.
+    # yoyoma: Construct temporary rating objects.  Code calling this shouldn't need to worry about it.
+    white_rating = Rating.new_player_copy(white)
+    black_rating = Rating.new_player_copy(black)
+    hka = advantage_in_elo(white_rating, black_rating, input[:rules], handi, komi)
     white_won = input[:winner] == 'W'
     print "%sw=%s %sb=%s h=%d k=%d hka=%0.0f " % [white_won ? "+":" ", white.id, white_won ? " ":"+", black.id, handi, komi, hka] if DEBUG
     # Initial update on RD based on how long it has been since the player's last game
-    for player in [white, black] do
-      #TODO another reference to the rating object.
-      initial_rd_update(player.rating, input[:datetime])
+    for rating in [white_rating, black_rating] do
+      initial_rd_update(rating, input[:datetime])
     end
     new_r  = {}  # Updates must be calculated first, then applied.  Temp store updates here.
     new_rd = {}
-    for player, opp, player_won, hka in [[white, black, white_won, -hka], [black, white, !white_won, hka]] do
+    for player_rating, opp_rating, player_won, hka in [[white_rating, black_rating, white_won, -hka], [black_rating, white_rating, !white_won, hka]] do
       score = player_won ? 1.0 : 0.0
-      d_squared = d_squared(player.rating, opp.rating, hka)
-      e = win_probability(player.rating, opp.rating, hka)
-      q_term = Rating::Q / ((1.0/player.rating.rd**2.0)+1.0/d_squared)
-      g_term = g(opp.rating)
+      d_squared = d_squared(player_rating, opp_rating, hka)
+      e = win_probability(player_rating, opp_rating, hka)
+      q_term = Rating::Q / ((1.0/player_rating.rd**2.0)+1.0/d_squared)
+      g_term = g(opp_rating)
       g_term_mod = g_term ** G_TERM_MOD
       s_term = score - e
       #delta = q_term*g_term*s_term
       delta = q_term*g_term_mod*s_term
-      new_r[player]  = player.rating.elo + delta
-      new_rd[player] = [MIN_RD, Math.sqrt(1.0/((1.0/player.rating.rd**2.0)+1.0/d_squared))].max
+      new_r[player_rating.player_object]  = player_rating.elo + delta
+      new_rd[player_rating.player_object] = [MIN_RD, Math.sqrt(1.0/((1.0/player_rating.rd**2.0)+1.0/d_squared))].max
       #print "q=%6.2f g=%4.2f g_term_mod=%4.2f s=%5.2f d=%7.2f  " % [q_term, g_term, g_term_mod, s_term, delta]
     end
     #puts
+    # TODO: Check that this is ok.
+    # yoyoma: At the end the original player.elo, player.rd, player.time_last_played properties are updated
+    #         Temporary Rating objects no longer needed
     # Apply updates
     for player in [white, black]
-      player.rating.elo = new_r[player]
-      player.rating.rd = new_rd[player]
-      player.rating.time_last_played = input[:datetime]
+      player.rating = new_r[player]
+      player.rd = new_rd[player]
+      player.time_last_played = input[:datetime]
       print "id=%s rating=%7.2f rd=%6.2f  " % [player.id, player.rating.elo, player.rating.rd] if DEBUG
     end
     print "\n" if DEBUG
@@ -272,7 +280,11 @@ module Glicko
   end
 
   def self.validate(player)
-    aga_rating = player.rating.aga
+    rating = Rating.new(player.rating)
+    elo_rating = rating.elo
+    kd_rating = rating.kyudan
+    aga_rating = rating.aga
+    #aga_rating = Rating.new(player.rating).aga
     raise GlickoError, "Rating less than 35k" if aga_rating <= -36.0
     raise GlickoError, "Rating more than 12d" if aga_rating >= 13.0
   end
