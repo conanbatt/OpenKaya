@@ -12,7 +12,7 @@ test "Nodify moves" do
   node = ";B[ab]"
   sgf.add_move(node)
 
-  assert sgf.move_list = ";B[ab]"
+  assert_equal sgf.move_list, ";B[ab]"
 
 end
 
@@ -23,11 +23,11 @@ test "Should add comment to a node" do
   sgf.add_move(node)
   sgf.add_comment("This guy sucks")
 
-  assert sgf.move_list == ";B[ab]C[This guy sucks ]"
+  assert_equal sgf.move_list, ";B[ab]C[This guy sucks ]"
 
   sgf.add_comment("yeah")
 
-  assert sgf.move_list == ";B[ab]C[This guy sucks yeah ]"
+  assert_equal sgf.move_list, ";B[ab]C[This guy sucks yeah ]"
 
 end
 
@@ -148,4 +148,17 @@ test 'Should be able to send a pass move' do
 
   assert sgf.move_list =  ";B[]"
 
+end
+
+test 'Should create a node object' do
+  node = Node.new(";B[ac]")
+
+  assert_equal node.color, "B"
+  assert_equal node.coordinate, "ac"
+
+  node.add_comment("pepe")
+  assert_equal node.comments, "pepe "
+
+  node.add_comment("y yo")
+  assert_equal node.comments, "pepe y yo "
 end

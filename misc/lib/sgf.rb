@@ -5,36 +5,29 @@ class SGF
   attr_accessor :move_list, :comment_buffer,:metadata
 
   def initialize(moves="", size=19)
-    @move_list= moves || ""
+    #@move_list= moves || ""
+    @move_list = [Node.new("", true)]
     @comment_buffer = ""
     @size = size
     @metadata =""
   end
 
   def add_move(node) #TODO objetify node
-    validate_node_format(node)
-   
-    if(node.size == 6)
-      color = node[1]
-      x = node[3]
-      y = node[4]
- 
-      validate_coordinate(x, y)
-    end
-    @move_list += "C[#{@comment_buffer}]" unless @comment_buffer.empty?
-    @comment_buffer = ""
-    @move_list += node
+    @move_list << Node.new(node)
   end
 
   def add_comment(comment)
-    @comment_buffer += comment+" " if comment
+    @move_list.last.add_comment(comment)
     move_list
   end
 
   def move_list
-    @move_list + (@comment_buffer.empty? ? "" : "C[#{@comment_buffer}]") #Best way to handle comment node? avoids string parsing
+    buffer = ""
+    @move_list.each do |node|
+      buffer += node.to_s
+    end
+    buffer
   end
-
     #light validation to make sure the input is not totally bs. only makes sure the coordinate is in the board
   def validate_coordinate(x, y)
     lower_boundary = 97
@@ -61,7 +54,7 @@ class SGF
   end 
   def load_from_string(input)
     @metadata = input.split(";")[1] #will process this later
-    @move_list = input.gsub(@metadata, "")[2..-3] #chopping some extra characters
+    @move_list << Node.new(input.gsub(@metadata, "")[2..-3]) #chopping some extra characters
   end
 
   METALABELS= {:white_player => "PW", :black_player => "PB", 
@@ -87,3 +80,56 @@ class SGF
 
 end
 
+
+class Node
+
+  attr_reader :node_text
+
+  def initialize(node_text= "", main_node = false)
+    if !main_node
+      validate_node_format(node_text)
+    end
+    @node_text = node_text
+    @comments = []
+  end
+
+  def to_s
+    comment_node = comments.empty? ? "" : "C[#{comments}]"
+    node_text + comment_node
+  end
+
+  def add_comment(comment)
+    @comments << comment + " "
+  end
+  def comments
+    buffer = ""
+    @comments.each{|c| buffer += c}
+    buffer
+  end
+
+  def color
+    @node_text[1] 
+  end
+
+  def x
+    @node_text[3] unless pass_node?
+  end
+  def y
+    @node_text[4] unless pass_node?
+  end
+  def coordinate
+    x+y
+  end
+  def pass_node?
+    @node_text.length == 4
+  end
+
+  def validate_node_format(node)
+    valid = node.match(/;[BW]\[(|[a-z][a-z])\]/)
+    if node.include?("BL") || node.include?("WL")
+      valid = valid && node.match(/[BW]L\[\d{0,6}.\d{3}\]/)
+    end
+    raise "#{node} is invalid node format" unless valid
+  end
+
+end
