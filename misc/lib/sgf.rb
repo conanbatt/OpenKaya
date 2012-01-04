@@ -54,7 +54,7 @@ class SGF
   end 
   def load_from_string(input)
     @metadata = input.split(";")[1] #will process this later
-    @move_list << Node.new(input.gsub(@metadata, "")[2..-3]) #chopping some extra characters
+    @move_list << Node.new(input.gsub(@metadata, "").chomp[2..-2]) #chopping some extra characters
   end
 
   METALABELS= {:white_player => "PW", :black_player => "PB", 
