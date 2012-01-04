@@ -151,13 +151,13 @@ module Glicko
     return "%5.0f [+-%3.0f] %6.2f [+-%5.2f]" % [player.rating, (r_max.elo-r_min.elo)/2.0, Rating.new(player.rating).aga, (r_max.aga-r_min.aga)/2.0]
   end
 
-  def self.suggest_handicap(input, players)
+  def self.suggest_handicap(input)
     # Right now this will also suggest the colors
     raise GlickoError, "Invalid arguments #{input}" unless input[:p1] && input[:p2] && input[:rules]
     #print "%s\n" % [input[:p1]]
     #print "%s\n" % [input[:p2]]
-    p1 = players[input[:p1]]
-    p2 = players[input[:p2]]
+    p1 = input[:p1]
+    p2 = input[:p2]
     if p1.rd == nil then p1.rd = MIN_RD end  # Super hack, should be initialized on construction
     if p2.rd == nil then p2.rd = MIN_RD end
     # TODO: Check that this is ok.
@@ -218,7 +218,6 @@ module Glicko
     #end
     hka = advantage_in_elo(white_rating, black_rating, input[:rules], handi, komi)
     e = win_probability(white_rating, black_rating, -hka)
-    print "white_rating=%0.2f black_rating=%0.2f diff=%0.2f H=%d K=%0.1f pwin=%0.2f\n" % [white_rating.kyudan, black_rating.kyudan, white_rating.kyudan-black_rating.kyudan, handi, komi, e]
     output = {}
     output[:white] = white_rating.player_object
     output[:black] = black_rating.player_object
@@ -275,8 +274,8 @@ module Glicko
     print "\n" if DEBUG
   end
 
-  def self.rank(player)
-    return player.rating.rank
+  def self.rank(rating)
+    return Rating.new(rating).rank
   end
 
   def self.validate(player)
