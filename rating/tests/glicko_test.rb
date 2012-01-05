@@ -8,6 +8,17 @@ class Player
   attr_accessor :rating, :rd, :time_last_played
 end
 
+test "rank2rating test" do
+  assert(Glicko::rank2rating("10d") == 10.5)
+  assert(Glicko::rank2rating("9d")  ==  9.5)
+  assert(Glicko::rank2rating("1d")  ==  1.5)
+  assert(Glicko::rank2rating("1k")  == -1.5)
+  assert(Glicko::rank2rating("30k")  == -30.5)
+  assert_raise(Glicko::GlickoError) do
+     Glicko::rank2rating("30")
+  end
+end
+
 test "Validate should raise error if rating is too small" do
   player_a = Player.new("a")
   player_a.rating = Rating.new_aga(-36.01).aga

@@ -277,6 +277,22 @@ module Glicko
     return Rating.new_aga(rating).rank
   end
 
+  # Input  Output
+  #  "9d"     9.5
+  #  "1d"     1.5
+  #  "1k"    -1.5
+  #  "30k"  -30.5
+  def self.rank2rating(rank)
+    num = Float(rank[0..-2])
+    if rank[-1] == "d"
+      return num+0.5
+    elsif rank[-1] == "k"
+      return -num-0.5
+    else
+      raise GlickoError, "Rank must end with d/k"
+    end
+  end
+
   def self.validate(player)
     rating = Rating.new_aga(player.rating)
     rating = Rating.new(player.rating)
