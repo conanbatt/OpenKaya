@@ -18,10 +18,15 @@ class Rating
 
   def self.new_player_copy(player)
     r = Rating.new()
-    r.elo = player.rating
+    r.aga = player.rating
     r.rd  = player.rd
     r.time_last_played = player.time_last_played
     r.player_object    = player
+    return r
+  end
+  def self.new_elo(elo_rating)
+    r = Rating.new()
+    r.elo = elo_rating
     return r
   end
   def self.new_aga(aga_rating)
@@ -41,8 +46,8 @@ class Rating
     handi -= 1 if handi > 0
     return handi + (even_komi-komi)/(even_komi*2.0)
   end
-  def initialize(elo=0, rd=Glicko::MIN_RD, time_last_played=nil)
-    @elo = elo
+  def initialize(aga=1.5, rd=Glicko::MIN_RD, time_last_played=nil)
+    self.aga = aga
     @rd  = rd
     @time_last_played = time_last_played
     return self
@@ -95,7 +100,7 @@ end
 
 
 module Glicko
-  INITIAL_RATING = 0
+  INITIAL_RATING = 1.5
   DEBUG = false
   MAX_RD = 300.0            # maximum rating deviation for new/inactive players
   MIN_RD = 80.0             # minimum rating deviation for very active players
@@ -146,9 +151,10 @@ module Glicko
   end
 
   def self.rating_to_s(player)
-    r_min = Rating.new(player.rating - player.rd*2)
-    r_max = Rating.new(player.rating + player.rd*2)
-    return "%5.0f [+-%3.0f] %6.2f [+-%5.2f]" % [player.rating, (r_max.elo-r_min.elo)/2.0, Rating.new(player.rating).aga, (r_max.aga-r_min.aga)/2.0]
+    r = Rating.new_player_copy(player)
+    r_min = Rating.new_elo(r.elo - r.rd*2)
+    r_max = Rating.new_elo(r.elo + r.rd*2)
+    return "%5.0f [+-%3.0f] %6.2f [+-%5.2f]" % [r.elo, (r_max.elo-r_min.elo)/2.0, r.aga, (r_max.aga-r_min.aga)/2.0]
   end
 
   def self.suggest_handicap(input)
@@ -160,8 +166,6 @@ module Glicko
     p2 = input[:p2]
     if p1.rd == nil then p1.rd = MIN_RD end  # Super hack, should be initialized on construction
     if p2.rd == nil then p2.rd = MIN_RD end
-    # TODO: Check that this is ok.
-    # yoyoma: I construct temporary rating objects.  Code calling this shouldn't need to worry about it.
     p1_rating = Rating.new_player_copy(p1)
     p2_rating = Rating.new_player_copy(p2)
     if p1_rating.kyudan > p2_rating.kyudan
@@ -233,8 +237,6 @@ module Glicko
     black = players[input[:black_player]]
     handi = input[:handicap]
     komi  = (input[:komi]).floor
-    # TODO: Check that this is ok.
-    # yoyoma: Construct temporary rating objects.  Code calling this shouldn't need to worry about it.
     white_rating = Rating.new_player_copy(white)
     black_rating = Rating.new_player_copy(black)
     hka = advantage_in_elo(white_rating, black_rating, input[:rules], handi, komi)
@@ -261,31 +263,25 @@ module Glicko
       #print "q=%6.2f g=%4.2f g_term_mod=%4.2f s=%5.2f d=%7.2f  " % [q_term, g_term, g_term_mod, s_term, delta]
     end
     #puts
-    # TODO: Check that this is ok.
-    # yoyoma: At the end the original player.elo, player.rd, player.time_last_played properties are updated
-    #         Temporary Rating objects no longer needed
     # Apply updates
     for player in [white, black]
-      player.rating = new_r[player]
+      player.rating = Rating.new_elo(new_r[player]).aga
       player.rd = new_rd[player]
       player.time_last_played = input[:datetime]
-      print "id=%s rating=%7.2f rd=%6.2f  " % [player.id, player.rating.elo, player.rating.rd] if DEBUG
+      print "id=%s rating=%7.2f rd=%6.2f  " % [player.id, player_rating.elo, player_rating.rd] if DEBUG
     end
     print "\n" if DEBUG
   end
 
   def self.rank(rating)
-    return Rating.new(rating).rank
+    return Rating.new_aga(rating).rank
   end
 
   def self.validate(player)
+    rating = Rating.new_aga(player.rating)
     rating = Rating.new(player.rating)
-    elo_rating = rating.elo
-    kd_rating = rating.kyudan
-    aga_rating = rating.aga
-    #aga_rating = Rating.new(player.rating).aga
-    raise GlickoError, "Rating less than 35k" if aga_rating <= -36.0
-    raise GlickoError, "Rating more than 12d" if aga_rating >= 13.0
+    raise GlickoError, "Rating less than 35k" if rating.aga <= -36.0
+    raise GlickoError, "Rating more than 12d" if rating.aga >= 13.0
   end
 
   def self.print_constants()

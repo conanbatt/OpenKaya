@@ -10,21 +10,21 @@ end
 
 test "Validate should raise error if rating is too small" do
   player_a = Player.new("a")
-  player_a.rating = Rating.new_aga(-36.01).elo
+  player_a.rating = Rating.new_aga(-36.01).aga
   assert_raise(Glicko::GlickoError) do
     Glicko::validate(player_a)
   end
-  player_a.rating = Rating.new_aga(-35.99).elo               # no problem here
+  player_a.rating = Rating.new_aga(-35.99).aga               # no problem here
   Glicko::validate(player_a)
 end
 
 test "Validate should raise error if rating is too large" do
   player_a = Player.new("a")
-  player_a.rating = Rating.new_aga(13.01).elo
+  player_a.rating = Rating.new_aga(13.01).aga
   assert_raise(Glicko::GlickoError) do
     Glicko::validate(player_a)
   end
-  player_a.rating = Rating.new_aga(12.99).elo  # no problem here
+  player_a.rating = Rating.new_aga(12.99).aga  # no problem here
   Glicko::validate(player_a)
 end
 
@@ -72,8 +72,10 @@ test "Ratings table" do
 end
 
 test "Calculate win probability between 2 players" do
-  rating_a = Rating.new(0)
-  rating_b = Rating.new(0)
+  rating_a = Rating.new()
+  rating_b = Rating.new()
+  rating_a.elo = 0.0
+  rating_b.elo = 0.0
   rating_a.rd = 0.0
   rating_b.rd = 0.0
   assert_equal Glicko::win_probability(rating_a, rating_b), 0.500   # Equal ratings = 50% winrate
@@ -91,21 +93,21 @@ test "" do
   p1 = system.players["p1"] = Player.new("p1")
   p2 = system.players["p2"] = Player.new("p2")
 
-  p1.rating = Rating.new_aga(4.00).elo
-  p2.rating = Rating.new_aga(5.24).elo
-  output = Glicko.suggest_handicap({:p1 => "p1", :p2 => "p2", :rules => "jpn"}, system.players)
+  p1.rating = Rating.new_aga(4.00).aga
+  p2.rating = Rating.new_aga(5.24).aga
+  output = Glicko.suggest_handicap({:p1 => p1, :p2 => p2, :rules => "jpn"})
   assert (output[:e] - 0.57).abs < 0.02
 
-  p2.rating = Rating.new_aga(5.26).elo
-  output = Glicko.suggest_handicap({:p1 => "p1", :p2 => "p2", :rules => "jpn"}, system.players)
+  p2.rating = Rating.new_aga(5.26).aga
+  output = Glicko.suggest_handicap({:p1 => p1, :p2 => p2, :rules => "jpn"})
   assert (output[:e] - 0.43).abs < 0.02
 
-  p2.rating = Rating.new_aga(5.74).elo
-  output = Glicko.suggest_handicap({:p1 => "p1", :p2 => "p2", :rules => "jpn"}, system.players)
+  p2.rating = Rating.new_aga(5.74).aga
+  output = Glicko.suggest_handicap({:p1 => p1, :p2 => p2, :rules => "jpn"})
   assert (output[:e] - 0.57).abs < 0.02
 
-  p2.rating = Rating.new_aga(5.75).elo
-  output = Glicko.suggest_handicap({:p1 => "p1", :p2 => "p2", :rules => "jpn"}, system.players)
+  p2.rating = Rating.new_aga(5.75).aga
+  output = Glicko.suggest_handicap({:p1 => p1, :p2 => p2, :rules => "jpn"})
   assert (output[:e] - 0.43).abs < 0.02
 end
 
@@ -115,8 +117,8 @@ test "Equal wins" do
   system = System.new(Glicko)
   for init_aga_rating in [-25, -1, 5]
     for (handi, komi) in [[0, 7.5], [0, 0.5], [0, -6.5], [2, 0.5], [6, 0.5]]
-      plr_w = system.players["w"] = Player.new("w", Rating.new_aga(init_aga_rating).elo)
-      plr_b = system.players["b"] = Player.new("b", Rating.new_aga(init_aga_rating).elo)
+      plr_w = system.players["w"] = Player.new("w", Rating.new_aga(init_aga_rating).aga)
+      plr_b = system.players["b"] = Player.new("b", Rating.new_aga(init_aga_rating).aga)
       80.times do
         system.add_result({:white_player => "w", :black_player => "b", :rules => "aga", :handicap => handi, :komi => komi, :winner => "W", :datetime => DateTime.parse("2011-09-24")})
         system.add_result({:white_player => "w", :black_player => "b", :rules => "aga", :handicap => handi, :komi => komi, :winner => "B", :datetime => DateTime.parse("2011-09-24")})
@@ -138,15 +140,15 @@ test "winratio test" do
   for init_aga_rating in [-25, -1, 5]
     (handi, komi) = [0, 7.5]
     for win_ratio in 1..9
-      plr_w = system.players["w"] = Player.new("w", Rating.new_aga(init_aga_rating).elo)
-      plr_b = system.players["b"] = Player.new("b", Rating.new_aga(init_aga_rating).elo)
+      plr_w = system.players["w"] = Player.new("w", Rating.new_aga(init_aga_rating).aga)
+      plr_b = system.players["b"] = Player.new("b", Rating.new_aga(init_aga_rating).aga)
       80.times do
         win_ratio.times do # White wins win_ratio times
           system.add_result({:white_player => "w", :black_player => "b", :rules => "aga", :handicap => handi, :komi => komi, :winner => "W", :datetime => DateTime.parse("2011-09-24")})
         end
         system.add_result({:white_player => "w", :black_player => "b", :rules => "aga", :handicap => handi, :komi => komi, :winner => "B", :datetime => DateTime.parse("2011-09-24")})
       end
-      diff = plr_w.rating - plr_b.rating
+      diff = Rating.new_aga(plr_w.rating).elo - Rating.new_aga(plr_b.rating).elo
       exp_diff = Math::log(win_ratio) / Rating::Q
       #puts "diff=%0.2f  exp=%0.2f elos:%0.0f %0.0f agas:%0.2f %0.2f" % [diff, exp_diff, plr_w.rating.elo, plr_b.rating.elo, plr_w.rating.aga, plr_b.rating.aga]
       assert ((diff - exp_diff).abs < (0.2/Rating::Q)) # Diff should be close to expected diff
@@ -175,8 +177,8 @@ test "Ratings response" do
     puts "Measure time it takes for RD to decay, and results for one game with init_aga_rating=%0.2f" % [init_aga_rating]
     puts "days rd  newR   95%   newAGA    95%      dR  dKD  (1/dKD)"
     for days_rest in (0..30).step(1).to_a + (30..Glicko::RD_DECAY).step(30).to_a
-      plr_anchor = system.players["anchor"] = Player.new("anchor", Rating.new_aga(init_aga_rating).elo)
-      plr_b      = system.players["b"]      = Player.new("b"     , Rating.new_aga(init_aga_rating).elo)
+      plr_anchor = system.players["anchor"] = Player.new("anchor", Rating.new_aga(init_aga_rating).aga)
+      plr_b      = system.players["b"]      = Player.new("b"     , Rating.new_aga(init_aga_rating).aga)
       plr_b.rd = test_rd
       plr_b.time_last_played = datetime
       datetime += days_rest
@@ -199,8 +201,8 @@ test "Ratings response" do
     print "  rd rd*2 newR   95%   newAGA    95%      dR  dKD  (1/dKD)"
     puts "   rd rd*2 newR   95%   newAGA    95%      dR  dKD  (1/dKD)"
     for test_rd in (Glicko::MIN_RD..Glicko::MAX_RD).step(10)
-      plr_anchor = system.players["anchor"] = Player.new("anchor", Rating.new_aga(init_aga_rating).elo)
-      plr_b      = system.players["b"]      = Player.new("b"     , Rating.new_aga(init_aga_rating).elo)
+      plr_anchor = system.players["anchor"] = Player.new("anchor", Rating.new_aga(init_aga_rating).aga)
+      plr_b      = system.players["b"]      = Player.new("b"     , Rating.new_aga(init_aga_rating).aga)
       plr_anchor.rd = anchor_rd  # Reset anchor's rd
       prev_rat_anchor = plr_anchor.dup
       plr_b.rd = test_rd
@@ -224,8 +226,8 @@ test "Ratings response" do
       datetime = DateTime.parse("2011-09-24")
       puts "init_aga_rating=#{init_aga_rating} days_rest=#{days_rest}"
       puts "  #  newR   95%   newAGA    95%      dR  dKD  (1/dKD)"
-      plr_anchor = system.players["anchor"] = Player.new("anchor", Rating.new_aga(init_aga_rating).elo)
-      plr_b      = system.players["b"]      = Player.new("b"     , Rating.new_aga(init_aga_rating).elo)
+      plr_anchor = system.players["anchor"] = Player.new("anchor", Rating.new_aga(init_aga_rating).aga)
+      plr_b      = system.players["b"]      = Player.new("b"     , Rating.new_aga(init_aga_rating).aga)
       for i in 1..MAX_GAMES
         prev_rat_b      = plr_b.dup
         plr_anchor.rating = system.players["b"].rating = plr_b.rating  # Keep reseting the anchor to be same rating as the player
