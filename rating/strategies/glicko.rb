@@ -17,7 +17,7 @@ class Rating
   TWO_DAN  = (A/2.0)*((KD_TWO_DAN )**2) + (B*KD_TWO_DAN )    # ~ 217.3 -- Elo rating of the weakest 2d
 
   def self.new_player_copy(player)
-    r = Rating.new()
+    r = Rating.new
     r.aga = player.rating
     r.rd  = player.rd
     r.time_last_played = player.time_last_played
@@ -25,17 +25,17 @@ class Rating
     return r
   end
   def self.new_elo(elo_rating)
-    r = Rating.new()
+    r = Rating.new
     r.elo = elo_rating
     return r
   end
   def self.new_aga(aga_rating)
-    r = Rating.new()
+    r = Rating.new
     r.aga = aga_rating
     return r
   end
   def self.new_kyudan(kyudan)
-    r = Rating.new()
+    r = Rating.new
     r.kyudan = kyudan
     return r
   end
@@ -52,23 +52,23 @@ class Rating
     @time_last_played = time_last_played
     return self
   end
-  def to_s()
+  def to_s
     return "%s" % @elo
   end
   def gamma=(gamma)
     @elo = 400.0*Math::log10(gamma)
     return self
   end
-  def gamma()
+  def gamma
     return 10**(@elo/400.0)
   end
-  def kyudan()
+  def kyudan
     return KD_FIVE_KYU + (@elo-FIVE_KYU)/KGS_KYU_TRANSFORM if @elo < FIVE_KYU
     return KD_TWO_DAN  + (@elo- TWO_DAN)/KGS_DAN_TRANSFORM if @elo >  TWO_DAN
     return (Math.sqrt(2.0*A*@elo+B**2.0)-B)/A
   end
-  def aga()
-    r = kyudan()
+  def aga
+    r = kyudan
     return r < 0.0 ? r - 1.0 : r + 1.0  # Add the (-1.0,1.0) gap
   end
   def kyudan=(kyudan)
@@ -83,14 +83,15 @@ class Rating
   end
   def aga=(aga_rating)
     raise WhrError, "Illegal aga_rating #{aga_rating}" unless aga_rating.abs >= 1.0  # Ratings in (-1.0,1.0) are illegal
+
     self.kyudan = aga_rating < 0.0 ? aga_rating + 1.0 : aga_rating - 1.0   # Close the (-1.0,1.0) gap
     return self
   end
-  def rank()
+  def rank
     r = self.aga
     return r < 0.0 ? "%dk" % -r.ceil : "%dd" % r.floor
   end
-  def aga_rank_str()
+  def aga_rank_str
     r = self.aga
     return r < 0.0 ?
       "%0.1fk" % [(r*10.0).ceil/10.0] :
@@ -204,6 +205,9 @@ module Glicko
     elsif diff < 8.70 then handi = 9; komi =  0.5
     else                   handi = 9; komi = -5.5
     end
+    #TODO lets go this granular. But above all i noticed something important here : 1.75 difference yields 2 stones. This means
+    #1kvs1d could give 2 handicap games and thats not good. It must require minimum 2 ranks difference to provide 2 stones.
+
     # 4X the granularity of traditional handicaps:
     # not sure if I made the boundaries correct
     #if    diff < 0.25 then handi = 0; komi =  6.5
@@ -256,11 +260,9 @@ module Glicko
       g_term = g(opp_rating)
       g_term_mod = g_term ** G_TERM_MOD
       s_term = score - e
-      #delta = q_term*g_term*s_term
       delta = q_term*g_term_mod*s_term
       new_r[player_rating.player_object]  = player_rating.elo + delta
       new_rd[player_rating.player_object] = [MIN_RD, Math.sqrt(1.0/((1.0/player_rating.rd**2.0)+1.0/d_squared))].max
-      #print "q=%6.2f g=%4.2f g_term_mod=%4.2f s=%5.2f d=%7.2f  " % [q_term, g_term, g_term_mod, s_term, delta]
     end
     #puts
     # Apply updates
@@ -282,6 +284,7 @@ module Glicko
   #  "1d"     1.5
   #  "1k"    -1.5
   #  "30k"  -30.5
+  #TODO what i really need is for it to transform to Elo which is how its saved on the server.
   def self.rank2rating(rank)
     num = Float(rank[0..-2])
     if rank[-1] == "d"
