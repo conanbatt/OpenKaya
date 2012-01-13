@@ -99,6 +99,13 @@ test "should be able to add a time property to a node" do
 
 end
 
+test "should explode if try to access invalid metadata" do
+  sgf = SGF.new
+  sgf.load_from_string("(;PB[CARLOS]PW[PEPE];B[aa])")
+
+  assert sgf.metadata(:komi).nil?
+end
+
 #(;FF[4]GM[1]SZ[19]CA[UTF-8]SO[gokifu.com]BC[kr]WC[kr]EV[7th Korean Wonik Cup Siptan]PB[Ryu Chaehyeong]BR[9p]PW[Kang Dongyun]WR[9p]KM[6.5]DT[2011-09-30]RE[W+R]
 
 

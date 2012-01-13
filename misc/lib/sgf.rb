@@ -91,6 +91,7 @@ class SGF
     return @metadata if symbol == :all
     dup = @metadata.dup
     dup.slice!(/.*#{METALABELS[symbol]}\[/)
+    return nil if dup.length == @metadata.length #means it wasnt found
     dup.slice!(/\].*/)
     return dup
   end
