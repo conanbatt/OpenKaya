@@ -81,7 +81,7 @@ class SGF
     nodify_move_list(input.gsub(@metadata, "").chomp[2..-2])
   end
 
-  METALABELS= {:white_player => "PW", :black_player => "PB",
+  METALABELS= {:black_rank => "BR", :white_rank => "WR",:white_player => "PW", :black_player => "PB",
                :komi => "KM", :date => "DT", :result => "RE",
                :file_format => "FF", :black_country => "BC",
                :white_country => "WC", :event => "EV", :source => "SO",
