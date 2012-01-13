@@ -162,3 +162,17 @@ test 'Should create a node object' do
   node.add_comment("y yo")
   assert_equal node.comments, "pepe y yo "
 end
+
+test 'should create the sgf node list with initialization' do
+
+  sgf = SGF.new(";B[ac];W[ed]")
+  assert_equal sgf.move_list, ";B[ac];W[ed]"
+  sgf = SGF.new(nil)
+  assert_equal sgf.move_list, ""
+end
+
+test 'should have handicap node settings' do
+
+  assert !SGF.handi_node(19,5).nil?
+
+end

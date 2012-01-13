@@ -1,19 +1,38 @@
-class SGF 
+class SGF
 
   BLACK = "B"
   WHITE = "W"
   attr_accessor :move_list, :comment_buffer,:metadata
 
   def initialize(moves="", size=19)
-    #@move_list= moves || ""
-    @move_list = [Node.new("", true)]
+    moves ||= ""
+    @move_list = []
+    @move_list << Node.new("", true)
+    nodify_move_list(moves) unless moves.empty?
     @comment_buffer = ""
     @size = size
     @metadata =""
   end
 
+  def last_two_moves_are_pass?
+    if @move_list.count >2
+      return @move_list.last.pass_node? && @move_list[@move_list.count-2].pass_node?
+    end
+  end
+
+  def nodify_move_list(moves)
+    moves.split(";").each do |txt|
+      add_move(";"+txt) unless txt.empty?
+    end
+  end
+
   def add_move(node) #TODO objetify node
     @move_list << Node.new(node)
+    move_list
+  end
+
+  def last_play_color
+    @move_list.last && @move_list.last.color
   end
 
   def add_comment(comment)
@@ -28,6 +47,11 @@ class SGF
     end
     buffer
   end
+
+  def move_by_number(index)
+    @move_list[index].to_s unless index < 0 || index > @move_list.length - 1
+  end
+
     #light validation to make sure the input is not totally bs. only makes sure the coordinate is in the board
   def validate_coordinate(x, y)
     lower_boundary = 97
@@ -51,15 +75,15 @@ class SGF
         load_from_string(line)
       end
     end
-  end 
+  end
   def load_from_string(input)
     @metadata = input.split(";")[1] #will process this later
-    @move_list << Node.new(input.gsub(@metadata, "").chomp[2..-2]) #chopping some extra characters
+    nodify_move_list(input.gsub(@metadata, "").chomp[2..-2])
   end
 
-  METALABELS= {:white_player => "PW", :black_player => "PB", 
-               :komi => "KM", :date => "DT", :result => "RE", 
-               :file_format => "FF", :black_country => "BC", 
+  METALABELS= {:white_player => "PW", :black_player => "PB",
+               :komi => "KM", :date => "DT", :result => "RE",
+               :file_format => "FF", :black_country => "BC",
                :white_country => "WC", :event => "EV", :source => "SO",
                :encoding => "CA", :size => "SZ", :rules => "RU", :time_set => "OT"}
 
@@ -78,6 +102,76 @@ class SGF
     @metadata = node + @metadata
   end
 
+
+  def self.handi_node(size,handicap)
+    case size
+
+    when 19
+      case handicap
+      when 2
+        return "HA[2]AB[dd][pp]"
+      when 3
+        return "HA[3]AB[dd][dp][pd]"
+      when 4
+        return "HA[4]AB[dd][pd][dp][pp]"
+      when 5
+        return "HA[5]AB[dd][pd][dp][pp][jj]"
+      when 6
+        return "HA[6]AB[dd][pd][dp][pp][dj][pj]"
+      when 7
+        return "HA[7]AB[dd][pd][dp][pp][dj][pj][jj]"
+      when 8
+        return "HA[8]AB[dd][jd][pd][dj][pj][dp][jp][pp]"
+      when 9
+        return "HA[9]AB[dd][jd][pd][dj][jj][pj][dp][jp][pp]"
+      else
+        raise "Invalid handicap setting #{handicap}"
+      end
+    when 13
+      case handicap
+      when 2
+        return "HA[2]AB[dd][jj]"
+      when 3
+        return "HA[3]AB[dd][dj][jd]"
+      when 4
+        return "HA[4]AB[dd][jd][dj][jj]"
+      when 5
+        return "HA[5]AB[dd][jd][dj][gg][jj]"
+      when 6
+        return "HA[6]AB[dd][jd][dj][jj][dg][jg]"
+      when 7
+        return "HA[7]AB[dd][jd][dj][jj][dg][jg][gg]"
+      when 8
+        return "HA[8]AB[dd][jd][dj][gj][jj][jg][gd][dg]"
+      when 9
+        return "HA[9]AB[dd][jd][dj][gj][jj][jg][gg][gd][dg]"
+      else
+        raise "Invalid handicap setting #{handicap}"
+      end
+    when 9
+      case handicap
+      when 2
+        return "HA[2]AB[cc][gg]"
+      when 3
+        return "HA[3]AB[cc][cg][gg]"
+      when 4
+        return "HA[4]AB[cc][gg][cg][gc]"
+      when 5
+        return "HA[5]AB[cc][gg][cg][gc][ee]"
+      when 6
+        return "HA[6]AB[cc][gg][cg][gc][ee][ge]"
+      when 7
+        return "HA[7]AB[cc][gg][cg][gc][ee][ge][ee]"
+      when 8
+        return "HA[8]AB[cc][gc][cg][gg][ce][ge][ec][eg]"
+      when 9
+        return "HA[9]AB[cc][gc][cg][gg][ce][ge][ec][ee][eg]"
+      else
+        raise "Invalid handicap setting #{handicap}"
+      end
+    end
+  raise "Invalid handicap setting Size: #{size} and  handicap #{handicap}"
+  end
 end
 
 
@@ -108,7 +202,7 @@ class Node
   end
 
   def color
-    @node_text[1] 
+    @node_text[1]
   end
 
   def x
