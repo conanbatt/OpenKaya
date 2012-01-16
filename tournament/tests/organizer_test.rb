@@ -18,12 +18,12 @@ end
 
 test "Should create a tournament object" do
 
-  random_tournament = Organizer.create_tournament("Random",[])  
-  assert_equal random_tournament.class, Random
+  random_tournament = Organizer.create_tournament("RandomTournament",[])  
+  assert_equal random_tournament.class, RandomTournament
 end
 test "Should do a pairing" do
   players = [Player.new("Carlos",0,"1d"), Player.new("Pepe",1,"2d")]
-  random_tournament = Organizer.create_tournament("Random",players)
+  random_tournament = Organizer.create_tournament("RandomTournament",players)
 
   pairings = random_tournament.do_pairings
 
@@ -35,7 +35,7 @@ test "should be able to add results, and not start another round until the first
 
   players = spawn_player_list(4)
 
-  random_tournament = Organizer.create_tournament("Random", players)
+  random_tournament = Organizer.create_tournament("RandomTournament", players)
   
   assert random_tournament.start_round
 
@@ -58,7 +58,7 @@ test "should get results by player " do
 
   players = spawn_player_list(4)
 
-  random_tournament = Organizer.create_tournament("Random", players)
+  random_tournament = Organizer.create_tournament("RandomTournament", players)
   
   random_tournament.start_round
   mock_results(random_tournament)
@@ -76,7 +76,7 @@ test "should give a fixture of the tournament" do
 
   players = spawn_player_list(4)
 
-  random_tournament = Organizer.create_tournament("Random", players)
+  random_tournament = Organizer.create_tournament("RandomTournament", players)
 
   random_tournament.start_round
   mock_results(random_tournament)

@@ -11,15 +11,9 @@ class Player
 end
 
 class Organizer
-
   def self.create_tournament(tournament, players)
     raise "Invalid tournament system" unless Kernel.const_defined?(tournament)
     tournament = Kernel.const_get(tournament)
     tournament.new(players)
   end
-
-  
-
-
-
 end
