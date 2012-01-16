@@ -125,11 +125,11 @@ The tournament engine is a core library to manage and organize a tournament. It 
 Right now there is only a demo-system implemented (Random tournament) and some hints on a Single Elimination tournament.
 Eventually the list should include:
 
- *Single Elimination
- *Double Elimination
- *Swiss
- *McMahon
- *Round Robin
+* Single Elimination
+* Double Elimination
+* Swiss
+* McMahon
+* Round Robin
 
 Right now there is no league code whatsoever, but the ability to organize leagues is also desired. 
 
@@ -138,7 +138,7 @@ Right now there is no league code whatsoever, but the ability to organize league
 Always remember to produce tests for the code you make. It is much easier for us to verify code with tests than without it,which means 
 we will only accept the former.
 
-Keep in mind that you can change the base class in case you think that it will enrich all tournament systems, but it doesnt clutter it. Making a lean base_tournament class makes it much easier for new systems to be implemented without backward-supporting useless functionality for its type. 
+Keep in mind that you can change the base class in case you think that it will enrich all tournament systems, but it doesnt clutter it. Making a lean base tournament class makes it much easier for new systems to be implemented without backward-supporting useless functionality for its type. 
 
 Strongly suggested that you keep your code very strict. Add validation functions that can detect critical cases in each round(i.e. 2 players playing each other again).
 
