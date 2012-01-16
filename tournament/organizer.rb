@@ -1,5 +1,6 @@
 Dir[File.dirname(__FILE__) + "/tournament_systems/*.rb"].each {|file| require file }
 
+
 class Player
   attr_accessor :rank,:name,:ip
   def initialize(name, ip, rank)

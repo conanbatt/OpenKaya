@@ -1,7 +1,4 @@
-require 'cutest'
-require File.expand_path("../organizer", File.dirname(__FILE__))
-Dir[File.dirname(__FILE__) + "/tournament_systems/*.rb"].each {|file| require file }
-require 'ruby-debug'
+require File.expand_path("test_helper", File.dirname(__FILE__))
 
 def spawn_player_list(number)
   list =[]
