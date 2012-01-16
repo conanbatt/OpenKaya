@@ -25,9 +25,9 @@ class Random
   end
 
   def fixture
-    res = ""
-    @rounds.each do |round|
-      res += "#{round.to_s}\n"
+    res = []
+    @players.each do |p|
+      res << {:ip=> p.ip, :player=> p.name, :score => score(result_by_player(p)), :rounds => result_by_player(p)}
     end
     res         
   end
@@ -42,10 +42,20 @@ class Random
     @rounds.last.add_result(p1,p2,result)
   end
 
-  def player_result(player)
-
-
+  def result_by_player(player)
+    res = []
+    @rounds.each do |r|
+      res << r.result_by_player(player)
+    end
+    return res
   end
+  def score(results)
+    points = 0
+    results.each {|res| points +=1 if (res[0]=="+") }
+    points
+  
+  end
+
 end
 
 class Round
@@ -63,6 +73,16 @@ class Round
   def finished?
     @pairings.each {|p| return false unless p.result}
     return true
+  end
+
+  def result_by_player(player)
+    pairings.each do |p|  
+      if (p.white_player == player)
+        return (p.result[0] == "W" ? "+#{p.black_player.ip}": "-#{p.black_player.ip}")
+      elsif(p.black_player == player)
+        return (p.result[0] == "B" ? "+#{p.white_player.ip}": "-#{p.white_player.ip}")
+      end
+    end
   end
 
   def to_s

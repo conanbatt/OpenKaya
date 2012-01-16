@@ -1,12 +1,13 @@
 require 'cutest'
 require File.expand_path("../organizer", File.dirname(__FILE__))
 Dir[File.dirname(__FILE__) + "/tournament_systems/*.rb"].each {|file| require file }
-
+require 'ruby-debug'
 
 def spawn_player_list(number)
   list =[]
-  number.times {|n| list << Player.new(:name => rand(8**4).to_s)}
+  number.times {|n| list << Player.new(rand(8**4).to_s, list.size, "1k")}
   list
+
 end
 
 def mock_results(tournament)
@@ -21,7 +22,7 @@ test "Should create a tournament object" do
   assert_equal random_tournament.class, Random
 end
 test "Should do a pairing" do
-  players = [Player.new(:name => "Carlos"), Player.new(:name=>"Pepe")]
+  players = [Player.new("Carlos",0,"1d"), Player.new("Pepe",1,"2d")]
   random_tournament = Organizer.create_tournament("Random",players)
 
   pairings = random_tournament.do_pairings
@@ -61,20 +62,31 @@ test "should get results by player " do
   
   random_tournament.start_round
   mock_results(random_tournament)
+  assert_equal random_tournament.result_by_player(players.first).size,1
 
-  assert random_tournament.player_result(players.first)
+  random_tournament.start_round
+  mock_results(random_tournament)
 
+  assert_equal random_tournament.result_by_player(players.first).size,2
 end
 
-=begin
+begin
+
 test "should give a fixture of the tournament" do
 
   players = spawn_player_list(4)
 
   random_tournament = Organizer.create_tournament("Random", players)
+
   random_tournament.start_round
   mock_results(random_tournament)
-  puts random_tournament.fixture
-  #assert_equals random_tournament.fixture.length, 4
+
+  random_tournament.start_round
+  mock_results(random_tournament)
+
+  random_tournament.start_round
+  mock_results(random_tournament)
+
+  assert_equal random_tournament.fixture.length, 4
 end
-=end
+end
