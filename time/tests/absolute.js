@@ -40,8 +40,8 @@ test("Configure Timer", function() {
 		deepEqual(board2.time.remain, test_remain, "B2: At startup the time is " + STARTING_TIME + " secconds.");
 
 		// Status
-		equal(board1.time.status, ST_STOPED, "B1: Starts stoped.");
-		equal(board2.time.status, ST_STOPED, "B2: Starts stoped.");
+		equal(board1.time.status, ST_PAUSED, "B1: Starts paused.");
+		equal(board2.time.status, ST_PAUSED, "B2: Starts paused.");
 
 		// Actual color
 		equal(board1.time.actual_color, null, "B1: No color at startup.");

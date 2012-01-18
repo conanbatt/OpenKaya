@@ -1,6 +1,8 @@
 var ST_STOPED = 0;
 var ST_PAUSED = 1;
 var ST_COUNTING = 2;
+var BLACK = "B";
+var WHITE = "W";
 
 function AbsoluteTimer(game, time) {
 	// Game
@@ -12,19 +14,30 @@ function AbsoluteTimer(game, time) {
 	this.remain[WHITE] = time;
 
 	// Stats
-	this.status = ST_STOPED;
+	this.status = ST_PAUSED;
 	this.actual_color;
 	this.last_resume;
 	this.last_pause;
 
-	// Draw
-	this.game.update_clocks(this.remain);
+	// System
+	this.system = {};
+	this.system.name = "Absolute";
+	this.system.time = time;
 }
 
 AbsoluteTimer.prototype = {
+	// Force a remaining time for a player.
+	set_remain: function(color, time) {
+		if (color != "B" && color != "W") {
+			throw new Error("Wrong color");
+		} else {
+			this.remain[color] = time;
+		}
+	},
+
 	// If it's not counting: update remain, color, last_resume and status, register interval, start!
 	resume: function(color, remain_b, remain_w) {
-		if (this.status != ST_COUNTING) {
+		if (this.status == ST_PAUSED) {
 			if (remain_b && remain_w) {
 				this.remain[BLACK] = remain_b;
 				this.remain[WHITE] = remain_w;
@@ -53,12 +66,17 @@ AbsoluteTimer.prototype = {
 		window.clearInterval(this.clock);
 		if (remain) {
 			this.remain = remain;
-			this.game.update_clocks(this.remain);
 		}
 		this.actual_color = null;
 		this.last_resume = null;
 		this.last_pause = null;
 		this.status = ST_STOPED;
+	},
+
+	adjust: function(adjustment) {
+		if (this.status != ST_STOPED) {
+			this.remain[this.actual_color] -= Number(adjustment);
+		}
 	},
 
 	// This handles the interval callback, creates a remain estimation and updates the clocks.
@@ -72,7 +90,7 @@ AbsoluteTimer.prototype = {
 		if (tmp_remain[this.actual_color] <= 0) {
 			this.remain[this.actual_color] = 0;
 			this.stop();
-			this.game.announce_loss(this.remain);
+			this.game.announce_time_loss(this.remain);
 		}
 	},
 

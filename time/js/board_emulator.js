@@ -45,7 +45,7 @@ Board.prototype = {
 		this.div_clocks[WHITE].innerHTML = Math.round(remain[WHITE]);
 	},
 
-	announce_loss: function(remain) {
+	announce_time_loss: function(remain) {
 		this.next_move = null;
 		this.div_result.innerHTML = this.my_color + " LOSE";
 		this.server.announce_loss(this.my_color, remain);
