@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title>Media-sgf</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script type="text/javascript" src="../jquery.min.js"></script>
+        <script type="text/javascript" src="media.js"></script>
+</head>
+<body>
+        <iframe width="420" height="315" src="http://www.youtube.com/embed/Z6zZbkDmvks" frameborder="0" allowfullscreen></iframe>
+
+        <label name="output">Raw SGF</label>
+        <textarea id="output"></textarea>
+        <label name="output">Mock function calling</label>
+        <textarea id="command"></textarea>
+
+</body>
+
+
+<script> 
+
+function write_first(){
+    $("#output").text(";B[jj]")
+    $("#command").text("SGFPARSER(first_black_move)")
+}
+function write_scond(){
+    $("#output").text(";B[jj];W[cd]")
+    $("#command").text("SGFPARSER(first_white_move)")
+}
+
+setTimeout(write_text, 16000)
+setTimeout(write_text, 18500)
+
+</script>
+
+</html>
+
