@@ -26,7 +26,7 @@ function FischerTimer(game, time, bonus) {
 
 	// System
 	this.system = {};
-	this.system.name = "Absolute";
+	this.system.name = "Fischer";
 	this.system.time = time;
 	this.system.bonus = bonus
 }
