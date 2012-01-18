@@ -15,6 +15,8 @@ function Board(config) {
 	// Timer
 	if (config.time_system == "Absolute") {
 		this.time = new AbsoluteTimer(this, config.starting_time);
+	} else if (config.time_system == "Fischer") {
+		this.time = new FischerTimer(this, config.starting_time, config.bonus);
 	} else {
 		throw new Error("No time system defined or time system not available.");
 	}
@@ -30,7 +32,7 @@ Board.prototype = {
 			throw new Error("Not my turn to play.");
 			return false;
 		}
-		var remain = this.time.pause();
+		var remain = this.time.pause(true);
 		this.server.play(this.my_color, remain);
 	},
 
