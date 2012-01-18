@@ -5,6 +5,11 @@ var BLACK = "B";
 var WHITE = "W";
 
 function AbsoluteTimer(game, time) {
+	// Validation
+	if (!this.validate(time)) {
+		return false;
+	}
+
 	// Game
 	this.game = game;
 
@@ -26,6 +31,21 @@ function AbsoluteTimer(game, time) {
 }
 
 AbsoluteTimer.prototype = {
+	// Validation
+	validate: function(time) {
+		if (time == undefined) {
+			throw new Error("Must configure a main time.");
+			return false;
+		} else {
+			if (typeof time != "number" || parseInt(time, 10) != time) {
+				throw new Error("Main time parameter must be an integer indicating secconds.");
+				return false;
+			}
+		}
+
+		return true;
+	},
+
 	// Force a remaining time for a player.
 	set_remain: function(color, time) {
 		if (color != "B" && color != "W") {
