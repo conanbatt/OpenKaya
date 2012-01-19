@@ -183,3 +183,13 @@ test 'should have handicap node settings' do
   assert !SGF.handi_node(19,5).nil?
 
 end
+
+test 'should recognize if last two moves are pass' do
+
+  sgf = SGF.new(";B[];W[]")
+  assert_equal sgf.move_list, ";B[];W[]"
+  assert sgf.last_two_moves_are_pass?
+
+end
+
+
