@@ -216,7 +216,7 @@ class Node
     x+y
   end
   def pass_node?
-    @node_text.length == 4
+    @node_text.match(/[BW]\[\]/)
   end
 
   def validate_node_format(node)

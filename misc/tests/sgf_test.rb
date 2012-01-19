@@ -190,6 +190,10 @@ test 'should recognize if last two moves are pass' do
   assert_equal sgf.move_list, ";B[];W[]"
   assert sgf.last_two_moves_are_pass?
 
+  sgf = SGF.new(";B[]BL[500.000];W[]WL[500.000]")
+  assert_equal sgf.move_list, ";B[]BL[500.000];W[]WL[500.000]"
+  assert sgf.last_two_moves_are_pass?
+
 end
 
 
