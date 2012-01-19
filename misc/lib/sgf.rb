@@ -7,11 +7,10 @@ class SGF
   def initialize(moves="", size=19)
     moves ||= ""
     @move_list = []
-    @move_list << Node.new("", true)
+    @move_list << ConfigNode.new
     nodify_move_list(moves) unless moves.empty?
     @comment_buffer = ""
     @size = size
-    @metadata =""
   end
 
   def last_two_moves_are_pass?
@@ -41,8 +40,8 @@ class SGF
   end
 
   def move_list
-    buffer = ""
-    @move_list.each do |node|
+    buffer = @move_list.first.comments
+    @move_list.drop(1).each do |node|
       buffer += node.to_s
     end
     buffer
@@ -77,30 +76,17 @@ class SGF
     end
   end
   def load_from_string(input)
-    @metadata = input.split(";")[1] #will process this later
-    nodify_move_list(input.gsub(@metadata, "").chomp[2..-2])
+    metadata= input.split(";")[1]
+    @move_list[0] = ConfigNode.new(metadata) #will process this later
+    nodify_move_list(input.gsub(metadata, "").chomp[2..-2])
   end
 
-  METALABELS= {:black_rank => "BR", :white_rank => "WR",:white_player => "PW", :black_player => "PB",
-               :komi => "KM", :date => "DT", :result => "RE",
-               :file_format => "FF", :black_country => "BC",
-               :white_country => "WC", :event => "EV", :source => "SO",
-               :encoding => "CA", :size => "SZ", :rules => "RU", :time_set => "OT"}
-
   def metadata(symbol)
-    return @metadata if symbol == :all
-    dup = @metadata.dup
-    dup.slice!(/.*#{METALABELS[symbol]}\[/)
-    return nil if dup.length == @metadata.length #means it wasnt found
-    dup.slice!(/\].*/)
-    return dup
+    @move_list.first.metadata(symbol)
   end
 
   def write_metadata(symbol, value)
-    raise "Invalid metadata #{symbol}" unless METALABELS[symbol]
-    node = ";#{METALABELS[symbol]}[#{value}]"
-    @metadata.gsub!(/;#{METALABELS[symbol]}\[\w*\]/, "")
-    @metadata = node + @metadata
+    @move_list.first.write_metadata(symbol, value)
   end
 
 
@@ -180,10 +166,8 @@ class Node
 
   attr_reader :node_text
 
-  def initialize(node_text= "", main_node = false)
-    if !main_node
-      validate_node_format(node_text)
-    end
+  def initialize(node_text= "")
+    validate_node_format(node_text)
     @node_text = node_text
     @comments = []
   end
@@ -228,3 +212,55 @@ class Node
   end
 
 end
+
+class ConfigNode
+
+  attr_accessor :node_text
+
+  def initialize(metadata="")
+    @node_text = metadata
+    @comments = []
+  end
+
+  def validate_node_format
+    return true
+  end
+
+  def add_comment(comment)
+    @comments << comment + " "
+  end
+  def comments
+    buffer = ""
+    @comments.each{|c| buffer += c}
+    buffer.empty? ? "" : "C[#{buffer}]"
+  end
+
+  def to_s
+    #comment_node = comments.empty? ? "" : "C[#{comments}]"
+    node_text + comments
+  end
+
+  METALABELS= {:black_rank => "BR", :white_rank => "WR",:white_player => "PW", :black_player => "PB",
+               :komi => "KM", :date => "DT", :result => "RE",
+               :file_format => "FF", :black_country => "BC",
+               :white_country => "WC", :event => "EV", :source => "SO",
+               :encoding => "CA", :size => "SZ", :rules => "RU", :time_set => "OT"}
+
+  def metadata(symbol)
+    return node_text if symbol == :all
+    dup = node_text.dup
+    dup.slice!(/.*#{METALABELS[symbol]}\[/)
+    return nil if dup.length == node_text.length #means it wasnt found
+    dup.slice!(/\].*/)
+    return dup
+  end
+
+  def write_metadata(symbol, value)
+    raise "Invalid metadata #{symbol}" unless METALABELS[symbol]
+    node = ";#{METALABELS[symbol]}[#{value}]"
+    @node_text.gsub!(/;#{METALABELS[symbol]}\[\w*\]/, "") #in case it already had it
+    @node_text = node + @node_text
+  end
+
+end
+

@@ -7,7 +7,7 @@ setup do
 end
 
 test "Nodify moves" do
-
+  
   sgf = SGF.new
   node = ";B[ab]"
   sgf.add_move(node)
@@ -36,11 +36,11 @@ test "Should add comment to an empty sgf" do
   sgf = SGF.new
   sgf.add_comment("This guy sucks")
 
-  assert sgf.move_list == "C[This guy sucks ]"
+  assert_equal sgf.move_list, "C[This guy sucks ]"
 
   sgf.add_comment("yeah")
 
-  assert sgf.move_list == "C[This guy sucks yeah ]"
+  assert_equal sgf.move_list, "C[This guy sucks yeah ]"
 
 end
 
@@ -82,7 +82,6 @@ test "Should load an sgf file" do
   filename = "mocks/mock.sgf"
   sgf = SGF.new
   sgf.load_file(filename)
-
   assert_equal sgf.move_list, ";B[qd];W[pp]"
 end
 
@@ -135,6 +134,7 @@ end
 test 'Should be able to write metadata' do 
 
   sgf = SGF.new
+
 
   sgf.write_metadata(:white_player, "Conan")
   assert_equal sgf.metadata(:white_player), "Conan"
