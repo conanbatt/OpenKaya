@@ -1,5 +1,6 @@
 
 var STARTING_TIME = 30;
+var BONUS = 3;
 
 function binder(method, object, args) {
 	return function(orig_args) { method.apply(object, [orig_args].concat(args)); };
@@ -12,8 +13,9 @@ test("Configure Timer", function() {
 	// Config
 		var server = new Server();
 		var config1 = {
-			time_system: "Absolute",
+			time_system: "Fischer",
 			starting_time: STARTING_TIME,
+			bonus: BONUS,
 			div_clock_b: "divb1",
 			div_clock_w: "divw1",
 			div_result: "divr1",
@@ -21,8 +23,9 @@ test("Configure Timer", function() {
 		var board1 = new Board(config1);
 
 		var config2 = {
-			time_system: "Absolute",
+			time_system: "Fischer",
 			starting_time: STARTING_TIME,
+			bonus: BONUS,
 			div_clock_b: "divb2",
 			div_clock_w: "divw2",
 			div_result: "divr2",
@@ -60,7 +63,7 @@ test("Configure Timer", function() {
 	asyncTest("Black plays after 6 seconds", function() {
 		setTimeout(function() {
 			board2.play();
-			test_remain[BLACK] = STARTING_TIME - 6;
+			test_remain[BLACK] = STARTING_TIME - 6 + BONUS;
 			test_remain[WHITE] = STARTING_TIME;
 			equal(Math.round(board1.time.remain[WHITE]), test_remain[WHITE], "B1: 6 seconds passed until B played.");
 			equal(Math.round(board1.time.remain[BLACK]), test_remain[BLACK], "B1: 6 seconds passed until B played.");
@@ -76,8 +79,8 @@ test("Configure Timer", function() {
 	asyncTest("White plays 10 seconds after black", function() {
 		setTimeout(function() {
 			board1.play();
-			test_remain[BLACK] = STARTING_TIME - 6;
-			test_remain[WHITE] = STARTING_TIME - 10;
+			test_remain[BLACK] = STARTING_TIME - 6 + BONUS;
+			test_remain[WHITE] = STARTING_TIME - 10 + BONUS;
 			equal(Math.round(board1.time.remain[WHITE]), test_remain[WHITE], "B1: 10 seconds passed until W played.");
 			equal(Math.round(board1.time.remain[BLACK]), test_remain[BLACK], "B1: 10 seconds passed until W played.");
 			equal(Math.round(board2.time.remain[WHITE]), test_remain[WHITE], "B2: 10 seconds passed until W played.");
@@ -92,8 +95,8 @@ test("Configure Timer", function() {
 	asyncTest("Black plays after 12 seconds", function() {
 		setTimeout(function() {
 			board2.play();
-			test_remain[BLACK] = STARTING_TIME - 6 - 12;
-			test_remain[WHITE] = STARTING_TIME - 10;
+			test_remain[BLACK] = STARTING_TIME - 6 - 12 + BONUS + BONUS;
+			test_remain[WHITE] = STARTING_TIME - 10 + BONUS;
 			equal(Math.round(board1.time.remain[WHITE]), test_remain[WHITE], "B1: 12 seconds passed until B played again. It was a great move!");
 			equal(Math.round(board1.time.remain[BLACK]), test_remain[BLACK], "B1: 12 seconds passed until B played again. It was a great move!");
 			equal(Math.round(board2.time.remain[WHITE]), test_remain[WHITE], "B2: 12 seconds passed until B played again. It was a great move!");
@@ -105,11 +108,43 @@ test("Configure Timer", function() {
 	});
 
 	// Play and test
-	asyncTest("White tries to play 22 seconds after black, but he only had 20 seconds remaining.", function() {
+	asyncTest("White tries to play 22 seconds after black. As he has had one bonus, he can play.", function() {
 		setTimeout(function() {
 			board1.play();
-			test_remain[BLACK] = STARTING_TIME - 6 - 12;
-			test_remain[WHITE] = STARTING_TIME - 10 - 20;
+			test_remain[BLACK] = STARTING_TIME - 6 - 12 + BONUS + BONUS;
+			test_remain[WHITE] = STARTING_TIME - 10 - 22 + BONUS + BONUS;
+			equal(Math.round(board1.time.remain[WHITE]), test_remain[WHITE], "B1: 22 seconds passed until W played. Game was ended before, so no effect.");
+			equal(Math.round(board1.time.remain[BLACK]), test_remain[BLACK], "B1: 22 seconds passed until W played. Game was ended before, so no effect.");
+			equal(Math.round(board2.time.remain[WHITE]), test_remain[WHITE], "B2: 22 seconds passed until W played. Game was ended before, so no effect.");
+			equal(Math.round(board2.time.remain[BLACK]), test_remain[BLACK], "B2: 22 seconds passed until W played. Game was ended before, so no effect.");
+			equal(board1.time.actual_color, BLACK, "B1: Counting for Black");
+			equal(board2.time.actual_color, BLACK, "B2: Counting for Black");
+			start();
+		}, 21900);
+	});
+
+	// Play and test
+	asyncTest("Black plays after 1 second", function() {
+		setTimeout(function() {
+			board2.play();
+			test_remain[BLACK] = STARTING_TIME - 6 - 12 - 1 + BONUS + BONUS + BONUS;
+			test_remain[WHITE] = STARTING_TIME - 10 - 22 + BONUS + BONUS;
+			equal(Math.round(board1.time.remain[WHITE]), test_remain[WHITE], "B1: 1 second passed until B played again. That was fast!");
+			equal(Math.round(board1.time.remain[BLACK]), test_remain[BLACK], "B1: 1 second passed until B played again. That was fast!");
+			equal(Math.round(board2.time.remain[WHITE]), test_remain[WHITE], "B2: 1 second passed until B played again. That was fast!");
+			equal(Math.round(board2.time.remain[BLACK]), test_remain[BLACK], "B2: 1 second passed until B played again. That was fast!");
+			equal(board1.time.actual_color, WHITE, "B1: Counting for White");
+			equal(board2.time.actual_color, WHITE, "B2: Counting for White");
+			start();
+		}, 900);
+	});
+
+	// Play and test
+	asyncTest("White tries to play 5 seconds after black, but he had only 4 seconds remaining.", function() {
+		setTimeout(function() {
+			board1.play();
+			test_remain[BLACK] = STARTING_TIME - 6 - 12 - 1 + BONUS + BONUS + BONUS;
+			test_remain[WHITE] = STARTING_TIME - 10 - 22 + BONUS + BONUS - 4; // Time ended and no bonus
 			equal(Math.round(board1.time.remain[WHITE]), test_remain[WHITE], "B1: 22 seconds passed until W played. Game was ended before, so no effect.");
 			equal(Math.round(board1.time.remain[BLACK]), test_remain[BLACK], "B1: 22 seconds passed until W played. Game was ended before, so no effect.");
 			equal(Math.round(board2.time.remain[WHITE]), test_remain[WHITE], "B2: 22 seconds passed until W played. Game was ended before, so no effect.");
@@ -119,7 +154,7 @@ test("Configure Timer", function() {
 			equal(board1.time.actual_color, null, "B1: No actual color");
 			equal(board2.time.actual_color, null, "B2: No actual color");
 			start();
-		}, 21900);
+		}, 4900);
 	});
 
 });

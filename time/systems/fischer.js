@@ -4,9 +4,9 @@ var ST_COUNTING = 2;
 var BLACK = "B";
 var WHITE = "W";
 
-function AbsoluteTimer(game, time) {
+function FischerTimer(game, time, bonus) {
 	// Validation
-	if (!this.validate(time)) {
+	if (!this.validate(time, bonus)) {
 		return false;
 	}
 
@@ -26,19 +26,30 @@ function AbsoluteTimer(game, time) {
 
 	// System
 	this.system = {};
-	this.system.name = "Absolute";
+	this.system.name = "Fischer";
 	this.system.time = time;
+	this.system.bonus = bonus
 }
 
-AbsoluteTimer.prototype = {
+FischerTimer.prototype = {
 	// Validation
-	validate: function(time) {
+	validate: function(time, bonus) {
 		if (time == undefined) {
 			throw new Error("Must configure a main time.");
 			return false;
 		} else {
 			if (typeof time != "number" || parseInt(time, 10) != time) {
 				throw new Error("Main time parameter must be an integer indicating secconds.");
+				return false;
+			}
+		}
+
+		if (bonus == undefined) {
+			throw new Error("Must configure a bonus.");
+			return false;
+		} else {
+			if (typeof bonus != "number" || parseInt(bonus, 10) != bonus) {
+				throw new Error("Bonus parameter must be an integer indicating bonus secconds.");
 				return false;
 			}
 		}
@@ -70,12 +81,13 @@ AbsoluteTimer.prototype = {
 	},
 
 	// If it's counting: update last_pause, status and remain. Clear interval.
-	pause: function() {
+	pause: function(give_bonus) {
 		if (this.status == ST_COUNTING) {
 			this.last_pause = new Date();
 			window.clearInterval(this.clock);
 			this.status = ST_PAUSED;
-			this.remain[this.actual_color] -= (this.last_pause - this.last_resume) / 1000;
+			var bonus = (give_bonus ? this.system.bonus : 0);
+			this.remain[this.actual_color] -= (((this.last_pause - this.last_resume) / 1000) - bonus);
 			return this.remain;
 		}
 		return false;
