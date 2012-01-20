@@ -7,14 +7,14 @@ class SGF
   def initialize(moves="", size=19)
     moves ||= ""
     @move_list = []
-    @move_list << ConfigNode.new
+    @config = ConfigNode.new
     nodify_move_list(moves) unless moves.empty?
     @comment_buffer = ""
     @size = size
   end
 
   def last_two_moves_are_pass?
-    if @move_list.count >2
+    if @move_list.count >= 2
       return @move_list.last.pass_node? && @move_list[@move_list.count-2].pass_node?
     end
   end
@@ -35,15 +35,17 @@ class SGF
   end
 
   def add_comment(comment)
-    @move_list.last.add_comment(comment)
+    if @move_list.empty?
+      @config.add_comment(comment)
+    else
+      @move_list.last.add_comment(comment)
+    end
     move_list
   end
 
   def move_list
-    buffer = @move_list.first.comments
-    @move_list.drop(1).each do |node|
-      buffer += node.to_s
-    end
+    buffer = @config.comments
+    @move_list.each {|node| buffer += node.to_s}
     buffer
   end
 
@@ -77,16 +79,16 @@ class SGF
   end
   def load_from_string(input)
     metadata= input.split(";")[1]
-    @move_list[0] = ConfigNode.new(metadata) #will process this later
+    @config = ConfigNode.new(metadata) #will process this later
     nodify_move_list(input.gsub(metadata, "").chomp[2..-2])
   end
 
   def metadata(symbol)
-    @move_list.first.metadata(symbol)
+    @config.metadata(symbol)
   end
 
   def write_metadata(symbol, value)
-    @move_list.first.write_metadata(symbol, value)
+    @config.write_metadata(symbol, value)
   end
 
 
