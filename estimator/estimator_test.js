@@ -143,7 +143,8 @@ var w_dead_stones_board = [
 
 test("Should be able to mark a string of stones as dead or alive if you select one of them as dead", function(){
 
-    var estimation = estimator.toggle_LD(w_dead_stones_board, [0,1]);
+    var toggledBoard = estimator.toggle_LD(w_dead_stones_board, [0,1]);
+    
     //previously marked dead chain is now alive
     var expected_result = [
                               ["*","W","B","*","W","*"],
@@ -154,9 +155,9 @@ test("Should be able to mark a string of stones as dead or alive if you select o
                               ["*","W","B","*","W","*"]
                           ];
 
-    ok(are_equal_boards(estimation.board, expected_result));
+    ok(are_equal_boards(toggledBoard, expected_result));
 
-    var estimation = estimator.toggle_LD(w_dead_stones_board, [0,2]);
+    var toggledBoard = estimator.toggle_LD(w_dead_stones_board, [0,2]);
 
     //black live chain is now dead
     var expected_result = [
@@ -168,7 +169,7 @@ test("Should be able to mark a string of stones as dead or alive if you select o
                               ["*","E","N","*","W","*"]
                           ];
 
-    ok(are_equal_boards(estimation.board, expected_result));
+    ok(are_equal_boards(toggledBoard, expected_result));
 
     
 
