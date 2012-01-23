@@ -121,7 +121,7 @@ test("Should return a painted array with marked territories", function(){
     var estimation = estimator.estimate(w_dead_stones_board);
 
     var expected_result = [ 
-                              ["BP","E","B","N","W","WP"],
+                              ["BP","E","B","X","W","WP"],
                               ["BP","E","B","X","W","WP"],
                               ["BP","E","B","X","W","WP"],
                               ["BP","E","B","X","W","WP"],
