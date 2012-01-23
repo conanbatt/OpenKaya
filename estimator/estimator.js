@@ -33,8 +33,8 @@ function Estimator() {
          * 
          */
 
-        for (var row = 0; row < size; ++row) {
-            for (var col = 0; col < size; ++col) {
+        for (var row = 0; row < size; row++) {
+            for (var col = 0; col < size; col++) {
                 cur_type = board[row][col];
 
                 switch (cur_type) {
@@ -83,8 +83,8 @@ function Estimator() {
 
             var tmpboard2 = cloneBoard(tmpboard);
 
-            for (var row = 0; row < size; ++row) {
-                for (var col = 0; col < size; ++col) {
+            for (var row = 0; row < size; row++) {
+                for (var col = 0; col < size; col++) {
 
                     var cur_value = tmpboard2[row][col];
                     var blackCount = 0;
@@ -167,10 +167,127 @@ function Estimator() {
             result.estimation = "JIGO";
         }
 
-
         return result;
 
     }
+    // makes a live chain dead and a dead one live
+    // returns the new board
+    this.toggle_LD = function (board0, move) {
+
+        var board_LD = cloneBoard(board0);
+        var cur_type = board_LD[move[0]][move[1]];
+
+        var new_type;
+
+        if (cur_type != BLACK && cur_type != WHITE && cur_type != BLACK_DEAD && cur_type != WHITE_DEAD) {
+
+            return board_LD;
+
+        }
+
+        switch (cur_type) {
+        case BLACK:
+            {
+                new_type = BLACK_DEAD;
+            }
+            break;
+        case WHITE:
+            {
+                new_type = WHITE_DEAD;
+            }
+            break;
+        case BLACK_DEAD:
+            {
+                new_type = BLACK;
+
+            }
+            break;
+        case WHITE_DEAD:
+            {
+                new_type = WHITE;
+            }
+            break;
+            // default not to be used, but just in case, would set same as cur_type
+        default:
+            {
+                new_type = cur_type;
+            }
+        }
+
+        var chain = findChain(board_LD, move, cur_type);
+
+        for (var i = 0; i < chain.length; i++) {
+            var row = chain[i][0];
+            var col = chain[i][1];
+            board_LD[row][col] = new_type;
+
+        }
+
+        return board_LD;
+
+    }
+
+    // finds and returns the chain
+    var findChain = function (board, move, cur_type) {
+            var coords = [];
+            var current_coords;
+            var stack_coords = [];
+            var size = board.length;
+
+            coords.push([move[0], move[1]]);
+            stack_coords.push([move[0], move[1]]);
+
+            while (current_coords = stack_coords.shift()) {
+
+                var row = current_coords[0];
+                var col = current_coords[1];
+
+                if (row + 1 < size) {
+
+                    if (board[row + 1][col] == cur_type && !contains(coords, [row + 1, col])) {
+
+                        coords.push([row + 1, col]);
+                        stack_coords.push([row + 1, col]);
+
+                    }
+                }
+
+                if (row - 1 >= 0) {
+
+                    if (board[row - 1][col] == cur_type && !contains(coords, [row - 1, col])) {
+
+                        coords.push([row - 1, col]);
+                        stack_coords.push([row - 1, col]);
+
+                    }
+                }
+
+                if (col + 1 < size) {
+
+                    if (board[row][col + 1] == cur_type && !contains(coords, [row, col + 1])) {
+
+                        coords.push([row, col + 1]);
+                        stack_coords.push([row, col + 1]);
+
+                    }
+                }
+
+                if (col - 1 >= 0) {
+
+                    if (board[row][col - 1] == cur_type && !contains(coords, [row, col - 1])) {
+
+                        coords.push([row, col - 1]);
+                        stack_coords.push([row, col - 1]);
+
+                    }
+                }
+            }
+
+            return coords;
+
+        }
+
+
     var cloneBoard = function (cboard) {
             var dup = [];
             var tmp = [];
@@ -184,3 +301,16 @@ function Estimator() {
             return dup;
         }
 };
+
+function contains(a, obj) {
+    var i = 0;
+    for (i = 0; i < a.length; i++) {
+        var tempArray = a[i];
+        if (tempArray[0] == obj[0] && tempArray[1] == obj[1]) {
+            return true;
+        }
+    }
+
+
+    return false;
+}
