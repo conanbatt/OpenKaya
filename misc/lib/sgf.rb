@@ -91,6 +91,10 @@ class SGF
     @config.write_metadata(symbol, value)
   end
 
+  def to_s
+    "(#{@config.to_s}#{move_list})"
+  end
+
 
   def self.handi_node(size,handicap)
     case size
@@ -239,7 +243,7 @@ class ConfigNode
 
   def to_s
     #comment_node = comments.empty? ? "" : "C[#{comments}]"
-    node_text + comments
+    ";"+node_text + comments
   end
 
   METALABELS= {:black_rank => "BR", :white_rank => "WR",:white_player => "PW", :black_player => "PB",
@@ -259,8 +263,8 @@ class ConfigNode
 
   def write_metadata(symbol, value)
     raise "Invalid metadata #{symbol}" unless METALABELS[symbol]
-    node = ";#{METALABELS[symbol]}[#{value}]"
-    @node_text.gsub!(/;#{METALABELS[symbol]}\[\w*\]/, "") #in case it already had it
+    node = "#{METALABELS[symbol]}[#{value}]"
+    @node_text.gsub!(/#{METALABELS[symbol]}\[\w*\]/, "") #in case it already had it
     @node_text = node + @node_text
   end
 
