@@ -130,4 +130,47 @@ test("Should return a painted array with marked territories", function(){
                           ];
     ok(are_equal_boards(estimator.board, expected_result));
 });
+/*
+var w_dead_stones_board = [
+                              ["*","E","B","*","W","*"],
+                              ["*","E","B","*","W","*"],
+                              ["*","E","B","*","W","*"],
+                              ["*","E","B","*","W","*"],
+                              ["*","E","B","*","W","*"],
+                              ["*","E","B","*","W","*"]
+                          ];
+*/
+
+test("Should be able to mark a string of stones as dead or alive if you select one of them as dead", function(){
+
+    var estimation = estimator.toggle_LD(w_dead_stones_board, [0,1]);
+    //previously marked dead chain is now alive
+    var expected_result = [
+                              ["*","W","B","*","W","*"],
+                              ["*","W","B","*","W","*"],
+                              ["*","W","B","*","W","*"],
+                              ["*","W","B","*","W","*"],
+                              ["*","W","B","*","W","*"],
+                              ["*","W","B","*","W","*"]
+                          ];
+
+    ok(are_equal_boards(estimator.board, expected_result));
+
+    var estimation = estimator.toggle_LD(w_dead_stones_board, [0,2]);
+
+    //black live chain is now dead
+    var expected_result = [
+                              ["*","E","N","*","W","*"],
+                              ["*","E","N","*","W","*"],
+                              ["*","E","N","*","W","*"],
+                              ["*","E","N","*","W","*"],
+                              ["*","E","N","*","W","*"],
+                              ["*","E","N","*","W","*"]
+                          ];
+
+    ok(are_equal_boards(estimator.board, expected_result));
+
+    
+
+});
 
