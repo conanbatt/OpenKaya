@@ -28,7 +28,7 @@ function Estimator() {
         };
 
         /*
-         * uses Influence-base control
+         * uses Influence-based control
          * for statement initiates board
          * 
          */
@@ -55,7 +55,6 @@ function Estimator() {
                     break;
                 case BLACK_DEAD:
                     {
-                        //document.write("yes, I get there boss");
                         tmpboard[row][col] = 0;
                         result.white_territory++;
                         result.white_captures++;
@@ -64,7 +63,6 @@ function Estimator() {
                     break;
                 case WHITE_DEAD:
                     {
-                        //document.write("yes, I get there boss");
                         tmpboard[row][col] = 0;
                         result.black_territory++;
                         result.black_captures++;
@@ -76,8 +74,6 @@ function Estimator() {
                         tmpboard[row][col] = 0;
                     }
                 }
-
-
             }
         }
 
@@ -102,7 +98,6 @@ function Estimator() {
                             whiteCount++;
 
                         }
-
                     }
 
                     if (row - 1 >= 0) {
@@ -113,7 +108,6 @@ function Estimator() {
                             whiteCount++;
 
                         }
-
                     }
 
                     if (col + 1 < size) {
@@ -124,7 +118,6 @@ function Estimator() {
                             whiteCount++;
 
                         }
-
                     }
 
                     if (col - 1 >= 0) {
@@ -135,7 +128,6 @@ function Estimator() {
                             whiteCount++;
 
                         }
-
                     }
 
                     // algorithm says to take absolute value, but this works too
@@ -149,8 +141,6 @@ function Estimator() {
                     // so we can modify board and compute score right away
                     if (radiate == 0 && board[row][col] == EMPTY) {
 
-
-
                         if (cur_value == 0) {
                             board[row][col] = NO_OWNER;
                         } else if (cur_value > 0) {
@@ -160,9 +150,6 @@ function Estimator() {
                             board[row][col] = "WP";
                             result.white_territory++;
                         }
-
-
-
                     }
 
                 }
@@ -181,10 +168,6 @@ function Estimator() {
         }
 
 
-
-
-
-        //document.write(result.board);
         return result;
 
     }
