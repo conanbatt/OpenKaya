@@ -1,4 +1,3 @@
-
 //TODO this should be in the SCORE board as constants
 var BLACK = "B"
 var WHITE = "W"
@@ -52,7 +51,7 @@ var single_stone_board = [
 test("Should make an estimation of the stone's value", function(){
     var  estimation = estimator.estimate(single_stone_board);
     ok(estimation.black_territory > 1);
-    ok(estimation.black_territory < 10);
+    ok(estimation.black_territory < 30);
 });
 
 var neutral_space_board = [
