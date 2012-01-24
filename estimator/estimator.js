@@ -175,7 +175,6 @@ function Estimator() {
     this.toggle_LD = function (board0, move) {
         var board_LD = cloneBoard(board0);
         var cur_type = board_LD[move[0]][move[1]];
-
         var new_type;
 
         if (cur_type != BLACK && cur_type != WHITE && cur_type != BLACK_DEAD && cur_type != WHITE_DEAD) {
@@ -232,7 +231,6 @@ function Estimator() {
         var current_coords;
         var stack_coords = [];
         var size = board.length;
-
         coords.push([move[0], move[1]]);
         stack_coords.push([move[0], move[1]]);
 
