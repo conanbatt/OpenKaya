@@ -36,11 +36,11 @@ test "Should add comment to an empty sgf" do
   sgf = SGF.new
   sgf.add_comment("This guy sucks")
 
-  assert_equal sgf.move_list, "C[This guy sucks ]"
+  assert_equal sgf.to_s , "(;FF[4]C[This guy sucks ])"
 
   sgf.add_comment("yeah")
 
-  assert_equal sgf.move_list, "C[This guy sucks yeah ]"
+  assert_equal sgf.to_s, "(;FF[4]C[This guy sucks yeah ])"
 
 end
 
@@ -233,10 +233,10 @@ test "should be able to parse comments into it" do
 
   sgf = SGF.new(";B[aa];W[bb]")
 
-  comments = {"0"=> "jajaja", "1" => "hf", "2"=> "i rule"}
+  comments = {"0"=> ["jajaja"], "1" => ["hf","u 2"], "2"=> ["i rule"]}
   sgf.parse_comments!(comments)
 
-  assert_equal sgf.to_s, "(;FF[4]C[jajaja ]C[jajaja ];B[aa]C[hf ];W[bb]C[i rule ])" 
+  assert_equal sgf.to_s, "(;FF[4]C[jajaja ];B[aa]C[hf u 2 ];W[bb]C[i rule ])" 
 
 end
 
