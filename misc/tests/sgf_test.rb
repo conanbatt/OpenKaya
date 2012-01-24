@@ -227,6 +227,16 @@ test "should be able to make an sgf with the initial config node properties as p
   sgf = SGF.new(";B[];W[]", params)
 
   assert_equal sgf.to_s, "(;PB[negro]PW[blanco]SZ[9]FF[4];B[];W[])"
+end
 
+test "should be able to parse comments into it" do
+
+  sgf = SGF.new(";B[aa];W[bb]")
+
+  comments = {"0"=> "jajaja", "1" => "hf", "2"=> "i rule"}
+  sgf.parse_comments!(comments)
+
+  assert_equal sgf.to_s, "(;FF[4]C[jajaja ]C[jajaja ];B[aa]C[hf ];W[bb]C[i rule ])" 
 
 end
+

@@ -45,6 +45,17 @@ class SGF
     move_list
   end
 
+  #takes a hash and inputs the contents into the nodes
+  def parse_comments!(comments)
+    comments.each do |key, value|
+      if (key.to_i == 0)
+        @config.add_comment(value)
+        next
+      end
+      @move_list[key.to_i - 1].add_comment(value)
+    end
+  end
+
   def move_list
     buffer = @config.comments
     @move_list.each {|node| buffer += node.to_s}
