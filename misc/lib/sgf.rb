@@ -224,7 +224,8 @@ class ConfigNode
   attr_accessor :node_text
 
   def initialize(metadata="")
-    @node_text = metadata
+    @node_text = metadata.dup
+    write_metadata(:file_format,4)
     @comments = []
   end
 

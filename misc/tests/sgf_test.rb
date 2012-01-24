@@ -151,7 +151,7 @@ test "should give a full sgf string" do
   sgf.write_metadata(:black_player,"Conan2")
   assert_equal sgf.metadata(:black_player), "Conan2"
 
-  assert_equal sgf.to_s, "(;PB[Conan2]PW[Conan];B[ac];W[ed])"
+  assert_equal sgf.to_s, "(;PB[Conan2]PW[Conan]FF[4];B[ac];W[ed])"
 
 end
 
