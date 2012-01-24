@@ -220,3 +220,13 @@ test 'should recognize if last two moves are pass' do
 
 end
 
+test "should be able to make an sgf with the initial config node properties as params" do
+
+  params = {:size => 9, :white_player => "blanco", :black_player => "negro"}
+
+  sgf = SGF.new(";B[];W[]", params)
+
+  assert_equal sgf.to_s, "(;PB[negro]PW[blanco]SZ[9]FF[4];B[];W[])"
+
+
+end

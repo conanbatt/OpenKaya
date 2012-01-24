@@ -4,13 +4,15 @@ class SGF
   WHITE = "W"
   attr_accessor :move_list, :comment_buffer,:metadata
 
-  def initialize(moves="", size=19)
+  def initialize(moves="", properties={})
     moves ||= ""
     @move_list = []
     @config = ConfigNode.new
     nodify_move_list(moves) unless moves.empty?
     @comment_buffer = ""
-    @size = size
+    @size = properties[:size]
+    properties.keys.each {|k| @config.write_metadata(k,properties[k]) }
+     
   end
 
   def last_two_moves_are_pass?
