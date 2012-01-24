@@ -173,7 +173,6 @@ function Estimator() {
     // makes a live chain dead and a dead one live
     // returns the new board
     this.toggle_LD = function (board0, move) {
-
         var board_LD = cloneBoard(board0);
         var cur_type = board_LD[move[0]][move[1]];
 
@@ -229,77 +228,76 @@ function Estimator() {
 
     // finds and returns the chain
     var findChain = function (board, move, cur_type) {
-            var coords = [];
-            var current_coords;
-            var stack_coords = [];
-            var size = board.length;
+        var coords = [];
+        var current_coords;
+        var stack_coords = [];
+        var size = board.length;
 
-            coords.push([move[0], move[1]]);
-            stack_coords.push([move[0], move[1]]);
+        coords.push([move[0], move[1]]);
+        stack_coords.push([move[0], move[1]]);
 
-            while (current_coords = stack_coords.shift()) {
+        while (current_coords = stack_coords.shift()) {
 
-                var row = current_coords[0];
-                var col = current_coords[1];
+            var row = current_coords[0];
+            var col = current_coords[1];
 
-                if (row + 1 < size) {
+            if (row + 1 < size) {
 
-                    if (board[row + 1][col] == cur_type && !contains(coords, [row + 1, col])) {
+                if (board[row + 1][col] == cur_type && !contains(coords, [row + 1, col])) {
 
-                        coords.push([row + 1, col]);
-                        stack_coords.push([row + 1, col]);
+                    coords.push([row + 1, col]);
+                    stack_coords.push([row + 1, col]);
 
-                    }
-                }
-
-                if (row - 1 >= 0) {
-
-                    if (board[row - 1][col] == cur_type && !contains(coords, [row - 1, col])) {
-
-                        coords.push([row - 1, col]);
-                        stack_coords.push([row - 1, col]);
-
-                    }
-                }
-
-                if (col + 1 < size) {
-
-                    if (board[row][col + 1] == cur_type && !contains(coords, [row, col + 1])) {
-
-                        coords.push([row, col + 1]);
-                        stack_coords.push([row, col + 1]);
-
-                    }
-                }
-
-                if (col - 1 >= 0) {
-
-                    if (board[row][col - 1] == cur_type && !contains(coords, [row, col - 1])) {
-
-                        coords.push([row, col - 1]);
-                        stack_coords.push([row, col - 1]);
-
-                    }
                 }
             }
 
-            return coords;
+            if (row - 1 >= 0) {
 
+                if (board[row - 1][col] == cur_type && !contains(coords, [row - 1, col])) {
+
+                    coords.push([row - 1, col]);
+                    stack_coords.push([row - 1, col]);
+
+                }
+            }
+
+            if (col + 1 < size) {
+
+                if (board[row][col + 1] == cur_type && !contains(coords, [row, col + 1])) {
+
+                    coords.push([row, col + 1]);
+                    stack_coords.push([row, col + 1]);
+
+                }
+            }
+
+            if (col - 1 >= 0) {
+
+                if (board[row][col - 1] == cur_type && !contains(coords, [row, col - 1])) {
+
+                    coords.push([row, col - 1]);
+                    stack_coords.push([row, col - 1]);
+
+                }
+            }
         }
 
+        return coords;
+
+    }
 
     var cloneBoard = function (cboard) {
-            var dup = [];
-            var tmp = [];
-            for (var row in cboard) {
-                for (var col in cboard) {
-                    tmp[col] = (cboard[row][col] == undefined ? EMPTY : cboard[row][col]);
-                }
-                dup.push(tmp);
-                tmp = [];
+        var dup = [];
+        var tmp = [];
+        for (var row in cboard) {
+            for (var col in cboard) {
+                tmp[col] = (cboard[row][col] == undefined ? EMPTY : cboard[row][col]);
             }
-            return dup;
+            dup.push(tmp);
+            tmp = [];
         }
+        return dup;
+    }
 };
 
 function contains(a, obj) {
