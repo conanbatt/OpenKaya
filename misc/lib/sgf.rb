@@ -57,9 +57,16 @@ class SGF
 
   def move_list
     buffer = ""
+    @move_list.each {|node| buffer += node.node_text}
+    buffer
+  end
+
+  def move_list_with_comments
+    buffer = ""
     @move_list.each {|node| buffer += node.to_s}
     buffer
   end
+
 
   def move_by_number(index)
     @move_list[index].to_s unless index < 0 || index > @move_list.length - 1
@@ -104,7 +111,7 @@ class SGF
   end
 
   def to_s
-    "(#{@config.to_s}#{move_list})"
+    "(#{@config.to_s}#{move_list_with_comments})"
   end
 
 
