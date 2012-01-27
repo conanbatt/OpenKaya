@@ -4,7 +4,7 @@ class SwissTournament < Tournament
 
   ########################################################
   
-  #rules of swiss tournament implemented here (loosely based on FIDE definition)
+  # Rules of swiss tournament implemented here (loosely based on FIDE definition)
   
   #1.   The number of rounds to be played is declared beforehand. [ENFORCED]
   #2.   Two players may play each other only once. [ENFORCED]
@@ -17,11 +17,11 @@ class SwissTournament < Tournament
   # TODO
   
   # - No handling of handicap
+  # - Implement Time Limits
+  # - Handle special external commands (bye, sleep...)
   
   ########################################################
   
-  
-    
   # ==  0 if same rank
   # ==  1 if a rank is better than b rank
   # == -1 if b rank is better than a rank
@@ -85,7 +85,7 @@ class SwissTournament < Tournament
         r.pairings.each do |p|
             if(p.winner == player)
               score = score + 1
-            elsif(p.draw?)
+            elsif(p.is_playing(player) && p.draw?)
               score = score + 0.5
             end
         end
@@ -123,6 +123,11 @@ class SwissTournament < Tournament
       pairings << Pairing.new(p1,p2)
     end while available_players.size > 1
    
+    #No handicap tournament? Do Nigiri
+    pairings.each do |p|
+        p.do_nigiri!
+    end
+    
     if available_players.length == 1
         p1 = available_players.shift
         pairing = Pairing.new(p1, p1)

@@ -4,13 +4,16 @@ class McMahonTournament < Tournament
 
   ########################################################
   
-  #rules of mcmahon tournament loosely based on http://www.britgo.org/organisers/mcmahonpairing.html
+  # Rules of mcmahon tournament loosely based on http://www.britgo.org/organisers/mcmahonpairing.html
+  
   #1.   using BGA standards for McMahon Bar
   #2.   use of zero-20kyu McMahon scale
   
   # TODO
   
   # - No handling of handicap
+  # - Implement Time Limits
+  # - Handle special external commands (bye, sleep...)
   
   ########################################################
   
@@ -78,7 +81,7 @@ class McMahonTournament < Tournament
         r.pairings.each do |p|
             if(p.winner == player)
               score = score + 1
-            elsif(p.draw?)
+            elsif(p.is_playing(player) && p.draw?)
               score = score + 0.5
             end
         end
@@ -165,6 +168,11 @@ class McMahonTournament < Tournament
       pairings << Pairing.new(p1,p2)
     end while available_players.size > 1
    
+    #No handicap tournament? Do Nigiri
+    pairings.each do |p|
+        p.do_nigiri!
+    end
+    
     if available_players.length == 1
         p1 = available_players.shift
         pairing = Pairing.new(p1, p1)

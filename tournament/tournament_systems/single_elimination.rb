@@ -2,14 +2,29 @@ require File.expand_path("../tournament", File.dirname(__FILE__))
 
 class SingleElimination < Tournament
 
-
+  ########################################################
+   
+  # Single Elimination constraints/rules
+  #- P0 only live players (never lost) - tournament finishes when only one player remains
+  #- P1 players shouldn't play each other again unless there is no choice
+  #- P2 top players (by score) should play together if possible
+  #- P3 odd number of players the last one to be picked gets a win by default
+  #- P4 add a bit of randomness so that the order of entry of the player has no influence
+    
+  # TODO
+  
+  # - Handle handicap tournaments
+  # - Implement Time Limits
+  # - Handle special external commands (bye, sleep...)
+  
+  ########################################################
   
   def score_by_player(player)
     score = 0
     
     @rounds.each do |r|
         r.pairings.each do |p|
-            if(p.winner == player || p.draw?)
+            if(p.winner == player || (p.is_playing(player) && p.draw?))
                 score=score+1
             end
         end
@@ -20,17 +35,6 @@ class SingleElimination < Tournament
   
   def do_pairings
     pairings = []
-    
-    #constraints/rules (P = Priority)
-    #- P0 only live players
-    #- P1 players shouldn't play each other again unless there is no choice
-    #- P2 top players (by score) should play together if possible
-    #- P3 odd number of players the last one to be picked gets a win by default
-    #- P4 add a bit of randomness so that the order of entry of the player has no influence
-    
-    #Todo
-    #- Handle handicap tournamenents
-    #- Implement time limits
     
     available_players = live_players.shuffle.sort { |x,y| score_by_player(x) <=> score_by_player(y) }
     

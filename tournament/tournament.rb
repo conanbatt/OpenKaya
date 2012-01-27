@@ -68,7 +68,7 @@ class Tournament
     results.each {|res| points +=1 if (res[0]=="+") }
     points
   end
-
+  
   #Rounds dont know of previous rounds or future ones, they just take a pairing and do some basic operations
   class Round
 
@@ -116,6 +116,18 @@ class Tournament
       @white_player = white_player
       @black_player = black_player
       @handicap = 0
+    end
+    
+    def default?
+      result == "B+D" or result == "W+D" 
+    end
+    
+    def void?
+      result == "Void"
+    end
+    
+    def is_playing(player)
+      return (black_player == player || white_player==player)
     end
     
     def draw?

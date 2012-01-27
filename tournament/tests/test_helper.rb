@@ -12,7 +12,9 @@ end
 
 def mock_results(tournament)
   tournament.pairings.each do |pairing|
-    tournament.add_result(pairing.white_player, pairing.black_player, "W+R")
+    if pairing.result.nil?
+      tournament.add_result(pairing.white_player, pairing.black_player, "W+R")
+    end
   end
 end
 
