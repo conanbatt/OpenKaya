@@ -48,16 +48,18 @@ class SGF
   def parse_comments!(comments)
     comments.each do |key, value|
       if (key.to_i == 0)
-        value.each do |v| 
-          message = "#{v["user"]}[#{v["rank"]}]: #{v["message"]}"
-          @config.add_comment(message)
-        end
+        value.each {|v| @config.add_comment(hash_to_comment(v))}
         next
       end
-      value.each{|v| @move_list[key.to_i - 1].add_comment(v)}
+      value.each{|v| @move_list[key.to_i - 1].add_comment(hash_to_comment(v))}
     end
   end
 
+  def hash_to_comment(hash)
+    raise "invalid hash" unless hash["user"] && hash["rank"] && hash["message"]
+    "#{hash["user"]}[#{hash["rank"]}]: #{hash["message"]}"
+  end
+    
   def move_list
     buffer = ""
     @move_list.each {|node| buffer += node.node_text}
