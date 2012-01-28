@@ -2,7 +2,7 @@ class SGF
 
   BLACK = "B"
   WHITE = "W"
-  attr_accessor :move_list, :comment_buffer,:metadata
+  attr_accessor :move_list, :comment_buffer,:property
 
   def initialize(moves="", properties={})
     moves ||= ""
@@ -11,7 +11,7 @@ class SGF
     nodify_move_list(moves) unless moves.empty?
     @comment_buffer = ""
     @size = properties[:size]
-    properties.keys.each {|k| @config.write_metadata(k,properties[k]) }
+    properties.keys.each {|k| @config.write_property(k,properties[k]) }
      
   end
 
@@ -48,7 +48,10 @@ class SGF
   def parse_comments!(comments)
     comments.each do |key, value|
       if (key.to_i == 0)
-        value.each{|v| @config.add_comment(v)}
+        value.each do |v| 
+          message = "#{v["user"]}[#{v["rank"]}]: #{v["message"]}"
+          @config.add_comment(message)
+        end
         next
       end
       value.each{|v| @move_list[key.to_i - 1].add_comment(v)}
@@ -97,17 +100,25 @@ class SGF
     end
   end
   def load_from_string(input)
-    metadata= input.split(";")[1]
-    @config = ConfigNode.new(metadata) #will process this later
-    nodify_move_list(input.gsub(metadata, "").chomp[2..-2])
+    properties= input.split(";")[1]
+    @config = ConfigNode.new(properties) #will process this later
+    nodify_move_list(input.gsub(properties, "").chomp[2..-2])
   end
 
-  def metadata(symbol)
-    @config.metadata(symbol)
+  def properties
+    @config.to_s
   end
 
-  def write_metadata(symbol, value)
-    @config.write_metadata(symbol, value)
+  def properties=(arg)
+    @config.node_text = arg 
+  end
+
+  def property(symbol)
+    @config.property(symbol)
+  end
+
+  def write_property(symbol, value)
+    @config.write_property(symbol, value)
   end
 
   def to_s
@@ -242,9 +253,9 @@ class ConfigNode
 
   attr_accessor :node_text
 
-  def initialize(metadata="")
-    @node_text = metadata.dup
-    write_metadata(:file_format,4)
+  def initialize(property="")
+    @node_text = property.dup
+    write_property(:file_format,4)
     @comments = []
   end
 
@@ -272,7 +283,7 @@ class ConfigNode
                :white_country => "WC", :event => "EV", :source => "SO",
                :encoding => "CA", :size => "SZ", :rules => "RU", :time_set => "OT"}
 
-  def metadata(symbol)
+  def property(symbol)
     return node_text if symbol == :all
     dup = node_text.dup
     dup.slice!(/.*#{METALABELS[symbol]}\[/)
@@ -281,8 +292,8 @@ class ConfigNode
     return dup
   end
 
-  def write_metadata(symbol, value)
-    raise "Invalid metadata #{symbol}" unless METALABELS[symbol]
+  def write_property(symbol, value)
+    raise "Invalid property #{symbol}" unless METALABELS[symbol]
     node = "#{METALABELS[symbol]}[#{value}]"
     @node_text.gsub!(/#{METALABELS[symbol]}\[\w*\]/, "") #in case it already had it
     @node_text = node + @node_text

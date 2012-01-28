@@ -100,36 +100,36 @@ test "should be able to add a time property to a node" do
 
 end
 
-test "should explode if try to access invalid metadata" do
+test "should explode if try to access invalid property" do
   sgf = SGF.new
   sgf.load_from_string("(;PB[CARLOS]PW[PEPE];B[aa])")
 
-  assert sgf.metadata(:komi).nil?
+  assert sgf.property(:komi).nil?
 end
 
 #(;FF[4]GM[1]SZ[19]CA[UTF-8]SO[gokifu.com]BC[kr]WC[kr]EV[7th Korean Wonik Cup Siptan]PB[Ryu Chaehyeong]BR[9p]PW[Kang Dongyun]WR[9p]KM[6.5]DT[2011-09-30]RE[W+R]
 
 
-test "Should load a sgf metadata" do
+test "Should load a sgf property" do
   filename = "mocks/mock.sgf"
   sgf = SGF.new
   sgf.load_file(filename)
 
-  assert_equal sgf.metadata(:white_player), "Kang Dongyun"
-  assert_equal sgf.metadata(:black_player), "Ryu Chaehyeong"
-  assert_equal sgf.metadata(:komi), "6.5"
-  assert_equal sgf.metadata(:date), "2011-09-30"
-  assert_equal sgf.metadata(:result), "W+R"
-  assert_equal sgf.metadata(:file_format), "4"
-  assert_equal sgf.metadata(:date), "2011-09-30"
-  assert_equal sgf.metadata(:source), "gokifu.com"
-  assert_equal sgf.metadata(:black_country), "kr"
-  assert_equal sgf.metadata(:white_country), "kr"
-  assert_equal sgf.metadata(:encoding), "UTF-8"
-  assert_equal sgf.metadata(:size), "19"
-  assert_equal sgf.metadata(:event), "7th Korean Wonik Cup Siptan"
-  assert_equal sgf.metadata(:rules), "Japanese"
-  assert_equal sgf.metadata(:time_set), "5x30 byo-yomi"
+  assert_equal sgf.property(:white_player), "Kang Dongyun"
+  assert_equal sgf.property(:black_player), "Ryu Chaehyeong"
+  assert_equal sgf.property(:komi), "6.5"
+  assert_equal sgf.property(:date), "2011-09-30"
+  assert_equal sgf.property(:result), "W+R"
+  assert_equal sgf.property(:file_format), "4"
+  assert_equal sgf.property(:date), "2011-09-30"
+  assert_equal sgf.property(:source), "gokifu.com"
+  assert_equal sgf.property(:black_country), "kr"
+  assert_equal sgf.property(:white_country), "kr"
+  assert_equal sgf.property(:encoding), "UTF-8"
+  assert_equal sgf.property(:size), "19"
+  assert_equal sgf.property(:event), "7th Korean Wonik Cup Siptan"
+  assert_equal sgf.property(:rules), "Japanese"
+  assert_equal sgf.property(:time_set), "5x30 byo-yomi"
 
 end
 
@@ -147,29 +147,29 @@ test "should give a full sgf string" do
 
   sgf = SGF.new(";B[ac];W[ed]")
 
-  sgf.write_metadata(:white_player, "Conan")
-  assert_equal sgf.metadata(:white_player), "Conan"
+  sgf.write_property(:white_player, "Conan")
+  assert_equal sgf.property(:white_player), "Conan"
 
-  sgf.write_metadata(:black_player,"Conan2")
-  assert_equal sgf.metadata(:black_player), "Conan2"
+  sgf.write_property(:black_player,"Conan2")
+  assert_equal sgf.property(:black_player), "Conan2"
 
   assert_equal sgf.to_s, "(;PB[Conan2]PW[Conan]FF[4];B[ac];W[ed])"
 
 end
 
-test 'Should be able to write metadata' do 
+test 'Should be able to write property' do 
 
   sgf = SGF.new
 
 
-  sgf.write_metadata(:white_player, "Conan")
-  assert_equal sgf.metadata(:white_player), "Conan"
+  sgf.write_property(:white_player, "Conan")
+  assert_equal sgf.property(:white_player), "Conan"
 
-  sgf.write_metadata(:white_player,"Conan2")
-  assert_equal sgf.metadata(:white_player), "Conan2"
+  sgf.write_property(:white_player,"Conan2")
+  assert_equal sgf.property(:white_player), "Conan2"
 
   assert_raise(RuntimeError) do
-    sgf.write_metadata(:total_bs, "bs")
+    sgf.write_property(:total_bs, "bs")
   end
 
 end
@@ -235,10 +235,22 @@ test "should be able to parse comments into it" do
 
   sgf = SGF.new(";B[aa];W[bb]")
 
-  comments = {"0"=> ["jajaja"], "1" => ["hf","u 2"], "2"=> ["i rule"]}
+  comments = {"0"=>[{"timestamp"=>"[1327727980000]",
+                     "user"=>"dp",
+                     "rank"=>"[7d]",
+                     "message"=>"fgsfgafha",
+                     "visibility"=>"",
+                     "move_number"=>"0"},
+                    {"timestamp"=>"[1327727987000]",
+                     "user"=>"conanbatt",
+                     "rank"=>"[7d]",
+                     "message"=>"aaa",
+                     "visibility"=>"",
+                     "move_number" =>"0"}
+                   ]
+             }
   sgf.parse_comments!(comments)
 
-  assert_equal sgf.to_s, "(;FF[4]C[jajaja ];B[aa]C[hf u 2 ];W[bb]C[i rule ])" 
+  assert_equal sgf.to_s, "(;FF[4]C[dp[[7d]]: fgsfgafha conanbatt[[7d]]: aaa ];B[aa];W[bb])" 
 
 end
-
