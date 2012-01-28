@@ -1,11 +1,11 @@
 require File.expand_path("../tournament", File.dirname(__FILE__))
 
-class SingleElimination < Tournament
+class DoubleElimination < Tournament
 
   ########################################################
    
-  # Single Elimination constraints/rules
-  #- P0 only live players (never lost) - tournament finishes when only one player remains
+  # Double Elimination constraints/rules
+  #- P0 only live players (lost only one time max) - tournament finishes when only one player remains
   #- P1 players shouldn't play each other again unless there is no choice
   #- P2 top players (by score) should play together if possible
   #- P3 odd number of players the last one to be picked gets a win by default
@@ -63,10 +63,24 @@ class SingleElimination < Tournament
         pairing.result = "B+D"
         pairings << pairing
     end
-    
+
     return pairings
   end
   
+  
+  def count_loss(player)
+    count = 0
+    
+    @rounds.each do |r|
+        r.pairings.each do |p|
+            if((p.black_player == player || p.white_player == player) && p.winner != player && !p.draw?)
+                count=count+1
+            end
+        end
+    end
+    
+    return count
+  end
   
   def finished?
     (live_players.size == 1)
@@ -74,20 +88,15 @@ class SingleElimination < Tournament
   
   def live_players
   
-    #first round, all players are live
-    if @rounds.last.nil? || @rounds.last.pairings.nil? 
+    #first round or secound round, all players are live
+    if @rounds.size < 2
         return @players
     end
     
-    #live players are all players from previous round minus those who lost
+    #live players are all players from previous round minus those who lost twice
     live_players = []
-    @rounds.last.pairings.each do |p|
-        if p.result.nil?
-            live_players << p.black_player
-            live_players << p.white_player
-        else
-            live_players << p.winner
-        end
+    @players.each do |p|
+        live_players << p if (count_loss(p) < 2)
     end
     
     return live_players
