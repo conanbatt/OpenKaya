@@ -10,9 +10,10 @@ Open-source code is subject to as rigorous standards as the server. Code must ha
 This modules have been opened and are ready to be forked:
 
 * Rating System
-* Game Scoring
-* Tournament & League systems
-* Time System
+* Score estimator
+* Game Scoring (Chinese rules missing )
+* Tournament & League systems (League systems missing)
+* Time System (Byo-yomi, canadian, hourglass and Bronstein)
 
 # Rating System
 
