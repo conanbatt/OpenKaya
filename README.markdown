@@ -114,17 +114,18 @@ WARNING: Current code is highly unstable and subject to big changes, depending o
 
 ## Dependencies & tools
 
-Ruby 1.9.2, cutest gem.
+Ruby 1.9.2, cutest gem. (for engine & tests)
+
+cutest, cuba, active record gems. (for the site)
 
 ## Intro
 
 It is a tactical aim for us to provide a flexible and usable Tournament organizer for users of the system. Organizing tournaments is one of the most common activities, and also one of the most difficult ones to do properly. 
-The tournament engine is a core library to manage and organize a tournament. It is designed to be flexible, to be able to implement numerous systems. As with everything in OpenKaya, its has a flexible license for the code to be used anywhere.
+The tournament engine is a core library to manage and organize a tournament. It is designed to be flexible, to be able to implement numerous systems. 
 
 ## Details
 
-Right now there is only a demo-system implemented (Random tournament) and some hints on a Single Elimination tournament.
-Eventually the list should include:
+Right now the following systems are supported:
 
 * Single Elimination
 * Double Elimination
@@ -148,6 +149,11 @@ Strongly suggested that you keep your code very strict. Add validation functions
 ## Dependencies & tools
 
 Current code is pure Javascript and can be run from within the browser without any installation.
+
+## Walkthrough
+
+To run, just open the html files with your browser. 
+To work on it, create a new html with test cases for your system, then work on the js files. Code without tests will be rejected!
 
 ## Details
 
