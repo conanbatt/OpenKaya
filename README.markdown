@@ -112,7 +112,7 @@ WARNING: Current code is highly unstable and subject to big changes, depending o
 
 # Tournament & League Systems
 
-  Go to the tournament folder for specific documentation
+Go to the tournament folder for specific documentation
 
 # Time Systems
 
