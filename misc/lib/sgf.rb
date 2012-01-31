@@ -127,6 +127,29 @@ class SGF
     "(#{@config.to_s}#{move_list_with_comments})"
   end
 
+  def time_left(player)
+    raise "Invalid input #{player}. W or B expected" unless player == "B" || player == "W"
+    ln = last_node_by_player(player)
+    ln && ln.time_left
+  end
+
+  def add_time(player,time)
+    ln = last_node_by_player(player)
+    ln.time_left= (ln.time_left + time)
+  end
+
+  def last_node_by_player(player)
+    if @move_list.last && @move_list.last.color == player
+      return @move_list.last
+    elsif @move_list.size >= 2
+      second_last =  @move_list[@move_list.count -2]
+      return second_last
+    end 
+  end
+
+  def undo
+    @move_list.pop
+  end
 
   def self.handi_node(size,handicap)
     case size
@@ -248,6 +271,14 @@ class Node
     end
     raise "#{node} is invalid node format" unless valid
   end
+
+  def time_left
+    @node_text.match(/[#{color}]L\[\d{0,6}.\d{3}\]/).to_s[3..-2].to_f
+  end
+  def time_left=(time_left)
+    @node_text.gsub!(/[#{color}]L\[\d{0,6}.\d{3}\]/, "#{color}L[%.3f]" % [time_left])
+  end
+
 
 end
 

@@ -254,3 +254,25 @@ test "should be able to parse comments into it" do
   assert_equal sgf.to_s, "(;FF[4]C[dp[[7d]]: fgsfgafha conanbatt[[7d]]: aaa ];B[aa];W[bb])" 
 
 end
+
+test "should be able to read time by players" do
+
+  sgf = SGF.new(";B[aa]BL[200.000];W[bb]WL[300.000]")
+
+  assert_equal sgf.time_left("B"), 200.000
+  assert_equal sgf.time_left("W"), 300.000
+
+  sgf.add_time("B",500)
+
+  assert_equal sgf.time_left("B"), 700.000
+  assert_equal sgf.time_left("W"), 300.000
+end
+
+test "should be able to undo" do
+
+  sgf = SGF.new(";B[aa];W[bb];B[cc]")
+
+  sgf.undo
+  assert_equal sgf.move_list, ";B[aa];W[bb]"
+
+end
