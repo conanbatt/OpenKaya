@@ -158,6 +158,22 @@ module Glicko
     return "%5.0f [+-%3.0f] %6.2f [+-%5.2f]" % [r.elo, (r_max.elo-r_min.elo)/2.0, r.aga, (r_max.aga-r_min.aga)/2.0]
   end
 
+  #
+  # Handicap *stones* are always set according to rank difference.
+  # After this step, komi is adjusted to make the game closer to even.
+  # For players of the same rank:
+  #    If they are within 0.5 stones: Colors are picked randomly and komi is 6.5
+  #    Otherwise: Stronger player takes white and komi is 0.5
+  # For players one rank apart:
+  #    Stronger player takes white
+  #    Komi can be 6.5, 0.5, or -5.5 based on rating difference.
+  # For players 2-9 ranks apart:
+  #    Stronger player takes white, handicap = #ranks difference
+  #    Komi can be 0.5 or -5.5 based on rating difference
+  # For players >9 ranks apart:
+  #    Stronger player takes white, handicap = #ranks difference
+  #    Komi = -5.5
+  #
   def self.suggest_handicap(input)
     # Right now this will also suggest the colors
     raise GlickoError, "Invalid arguments #{input}" unless input[:p1] && input[:p2] && input[:rules]
@@ -169,61 +185,53 @@ module Glicko
     if p2.rd == nil then p2.rd = MIN_RD end
     p1_rating = Rating.new_player_copy(p1)
     p2_rating = Rating.new_player_copy(p2)
-    if p1_rating.kyudan > p2_rating.kyudan
+    diff = (p1_rating.kyudan - p2_rating.kyudan).abs
+    # If players are the same rank and also within 0.5 stones, pick colors randomly
+    # If they are >0.5 stones apart, force stronger one to be white because we will be adjusting komi
+    if p1_rating.rank == p2_rating.rank and diff.abs < 0.5
+      if Random.rand() < 0.5
+        white_rating = p1_rating
+        black_rating = p2_rating
+      else
+        white_rating = p2_rating
+        black_rating = p1_rating
+      end
+    elsif p1_rating.kyudan > p2_rating.kyudan
        white_rating = p1_rating
        black_rating = p2_rating
     else
        white_rating = p2_rating
        black_rating = p1_rating
     end
-    diff = white_rating.kyudan - black_rating.kyudan
-    # traditional handicaps:
-    #if    diff < 0.50 then handi = 0; komi =  6.5
-    #elsif diff < 1.50 then handi = 0; komi =  0.5
-    #elsif diff < 2.50 then handi = 2; komi =  0.5
-    #elsif diff < 3.50 then handi = 3; komi =  0.5
-    #else                   handi = 4; komi =  0.5
-    #end
-    # 2X the granularity of traditional handicaps:
-    if    diff < 0.25 then handi = 0; komi =  6.5
-    elsif diff < 0.75 then handi = 0; komi =  0.5
-    elsif diff < 1.25 then handi = 0; komi = -5.5
-    elsif diff < 1.75 then handi = 2; komi =  0.5
-    elsif diff < 2.25 then handi = 2; komi = -5.5
-    elsif diff < 2.70 then handi = 3; komi =  0.5
-    elsif diff < 3.25 then handi = 3; komi = -5.5
-    elsif diff < 3.70 then handi = 4; komi =  0.5
-    elsif diff < 4.25 then handi = 4; komi = -5.5
-    elsif diff < 4.70 then handi = 5; komi =  0.5
-    elsif diff < 5.25 then handi = 5; komi = -5.5
-    elsif diff < 5.70 then handi = 6; komi =  0.5
-    elsif diff < 6.25 then handi = 6; komi = -5.5
-    elsif diff < 6.70 then handi = 7; komi =  0.5
-    elsif diff < 7.25 then handi = 7; komi = -5.5
-    elsif diff < 7.70 then handi = 8; komi =  0.5
-    elsif diff < 8.25 then handi = 8; komi = -5.5
-    elsif diff < 8.70 then handi = 9; komi =  0.5
-    else                   handi = 9; komi = -5.5
+    if white_rating.kyudan.floor - black_rating.kyudan.floor < 2
+       handi = 0  # Rank difference of 0 or 1 is zero handicap stones -- adjust the rest with komi
+       komi  = 6.5
+       if diff > 0.5
+          komi = 0.5
+          diff -= 0.5
+       end
+       if diff > 0.5
+          komi = -5.5
+          diff -= 0.5
+       end
+    elsif white_rating.kyudan.floor - black_rating.kyudan.floor <= 9
+       handi = white_rating.kyudan.floor - black_rating.kyudan.floor
+       komi = 0.5
+       diff -= handi - 0.5  # Adjust difference based on handicap
+                            # Note that handicaps wth komi = 0.5 are 0.5 stones less than the number of stones
+       if diff > 0.5
+          komi = -5.5
+          diff -= 0.5
+       end
+    else
+       handi = 9  # Max handi is 9
+       komi = 0.5
+       diff -= handi - 0.5
+       if diff > 0.5
+          komi = -5.5
+          diff -= 0.5
+       end
     end
-    #TODO lets go this granular. But above all i noticed something important here : 1.75 difference yields 2 stones. This means
-    #1kvs1d could give 2 handicap games and thats not good. It must require minimum 2 ranks difference to provide 2 stones.
-
-    # 4X the granularity of traditional handicaps:
-    # not sure if I made the boundaries correct
-    #if    diff < 0.25 then handi = 0; komi =  6.5
-    #elsif diff < 0.50 then handi = 0; komi =  3.5
-    #elsif diff < 0.75 then handi = 0; komi =  0.5
-    #elsif diff < 1.00 then handi = 0; komi = -3.5
-    #elsif diff < 1.25 then handi = 0; komi = -5.5
-    #elsif diff < 1.50 then handi = 2; komi =  3.5
-    #elsif diff < 1.75 then handi = 2; komi =  0.5
-    #elsif diff < 2.00 then handi = 2; komi = -3.5
-    #elsif diff < 2.25 then handi = 2; komi = -5.5
-    #elsif diff < 2.50 then handi = 3; komi =  3.5
-    #elsif diff < 2.70 then handi = 3; komi =  0.5
-    #elsif diff < 3.00 then handi = 3; komi = -3.5
-    #elsif diff < 3.25 then handi = 3; komi = -5.5
-    #end
     hka = advantage_in_elo(white_rating, black_rating, input[:rules], handi, komi)
     e = win_probability(white_rating, black_rating, -hka)
     output = {}
@@ -232,6 +240,7 @@ module Glicko
     output[:handi] = handi
     output[:komi]  = komi
     output[:e]     = e     # e included in output for information only
+    #print "w=%0.3f b=%0.3f h=%d k=%0.1f e=%0.2f\n" % [white_rating.aga, black_rating.aga, handi, komi, e]
     return output
   end
 
