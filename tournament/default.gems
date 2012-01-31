@@ -17,5 +17,6 @@ ruby-debug19 -v0.11.6
 ruby_core_source -v0.1.5
 rubyzip -v0.9.5
 selenium-webdriver -v2.18.0
+sqlite3 -v1.3.5
 tilt -v1.3.3
 xpath -v0.1.4
