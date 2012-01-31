@@ -12,7 +12,7 @@ This modules have been opened and are ready to be forked:
 * Rating System
 * Score estimator
 * Game Scoring (Chinese rules missing )
-* Tournament & League systems (**STAR**)
+* Tournament & League systems (**Higher priority**)
 * Time System (Byo-yomi, canadian, hourglass and Bronstein)
 
 # Rating System
