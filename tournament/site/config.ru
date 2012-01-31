@@ -1,0 +1,3 @@
+require "./tournaments"
+
+run Cuba
