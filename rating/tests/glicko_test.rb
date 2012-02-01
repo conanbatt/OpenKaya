@@ -104,22 +104,75 @@ test "" do
   p1 = system.players["p1"] = Player.new("p1")
   p2 = system.players["p2"] = Player.new("p2")
 
-  p1.rating = Rating.new_aga(4.00).aga
-  p2.rating = Rating.new_aga(5.24).aga
+  p1.rating = Rating.new_aga(4.001).aga
+  p2.rating = Rating.new_aga(4.01).aga
   output = Glicko.suggest_handicap({:p1 => p1, :p2 => p2, :rules => "jpn"})
-  assert (output[:e] - 0.57).abs < 0.02
+  assert (output[:e] - 0.50).abs < 0.02
+  assert (output[:handi] == 0)
+  assert (output[:komi] == 6.5)
 
-  p2.rating = Rating.new_aga(5.26).aga
+  p2.rating = Rating.new_aga(4.49).aga
   output = Glicko.suggest_handicap({:p1 => p1, :p2 => p2, :rules => "jpn"})
-  assert (output[:e] - 0.43).abs < 0.02
+  assert (((output[:e] - 0.65).abs < 0.02) or ((output[:e] - 0.35).abs < 0.02))  # Random colors will make this switch
+  assert (output[:handi] == 0)
+  assert (output[:komi] == 6.5)
 
-  p2.rating = Rating.new_aga(5.74).aga
+  p2.rating = Rating.new_aga(4.51).aga
   output = Glicko.suggest_handicap({:p1 => p1, :p2 => p2, :rules => "jpn"})
-  assert (output[:e] - 0.57).abs < 0.02
+  assert (output[:e] - 0.50).abs < 0.02
+  assert (output[:handi] == 0)
+  assert (output[:komi] == 0.5)
 
-  p2.rating = Rating.new_aga(5.75).aga
+  p2.rating = Rating.new_aga(4.99).aga
   output = Glicko.suggest_handicap({:p1 => p1, :p2 => p2, :rules => "jpn"})
-  assert (output[:e] - 0.43).abs < 0.02
+  assert (output[:e] - 0.65).abs < 0.02
+  assert (output[:handi] == 0)
+  assert (output[:komi] == 0.5)
+
+  p2.rating = Rating.new_aga(5.01).aga
+  output = Glicko.suggest_handicap({:p1 => p1, :p2 => p2, :rules => "jpn"})
+  assert (output[:e] - 0.50).abs < 0.02
+  assert (output[:handi] == 0)
+  assert (output[:komi] == -5.5)
+
+  p2.rating = Rating.new_aga(6.01).aga
+  output = Glicko.suggest_handicap({:p1 => p1, :p2 => p2, :rules => "jpn"})
+  assert (output[:e] - 0.50).abs < 0.02
+  assert (output[:handi] == 2)
+  assert (output[:komi] == -5.5)
+
+  # Cover strong black player receiving handicap cases
+  p1.rating = Rating.new_aga(4.999).aga
+  p2.rating = Rating.new_aga(5.01).aga
+  output = Glicko.suggest_handicap({:p1 => p1, :p2 => p2, :rules => "jpn"})
+  assert (output[:e] - 0.50).abs < 0.02
+  assert (output[:handi] == 0)
+  assert (output[:komi] == 6.5)
+
+  p2.rating = Rating.new_aga(5.49).aga
+  output = Glicko.suggest_handicap({:p1 => p1, :p2 => p2, :rules => "jpn"})
+  assert (output[:e] - 0.65).abs < 0.02
+  assert (output[:handi] == 0)
+  assert (output[:komi] == 6.5)
+
+  p2.rating = Rating.new_aga(5.51).aga
+  output = Glicko.suggest_handicap({:p1 => p1, :p2 => p2, :rules => "jpn"})
+  assert (output[:e] - 0.50).abs < 0.02
+  assert (output[:handi] == 0)
+  assert (output[:komi] == 0.5)
+
+  p2.rating = Rating.new_aga(5.99).aga
+  output = Glicko.suggest_handicap({:p1 => p1, :p2 => p2, :rules => "jpn"})
+  assert (output[:e] - 0.65).abs < 0.02
+  assert (output[:handi] == 0)
+  assert (output[:komi] == 0.5)
+
+  p2.rating = Rating.new_aga(6.01).aga
+  output = Glicko.suggest_handicap({:p1 => p1, :p2 => p2, :rules => "jpn"})
+  assert (output[:e] - 0.36).abs < 0.02
+  assert (output[:handi] == 2)
+  assert (output[:komi] == 0.5)
+
 end
 
 test "Equal wins" do
