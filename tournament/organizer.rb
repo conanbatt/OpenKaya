@@ -1,4 +1,5 @@
 Dir[File.dirname(__FILE__) + "/tournament_systems/*.rb"].each {|file| require file }
+Dir[File.dirname(__FILE__) + "/league_systems/*.rb"].each {|file| require file }
 
 class Player
   attr_accessor :rank,:name,:ip
@@ -15,5 +16,11 @@ class Organizer
     raise "Invalid tournament system" unless Kernel.const_defined?(tournament)
     tournament = Kernel.const_get(tournament)
     tournament.new(*rest)
+  end
+  
+  def self.create_league(league, *rest)
+    raise "Invalid league system" unless Kernel.const_defined?(league)
+    league = Kernel.const_get(league)
+    league.new(*rest)
   end
 end

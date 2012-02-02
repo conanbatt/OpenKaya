@@ -46,12 +46,13 @@ class Tournament
 
   def start_round
     raise "Not all games were played in the previous round." unless @rounds.empty? || @rounds.last.finished?
-    @rounds.last.end_time = Time.now unless @rounds.size == 0
+    @rounds.last.end_time = Time.now unless @rounds.empty?
     @rounds << Round.new(do_pairings)
     @rounds.last.start_time = Time.now
   end
 
   def add_result(p1,p2, result)
+    raise "The tournament has not yet started" if @rounds.empty?
     @rounds.last.add_result(p1,p2,result)
   end
 
@@ -80,7 +81,6 @@ class Tournament
 
     def add_result(p1,p2, result)
       find_match_by_names(p1,p2).result = result
-      #puts find_match_by_names(p1,p2).to_s
     end
 
     def finished?
