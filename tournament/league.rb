@@ -47,7 +47,7 @@ class League
         @groups = groups
     end
     
-    def get_group(player)
+    def group_by_player(player)
       @groups.each do |g|
         return g if g.players.include?(player)
       end
