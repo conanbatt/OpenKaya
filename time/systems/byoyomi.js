@@ -127,13 +127,13 @@ ByoyomiTimer.prototype = {
 			remain_color.time -= ((this.last_pause - this.last_resume) / 1000);
 
 			// If the time is less than zeor, attempt to add periods
-			while(remain_color.time <= 0 && this.remain[this.actual_color].period > 0) {
+			while(remain_color.time < 0.5 && this.remain[this.actual_color].period > 0) {
 				remain_color.period--;
 				remain_color.time += this.system.period_time;
 			}
 
 			// If remain time is greater than zero, but we've used periods, force to the period time.
-			if(remain_color.time > 0 && remain_color.period < this.system.period) {
+			if(remain_color.time > 0.5 && remain_color.period < this.system.period) {
 				remain_color.time = this.system.period_time;
 			}
 
@@ -189,8 +189,8 @@ ByoyomiTimer.prototype = {
 
 		tmp_remain_color.time = remain_color.time - (new Date() - this.last_resume) / 1000;
 
-		// If the time is less than zero, attempt to add a period
-		while (tmp_remain_color.time <= 0 && tmp_remain_color.period > 0) {
+		// If the time < 0.5, attempt to add a period
+		while (tmp_remain_color.time < 0.5 && tmp_remain_color.period > 0) {
 			tmp_remain_color.time += this.system.period_time;
 			tmp_remain_color.period--;
 		}

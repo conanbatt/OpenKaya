@@ -119,8 +119,8 @@ CanadianTimer.prototype = {
 			this.status = ST_PAUSED;
 			remain_color.time -= ((this.last_pause - this.last_resume) / 1000);
 
-			// If we have stone == 0 then we are on main time, so if time <= 0 switch to overtime.
-			if (remain_color.time <= 0 && remain_color.stone == 0) {
+			// If we have stone == 0 then we are on main time, so if time < 0.5 switch to overtime display.
+			if (remain_color.time < 0.5 && remain_color.stone == 0) {
 				remain_color.stone = this.system.period_stone;
 				remain_color.time += this.system.period_time;
 			} 
@@ -181,8 +181,8 @@ CanadianTimer.prototype = {
 
 		tmp_remain_color.time = remain_color.time - (new Date() - this.last_resume) / 1000;
 
-		// If we have stone == 0 then we are on main time, so if time <= 0 switch to overtime.
-    if (tmp_remain_color.time <= 0 && tmp_remain_color.stone == 0) {
+		// If we have stone == 0 then we are on main time, so if time < 0.5 switch to overtime display.
+    if (tmp_remain_color.time < 0.5 && tmp_remain_color.stone == 0) {
       tmp_remain_color.stone = this.system.period_stone;
       tmp_remain_color.time += this.system.period_time;
     }
