@@ -237,13 +237,13 @@ test "should be able to parse comments into it" do
 
   comments = {"0"=>[{"timestamp"=>"[1327727980000]",
                      "user"=>"dp",
-                     "rank"=>"7d",
+                     "rank"=>"[7d]",
                      "message"=>"fgsfgafha",
                      "visibility"=>"",
                      "move_number"=>"0"},
                     {"timestamp"=>"[1327727987000]",
                      "user"=>"conanbatt",
-                     "rank"=>"7d",
+                     "rank"=>"[7d]",
                      "message"=>"aaa",
                      "visibility"=>"",
                      "move_number" =>"0"}

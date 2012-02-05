@@ -57,7 +57,7 @@ class SGF
 
   def hash_to_comment(hash)
     raise "invalid hash" unless hash["user"] && hash["rank"] && hash["message"]
-    "#{hash["user"]}[#{hash["rank"]}]: #{hash["message"]}"
+    "#{hash["user"]}#{hash["rank"]}: #{hash["message"]}"
   end
     
   def move_list
