@@ -276,3 +276,13 @@ test "should be able to undo" do
   assert_equal sgf.move_list, ";B[aa];W[bb]"
 
 end
+
+test "should write the hadnicap info" do
+
+  params = {:handicap => 9, :size => 19, :white_player => "fuerte", :black_player => "debil"}
+  sgf = SGF.new(";B[aa];W[bb];B[cc]", params)
+
+  assert_equal sgf.to_s, "(;HA[9]PB[debil]PW[fuerte]SZ[19]FF[4]AB[dd][jd][pd][dj][jj][pj][dp][jp][pp];B[aa];W[bb];B[cc])"
+
+
+end
