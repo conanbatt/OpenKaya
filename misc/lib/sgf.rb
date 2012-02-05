@@ -234,7 +234,7 @@ class Node
   end
 
   def to_s
-    comment_node = comments.empty? ? "" : "C[#{comments}\\]"
+    comment_node = comments.empty? ? "" : "C[#{comments.gsub("]","\\]")}]"
     node_text + comment_node
   end
 
@@ -302,7 +302,7 @@ class ConfigNode
   def comments
     buffer = ""
     @comments.each{|c| buffer += c}
-    buffer.empty? ? "" : "C[#{buffer}\\]"
+    buffer.empty? ? "" : "C[#{buffer.gsub("]","\\]")}]"
   end
 
   def to_s

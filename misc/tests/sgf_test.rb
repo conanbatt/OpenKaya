@@ -24,12 +24,12 @@ test "Should add comment to a node" do
   sgf.add_comment("This guy sucks")
 
   assert_equal sgf.move_list, ";B[ab]"
-  assert_equal sgf.to_s ,"(;FF[4];B[ab]C[This guy sucks \\])"
+  assert_equal sgf.to_s ,"(;FF[4];B[ab]C[This guy sucks ])"
 
   sgf.add_comment("yeah")
 
   assert_equal sgf.move_list, ";B[ab]"
-  assert sgf.to_s.include? "(;FF[4];B[ab]C[This guy sucks yeah \\])"
+  assert sgf.to_s.include? "(;FF[4];B[ab]C[This guy sucks yeah ])"
 
 end
 
@@ -38,11 +38,11 @@ test "Should add comment to an empty sgf" do
   sgf = SGF.new
   sgf.add_comment("This guy sucks")
 
-  assert_equal sgf.to_s , "(;FF[4]C[This guy sucks \\])"
+  assert_equal sgf.to_s , "(;FF[4]C[This guy sucks ])"
 
   sgf.add_comment("yeah")
 
-  assert_equal sgf.to_s, "(;FF[4]C[This guy sucks yeah \\])"
+  assert_equal sgf.to_s, "(;FF[4]C[This guy sucks yeah ])"
 
 end
 
@@ -251,7 +251,7 @@ test "should be able to parse comments into it" do
              }
   sgf.parse_comments!(comments)
 
-  assert_equal sgf.to_s, "(;FF[4]C[dp[7d]: fgsfgafha conanbatt[7d]: aaa \\];B[aa];W[bb])" 
+  assert_equal sgf.to_s, "(;FF[4]C[dp[7d\\]: fgsfgafha conanbatt[7d\\]: aaa ];B[aa];W[bb])" 
 
 end
 
