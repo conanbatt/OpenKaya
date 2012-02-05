@@ -23,11 +23,13 @@ test "Should add comment to a node" do
   sgf.add_move(node)
   sgf.add_comment("This guy sucks")
 
-  assert_equal sgf.move_list, ";B[ab]C[This guy sucks ]"
+  assert_equal sgf.move_list, ";B[ab]"
+  assert_equal sgf.to_s ,"(;FF[4];B[ab]C[This guy sucks ])"
 
   sgf.add_comment("yeah")
 
-  assert_equal sgf.move_list, ";B[ab]C[This guy sucks yeah ]"
+  assert_equal sgf.move_list, ";B[ab]"
+  assert sgf.to_s.include? "(;FF[4];B[ab]C[This guy sucks yeah ])"
 
 end
 
@@ -36,11 +38,11 @@ test "Should add comment to an empty sgf" do
   sgf = SGF.new
   sgf.add_comment("This guy sucks")
 
-  assert_equal sgf.move_list, "C[This guy sucks ]"
+  assert_equal sgf.to_s , "(;FF[4]C[This guy sucks ])"
 
   sgf.add_comment("yeah")
 
-  assert_equal sgf.move_list, "C[This guy sucks yeah ]"
+  assert_equal sgf.to_s, "(;FF[4]C[This guy sucks yeah ])"
 
 end
 
@@ -98,36 +100,36 @@ test "should be able to add a time property to a node" do
 
 end
 
-test "should explode if try to access invalid metadata" do
+test "should explode if try to access invalid property" do
   sgf = SGF.new
   sgf.load_from_string("(;PB[CARLOS]PW[PEPE];B[aa])")
 
-  assert sgf.metadata(:komi).nil?
+  assert sgf.property(:komi).nil?
 end
 
 #(;FF[4]GM[1]SZ[19]CA[UTF-8]SO[gokifu.com]BC[kr]WC[kr]EV[7th Korean Wonik Cup Siptan]PB[Ryu Chaehyeong]BR[9p]PW[Kang Dongyun]WR[9p]KM[6.5]DT[2011-09-30]RE[W+R]
 
 
-test "Should load a sgf metadata" do
+test "Should load a sgf property" do
   filename = "mocks/mock.sgf"
   sgf = SGF.new
   sgf.load_file(filename)
 
-  assert_equal sgf.metadata(:white_player), "Kang Dongyun"
-  assert_equal sgf.metadata(:black_player), "Ryu Chaehyeong"
-  assert_equal sgf.metadata(:komi), "6.5"
-  assert_equal sgf.metadata(:date), "2011-09-30"
-  assert_equal sgf.metadata(:result), "W+R"
-  assert_equal sgf.metadata(:file_format), "4"
-  assert_equal sgf.metadata(:date), "2011-09-30"
-  assert_equal sgf.metadata(:source), "gokifu.com"
-  assert_equal sgf.metadata(:black_country), "kr"
-  assert_equal sgf.metadata(:white_country), "kr"
-  assert_equal sgf.metadata(:encoding), "UTF-8"
-  assert_equal sgf.metadata(:size), "19"
-  assert_equal sgf.metadata(:event), "7th Korean Wonik Cup Siptan"
-  assert_equal sgf.metadata(:rules), "Japanese"
-  assert_equal sgf.metadata(:time_set), "5x30 byo-yomi"
+  assert_equal sgf.property(:white_player), "Kang Dongyun"
+  assert_equal sgf.property(:black_player), "Ryu Chaehyeong"
+  assert_equal sgf.property(:komi), "6.5"
+  assert_equal sgf.property(:date), "2011-09-30"
+  assert_equal sgf.property(:result), "W+R"
+  assert_equal sgf.property(:file_format), "4"
+  assert_equal sgf.property(:date), "2011-09-30"
+  assert_equal sgf.property(:source), "gokifu.com"
+  assert_equal sgf.property(:black_country), "kr"
+  assert_equal sgf.property(:white_country), "kr"
+  assert_equal sgf.property(:encoding), "UTF-8"
+  assert_equal sgf.property(:size), "19"
+  assert_equal sgf.property(:event), "7th Korean Wonik Cup Siptan"
+  assert_equal sgf.property(:rules), "Japanese"
+  assert_equal sgf.property(:time_set), "5x30 byo-yomi"
 
 end
 
@@ -145,29 +147,29 @@ test "should give a full sgf string" do
 
   sgf = SGF.new(";B[ac];W[ed]")
 
-  sgf.write_metadata(:white_player, "Conan")
-  assert_equal sgf.metadata(:white_player), "Conan"
+  sgf.write_property(:white_player, "Conan")
+  assert_equal sgf.property(:white_player), "Conan"
 
-  sgf.write_metadata(:black_player,"Conan2")
-  assert_equal sgf.metadata(:black_player), "Conan2"
+  sgf.write_property(:black_player,"Conan2")
+  assert_equal sgf.property(:black_player), "Conan2"
 
-  assert_equal sgf.to_s, "(;PB[Conan2]PW[Conan];B[ac];W[ed])"
+  assert_equal sgf.to_s, "(;PB[Conan2]PW[Conan]FF[4];B[ac];W[ed])"
 
 end
 
-test 'Should be able to write metadata' do 
+test 'Should be able to write property' do 
 
   sgf = SGF.new
 
 
-  sgf.write_metadata(:white_player, "Conan")
-  assert_equal sgf.metadata(:white_player), "Conan"
+  sgf.write_property(:white_player, "Conan")
+  assert_equal sgf.property(:white_player), "Conan"
 
-  sgf.write_metadata(:white_player,"Conan2")
-  assert_equal sgf.metadata(:white_player), "Conan2"
+  sgf.write_property(:white_player,"Conan2")
+  assert_equal sgf.property(:white_player), "Conan2"
 
   assert_raise(RuntimeError) do
-    sgf.write_metadata(:total_bs, "bs")
+    sgf.write_property(:total_bs, "bs")
   end
 
 end
@@ -220,3 +222,57 @@ test 'should recognize if last two moves are pass' do
 
 end
 
+test "should be able to make an sgf with the initial config node properties as params" do
+
+  params = {:size => 9, :white_player => "blanco", :black_player => "negro"}
+
+  sgf = SGF.new(";B[];W[]", params)
+
+  assert_equal sgf.to_s, "(;PB[negro]PW[blanco]SZ[9]FF[4];B[];W[])"
+end
+
+test "should be able to parse comments into it" do
+
+  sgf = SGF.new(";B[aa];W[bb]")
+
+  comments = {"0"=>[{"timestamp"=>"[1327727980000]",
+                     "user"=>"dp",
+                     "rank"=>"[7d]",
+                     "message"=>"fgsfgafha",
+                     "visibility"=>"",
+                     "move_number"=>"0"},
+                    {"timestamp"=>"[1327727987000]",
+                     "user"=>"conanbatt",
+                     "rank"=>"[7d]",
+                     "message"=>"aaa",
+                     "visibility"=>"",
+                     "move_number" =>"0"}
+                   ]
+             }
+  sgf.parse_comments!(comments)
+
+  assert_equal sgf.to_s, "(;FF[4]C[dp[[7d]]: fgsfgafha conanbatt[[7d]]: aaa ];B[aa];W[bb])" 
+
+end
+
+test "should be able to read time by players" do
+
+  sgf = SGF.new(";B[aa]BL[200.000];W[bb]WL[300.000]")
+
+  assert_equal sgf.time_left("B"), 200.000
+  assert_equal sgf.time_left("W"), 300.000
+
+  sgf.add_time("B",500)
+
+  assert_equal sgf.time_left("B"), 700.000
+  assert_equal sgf.time_left("W"), 300.000
+end
+
+test "should be able to undo" do
+
+  sgf = SGF.new(";B[aa];W[bb];B[cc]")
+
+  sgf.undo
+  assert_equal sgf.move_list, ";B[aa];W[bb]"
+
+end

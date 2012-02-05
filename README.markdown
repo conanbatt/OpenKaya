@@ -10,9 +10,10 @@ Open-source code is subject to as rigorous standards as the server. Code must ha
 This modules have been opened and are ready to be forked:
 
 * Rating System
-* Game Scoring
-* Tournament & League systems
-* Time System
+* Score estimator
+* Game Scoring (Chinese rules missing )
+* Tournament & League systems (**Higher priority**)
+* Time System (Byo-yomi, canadian, hourglass and Bronstein)
 
 # Rating System
 
@@ -111,42 +112,18 @@ WARNING: Current code is highly unstable and subject to big changes, depending o
 
 # Tournament & League Systems
 
-## Dependencies & tools
-
-Ruby 1.9.2, cutest gem.
-
-## Intro
-
-It is a tactical aim for us to provide a flexible and usable Tournament organizer for users of the system. Organizing tournaments is one of the most common activities, and also one of the most difficult ones to do properly. 
-The tournament engine is a core library to manage and organize a tournament. It is designed to be flexible, to be able to implement numerous systems. As with everything in OpenKaya, its has a flexible license for the code to be used anywhere.
-
-## Details
-
-Right now there is only a demo-system implemented (Random tournament) and some hints on a Single Elimination tournament.
-Eventually the list should include:
-
-* Single Elimination
-* Double Elimination
-* Swiss
-* McMahon
-* Round Robin
-
-Right now there is no league code whatsoever, but the ability to organize leagues is also desired. 
-
-## Notes
-
-Always remember to produce tests for the code you make. It is much easier for us to verify code with tests than without it,which means 
-we will only accept the former.
-
-Keep in mind that you can change the base class in case you think that it will enrich all tournament systems, but it doesnt clutter it. Making a lean base tournament class makes it much easier for new systems to be implemented without backward-supporting useless functionality for its type. 
-
-Strongly suggested that you keep your code very strict. Add validation functions that can detect critical cases in each round(i.e. 2 players playing each other again).
+Go to the tournament folder for specific documentation
 
 # Time Systems
 
 ## Dependencies & tools
 
 Current code is pure Javascript and can be run from within the browser without any installation.
+
+## Walkthrough
+
+To run, just open the html files with your browser. 
+To work on it, create a new html with test cases for your system, then work on the js files. Code without tests will be rejected!
 
 ## Details
 

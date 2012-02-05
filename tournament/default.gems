@@ -1,0 +1,22 @@
+# default.gems generated gem export file. Note that any env variable settings will be missing. Append these after using a ';' field separator
+archive-tar-minitar -v0.5.2
+capybara -v1.1.2
+childprocess -v0.3.0
+columnize -v0.3.4
+cuba -v2.2.1
+cutest -v1.1.3
+ffi -v1.0.11
+linecache19 -v0.5.12
+mime-types -v1.17.2
+multi_json -v1.0.4
+nokogiri -v1.5.0
+rack -v1.4.1
+rack-test -v0.6.1
+ruby-debug-base19 -v0.11.25
+ruby-debug19 -v0.11.6
+ruby_core_source -v0.1.5
+rubyzip -v0.9.5
+selenium-webdriver -v2.18.0
+sqlite3 -v1.3.5
+tilt -v1.3.3
+xpath -v0.1.4
