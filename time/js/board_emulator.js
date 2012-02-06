@@ -17,6 +17,8 @@ function Board(config) {
 		this.time = new AbsoluteTimer(this, config.starting_time);
 	} else if (config.time_system == "Hourglass") {
 		this.time = new HourglassTimer(this, config.starting_time);
+	} else if (config.time_system == "Bronstein") {
+		this.time = new BronsteinTimer(this, config.starting_time, config.bonus);
 	} else if (config.time_system == "Fischer") {
 		this.time = new FischerTimer(this, config.starting_time, config.bonus);
 	} else if (config.time_system == "Byoyomi") {
