@@ -239,7 +239,7 @@ class Node
   end
 
   def add_comment(comment)
-    @comments << comment + " "
+    @comments << comment + "\n"
   end
   def comments
     buffer = ""
@@ -298,7 +298,7 @@ class ConfigNode
   end
 
   def add_comment(comment)
-    @comments << (comment + " ")
+    @comments << (comment + "\n")
   end
   def comments
     buffer = ""
