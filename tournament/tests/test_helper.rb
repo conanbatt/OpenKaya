@@ -1,7 +1,7 @@
 require 'cutest'
 require File.expand_path("../organizer", File.dirname(__FILE__))
 Dir[File.dirname(__FILE__) + "/tournament_systems/*.rb"].each {|file| require file }
-
+Dir[File.dirname(__FILE__) + "/league_systems/*.rb"].each {|file| require file }
 
 def spawn_player_list(number)
   list =[]
@@ -56,3 +56,20 @@ def mock_results_based_on_rank(tournament)
     end
   end
 end
+
+def mock_league_results_based_on_rank(league)
+  league.groups.each do |g|
+    g.players.shuffle.each do |player_a|
+      g.players.shuffle.each do |player_b|
+        if player_a != player_b
+          if compare_ranks(player_b.rank, player_a.rank) > 0
+              league.add_result(player_b, player_a, "W+R")
+          else
+              league.add_result(player_b, player_a, "B+R")
+          end
+        end
+      end
+    end
+  end  
+end
+  
