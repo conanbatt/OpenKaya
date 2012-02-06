@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Bronstein Time System</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<!-- QUnit -->
+		<link rel="stylesheet" href="qunit/qunit.css" type="text/css" media="screen">
+		<script type="text/javascript" src="qunit/qunit.js"></script>
+
+		<!-- Requirements -->
+		<script type="text/javascript" src="js/constants.js"></script>
+		<script type="text/javascript" src="js/board_emulator.js"></script>
+		<script type="text/javascript" src="js/server_emulator.js"></script>
+		<script type="text/javascript" src="systems/bronstein.js"></script>
+
+		<!-- Tests -->
+		<script type="text/javascript" src="tests/bronstein.js"></script>
+	</head>
+	<body>
+		<h1 id="qunit-header">Bronstein Timer System&nbsp;&nbsp;&nbsp;<a href="index.html">Volver</a></h1>
+		<h2 id="qunit-banner"></h2>
+		<div id="qunit-testrunner-toolbar"></div>
+		<h2 id="qunit-userAgent"></h2>
+		<ol id="qunit-tests"></ol>
+		<div id="qunit-fixture">test markup</div>
+		<table style="float: left; margin: 30px; text-align: center;">
+			<tr>
+				<th colspan="2">
+					Board 1
+				</th>
+			</tr>
+			<tr>
+				<th>
+					B
+				</th>
+				<th>
+					W
+				</th>
+			</tr>
+			<tr>
+				<td>
+					<div id="divb1"></div>
+				</td>
+				<td>
+					<div id="divw1"></div>
+				</td>
+			</tr>
+			<tr>
+				<th colspan="2">
+					<div id="divr1"></div>
+				</td>
+			</tr>
+		</table>
+		<table style="float: left; margin: 30px; text-align: center;">
+			<tr>
+				<th colspan="2">
+					Board 2
+				</th>
+			</tr>
+			<tr>
+				<th>
+					B
+				</th>
+				<th>
+					W
+				</th>
+			</tr>
+			<tr>
+				<td>
+					<div id="divb2"></div>
+				</td>
+				<td>
+					<div id="divw2"></div>
+				</td>
+			</tr>
+			<tr>
+				<th colspan="2">
+					<div id="divr2"></div>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>
