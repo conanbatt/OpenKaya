@@ -4,6 +4,14 @@ Kaya will open source parts and bits of the application incrementally over time,
 
 Open-source code is subject to as rigorous standards as the server. Code must have decent unit test coverage, and well documented.
 
+## Management
+
+OpenKaya has grown quite a bit and i've included a public tracker: https://www.pivotaltracker.com/projects/470995. 
+
+If you are working on something and dont have member access to edit the chores and such you can email gabriel.benmergui@kaya.gs.
+
+If you want to do something but don't know what, visiting the tracker is a good start to see what is known to be missing. Any ideas are welcome and we will support it with advice, code, overview as it is fit, and finally integrate it into the Kaya experience.
+
 
 ## Open Sourced Modules
 
@@ -13,7 +21,7 @@ This modules have been opened and are ready to be forked:
 * Score estimator
 * Game Scoring (Chinese rules missing )
 * Tournament & League systems (**Higher priority**)
-* Time System (Byo-yomi, canadian, hourglass and Bronstein)
+* Time System (Bronstein)
 
 # Rating System
 
@@ -135,6 +143,14 @@ You can see some time systems explained in the link ahead.
 
 http://en.wikipedia.org/wiki/Game_clock#Time_controls
 
+# Credits
+
+OpenKaya grows thanks to the contributions of several collaborators. All of them receive the fire Kanji(火) recognition in Kaya.
+
+* AOA
+* (killerducky)yoyoma
+* Enders
+* (John Andrichak IV)Verse
 
 # LICENSE
 
