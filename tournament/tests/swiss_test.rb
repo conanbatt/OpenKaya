@@ -24,3 +24,12 @@ test "Score computation and podium, 8 players with large rank difference, the 6d
   assert_equal swiss_elim.podium[1].name, "Paul"  
   assert_equal swiss_elim.podium[2].name, "Jack"  
 end
+
+#TODO
+test "a fixture from a new tournament shouldnt explode :) " do
+
+  swiss = Organizer.create_tournament("SwissTournament", spawn_player_list(4),5)
+  swiss.start_round
+  assert_equal swiss.fixture.size, 4
+
+end
