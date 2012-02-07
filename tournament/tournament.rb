@@ -39,7 +39,7 @@ class Tournament
   def fixture
     res = []
     @players.each do |p|
-      res << {:ip=> p.ip, :player=> p.name, :score => score(result_by_player(p)), :rounds => result_by_player(p)}
+      res << {:ip=> p.ip, :player=> p.name, :score => score(result_by_player(p),p), :rounds => result_by_player(p)}
     end
     res         
   end
@@ -59,14 +59,18 @@ class Tournament
   def result_by_player(player)
     res = []
     @rounds.each do |r|
-      res << r.result_by_player(player)
+      r.pairings.each do |p|
+        if p.white_player == player || p.black_player == player
+          res << p
+        end
+      end
     end
     return res
   end
   
-  def score(results)
+  def score(results, player)
     points = 0
-    results.each {|res| points +=1 if (res[0]=="+") }
+    results.each {|res| points +=1 if (res.winner == player) }
     points
   end
   
@@ -131,11 +135,11 @@ class Tournament
     end
     
     def draw?
-      result == "Draw" || result == "Jigo"
+      (result == "Draw" || result == "Jigo")
     end
     
     def winner
-        ((result.nil?) ? nil :(result[0] == "W") ? white_player : black_player )
+        ((result.nil? || draw? || void?) ? nil :(result[0] == "W") ? white_player : black_player )
     end
     
     def to_s
