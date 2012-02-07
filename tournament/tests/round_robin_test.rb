@@ -39,3 +39,12 @@ test "Use case, 6 players with wide rank difference, the 6d should win the tourn
   
   assert_equal round_robin.podium[0].name, "Pierre"   
 end
+
+#TODO
+test "a fixture from a new tournament shouldnt explode :) " do
+
+  rr = Organizer.create_tournament("RoundRobinTournament", spawn_player_list(4))
+  rr.start_round
+  assert_equal rr.fixture.size, 4
+
+end

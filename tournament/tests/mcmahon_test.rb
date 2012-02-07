@@ -64,3 +64,13 @@ test "Score computation and podium, 8 players with large rank difference, the 6d
   assert_equal mcmahon_tournament.finished?,true
   assert_equal mcmahon_tournament.podium[0].name, "Pierre"  
 end
+
+
+#TODO
+test "a fixture from a new tournament shouldnt explode :) " do
+
+  mcmahon = Organizer.create_tournament("McMahonTournament", spawn_player_list(4),5,false)
+  mcmahon .start_round
+  assert_equal mcmahon.fixture.size, 4
+
+end

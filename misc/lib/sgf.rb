@@ -12,7 +12,7 @@ class SGF
     @comment_buffer = ""
     @size = properties[:size]
     properties.keys.each {|k| @config.write_property(k,properties[k]) }
-     
+    @config.write_property(:handicap, properties[:handicap])     
   end
 
   def last_two_moves_are_pass?
@@ -57,7 +57,7 @@ class SGF
 
   def hash_to_comment(hash)
     raise "invalid hash" unless hash["user"] && hash["rank"] && hash["message"]
-    "#{hash["user"]}[#{hash["rank"]}]: #{hash["message"]}"
+    "#{hash["user"]}#{hash["rank"]}: #{hash["message"]}"
   end
     
   def move_list
@@ -152,7 +152,7 @@ class SGF
   end
 
   def self.handi_node(size,handicap)
-    case size
+    case size.to_i
 
     when 19
       case handicap
@@ -234,12 +234,12 @@ class Node
   end
 
   def to_s
-    comment_node = comments.empty? ? "" : "C[#{comments}]"
+    comment_node = comments.empty? ? "" : "C[#{comments.gsub("]","\\]").gsub(")","\\)")}]"
     node_text + comment_node
   end
 
   def add_comment(comment)
-    @comments << comment + " "
+    @comments << comment + "\n"
   end
   def comments
     buffer = ""
@@ -289,6 +289,7 @@ class ConfigNode
   def initialize(property="")
     @node_text = property.dup
     write_property(:file_format,4)
+    handicap = property(:handicap)
     @comments = []
   end
 
@@ -297,12 +298,13 @@ class ConfigNode
   end
 
   def add_comment(comment)
-    @comments << (comment + " ")
+    @comments << (comment + "\n")
   end
   def comments
     buffer = ""
     @comments.each{|c| buffer += c}
-    buffer.empty? ? "" : "C[#{buffer}]"
+    #must escape ], )
+    buffer.empty? ? "" : "C[#{buffer.gsub("]","\\]").gsub(")","\\)")}]"
   end
 
   def to_s
@@ -314,7 +316,7 @@ class ConfigNode
                :komi => "KM", :date => "DT", :result => "RE",
                :file_format => "FF", :black_country => "BC",
                :white_country => "WC", :event => "EV", :source => "SO",
-               :encoding => "CA", :size => "SZ", :rules => "RU", :time_set => "OT"}
+               :encoding => "CA", :size => "SZ", :rules => "RU", :time_set => "OT",:handicap => "HA"}
 
   def property(symbol)
     return node_text if symbol == :all
@@ -326,10 +328,15 @@ class ConfigNode
   end
 
   def write_property(symbol, value)
+    return unless value
     raise "Invalid property #{symbol}" unless METALABELS[symbol]
     node = "#{METALABELS[symbol]}[#{value}]"
     @node_text.gsub!(/#{METALABELS[symbol]}\[\w*\]/, "") #in case it already had it
-    @node_text = node + @node_text
+    @node_text = node + @node_text 
+    size = property(:size)
+    #a little hackish to insert the AB node only
+    @node_text += SGF.handi_node(property(:size),value)[5..-1] if(size && 
+                                                           symbol == :handicap)
   end
 
 end

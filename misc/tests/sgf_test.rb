@@ -24,12 +24,12 @@ test "Should add comment to a node" do
   sgf.add_comment("This guy sucks")
 
   assert_equal sgf.move_list, ";B[ab]"
-  assert_equal sgf.to_s ,"(;FF[4];B[ab]C[This guy sucks ])"
+  assert_equal sgf.to_s ,"(;FF[4];B[ab]C[This guy sucks\n])"
 
   sgf.add_comment("yeah")
 
   assert_equal sgf.move_list, ";B[ab]"
-  assert sgf.to_s.include? "(;FF[4];B[ab]C[This guy sucks yeah ])"
+  assert sgf.to_s.include? "(;FF[4];B[ab]C[This guy sucks\nyeah\n])"
 
 end
 
@@ -38,11 +38,11 @@ test "Should add comment to an empty sgf" do
   sgf = SGF.new
   sgf.add_comment("This guy sucks")
 
-  assert_equal sgf.to_s , "(;FF[4]C[This guy sucks ])"
+  assert_equal sgf.to_s , "(;FF[4]C[This guy sucks\n])"
 
   sgf.add_comment("yeah")
 
-  assert_equal sgf.to_s, "(;FF[4]C[This guy sucks yeah ])"
+  assert_equal sgf.to_s, "(;FF[4]C[This guy sucks\nyeah\n])"
 
 end
 
@@ -190,10 +190,10 @@ test 'Should create a node object' do
   assert_equal node.coordinate, "ac"
 
   node.add_comment("pepe")
-  assert_equal node.comments, "pepe "
+  assert_equal node.comments, "pepe\n"
 
   node.add_comment("y yo")
-  assert_equal node.comments, "pepe y yo "
+  assert_equal node.comments, "pepe\ny yo\n"
 end
 
 test 'should create the sgf node list with initialization' do
@@ -251,7 +251,7 @@ test "should be able to parse comments into it" do
              }
   sgf.parse_comments!(comments)
 
-  assert_equal sgf.to_s, "(;FF[4]C[dp[[7d]]: fgsfgafha conanbatt[[7d]]: aaa ];B[aa];W[bb])" 
+  assert_equal sgf.to_s, "(;FF[4]C[dp[7d\\]: fgsfgafha\nconanbatt[7d\\]: aaa\n];B[aa];W[bb])" 
 
 end
 
@@ -274,5 +274,15 @@ test "should be able to undo" do
 
   sgf.undo
   assert_equal sgf.move_list, ";B[aa];W[bb]"
+
+end
+
+test "should write the hadnicap info" do
+
+  params = {:handicap => 9, :size => 19, :white_player => "fuerte", :black_player => "debil"}
+  sgf = SGF.new(";B[aa];W[bb];B[cc]", params)
+
+  assert_equal sgf.to_s, "(;HA[9]PB[debil]PW[fuerte]SZ[19]FF[4]AB[dd][jd][pd][dj][jj][pj][dp][jp][pp];B[aa];W[bb];B[cc])"
+
 
 end

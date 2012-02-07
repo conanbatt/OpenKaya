@@ -28,3 +28,12 @@ test "Score computation and podium, 6 players with wide rank difference, the 6d 
   assert_equal double_elim.finished?,true
   assert_equal double_elim.podium[0].name, "Pierre"   
 end
+
+#TODO
+test "a fixture from a new tournament shouldnt explode :) " do
+
+  double_elim = Organizer.create_tournament("DoubleElimination", spawn_player_list(4))
+  double_elim.start_round
+  assert_equal double_elim.fixture.size, 4
+
+end
