@@ -1,9 +1,20 @@
 var MAIN_TIME = 5;
 var PERIOD_TIME = 10;
 var PERIOD_STONES = 3;
+
 function binder(method, object, args) {
 	return function(orig_args) { method.apply(object, [orig_args].concat(args)); };
 }
+
+function timerEqual(game_remain, test_remain, test_text) {
+	equal(Math.floor(game_remain[WHITE].main_time), test_remain[WHITE].main_time, test_text);
+	equal(Math.floor(game_remain[BLACK].main_time), test_remain[BLACK].main_time, test_text);
+	equal(game_remain[WHITE].period_stones, test_remain[WHITE].period_stones, test_text);
+	equal(game_remain[BLACK].period_stones, test_remain[BLACK].period_stones, test_text);
+	equal(Math.floor(game_remain[WHITE].period_time), test_remain[WHITE].period_time, test_text);
+	equal(Math.floor(game_remain[BLACK].period_time), test_remain[BLACK].period_time, test_text);
+}
+
 
 test("Configure Timer", function() {
 
@@ -78,18 +89,10 @@ test("Configure Timer", function() {
 			test_remain[WHITE].period_stones = PERIOD_STONES;
 			test_remain[BLACK].period_time = PERIOD_TIME;
 			test_remain[WHITE].period_time = PERIOD_TIME;
-			equal(Math.floor(board1.time.remain[WHITE].main_time), test_remain[WHITE].main_time, "B1: Main time for white was reduced by 3 seconds.");
-			equal(Math.floor(board1.time.remain[BLACK].main_time), test_remain[BLACK].main_time, "B1: Main time for black is intact.");
-			equal(Math.floor(board2.time.remain[WHITE].main_time), test_remain[WHITE].main_time, "B2: Main time for white was reduced by 3 seconds.");
-			equal(Math.floor(board2.time.remain[BLACK].main_time), test_remain[BLACK].main_time, "B2: Main time for black is intact.");
-			equal(board1.time.remain[WHITE].period_stones, test_remain[WHITE].period_stones, "B1: Period stones are intact for both black and white.");
-			equal(board1.time.remain[BLACK].period_stones, test_remain[BLACK].period_stones, "B1: Period stones are intact for both black and white.");
-			equal(board2.time.remain[WHITE].period_stones, test_remain[WHITE].period_stones, "B2: Period stones are intact for both black and white.");
-			equal(board2.time.remain[BLACK].period_stones, test_remain[BLACK].period_stones, "B2: Period stones are intact for both black and white.");
-			equal(board1.time.remain[WHITE].period_time, test_remain[WHITE].period_time, "B1: Period time remains the same for both black and white.");
-			equal(board1.time.remain[BLACK].period_time, test_remain[BLACK].period_time, "B1: Period time remains the same for both black and white.");
-			equal(board2.time.remain[WHITE].period_time, test_remain[WHITE].period_time, "B2: Period time remains the same for both black and white.");
-			equal(board2.time.remain[BLACK].period_time, test_remain[BLACK].period_time, "B2: Period time remains the same for both black and white.");
+
+			timerEqual(board1.time.remain, test_remain, "B1: 3 seconds passed until B played.");
+			timerEqual(board2.time.remain, test_remain, "B2: 3 seconds passed until B played.");
+
 			equal(board1.time.actual_color, WHITE, "B1: Counting for White");
 			equal(board2.time.actual_color, WHITE, "B2: Counting for White");
 			start();
@@ -107,18 +110,10 @@ test("Configure Timer", function() {
 			test_remain[WHITE].period_time = PERIOD_TIME - 1; // should exceed main time by 1 second.
 			test_remain[BLACK].period_stones = PERIOD_STONES;
 			test_remain[WHITE].period_stones = PERIOD_STONES - 1; // As exeeded main time, this stone counts as a period stone.
-			equal(Math.floor(board1.time.remain[WHITE].main_time), test_remain[WHITE].main_time, "B1: 6 seconds passed until W played, he has 9 seconds to play 2 more stones.");
-			equal(Math.floor(board1.time.remain[BLACK].main_time), test_remain[BLACK].main_time, "B1: 6 seconds passed until W played, he has 9 seconds to play 2 more stones.");
-			equal(Math.floor(board2.time.remain[WHITE].main_time), test_remain[WHITE].main_time, "B2: 6 seconds passed until W played, he has 9 seconds to play 2 more stones.");
-			equal(Math.floor(board2.time.remain[BLACK].main_time), test_remain[BLACK].main_time, "B2: 6 seconds passed until W played, he has 9 seconds to play 2 more stones.");
-			equal(board1.time.remain[WHITE].period_stones, test_remain[WHITE].period_stones, "B1: 6 seconds passed until W played, he has 9 seconds to play 2 more stones.");
-			equal(board1.time.remain[BLACK].period_stones, test_remain[BLACK].period_stones, "B1: 6 seconds passed until W played, he has 9 seconds to play 2 more stones.");
-			equal(board2.time.remain[WHITE].period_stones, test_remain[WHITE].period_stones, "B2: 6 seconds passed until W played, he has 9 seconds to play 2 more stones.");
-			equal(board2.time.remain[BLACK].period_stones, test_remain[BLACK].period_stones, "B2: 6 seconds passed until W played, he has 9 seconds to play 2 more stones.");
-			equal(Math.floor(board1.time.remain[WHITE].period_time), test_remain[WHITE].period_time, "B1: 6 seconds passed until W played, he has 9 seconds to play 2 more stones.");
-			equal(Math.floor(board1.time.remain[BLACK].period_time), test_remain[BLACK].period_time, "B1: 6 seconds passed until W played, he has 9 seconds to play 2 more stones.");
-			equal(Math.floor(board2.time.remain[WHITE].period_time), test_remain[WHITE].period_time, "B2: 6 seconds passed until W played, he has 9 seconds to play 2 more stones.");
-			equal(Math.floor(board2.time.remain[BLACK].period_time), test_remain[BLACK].period_time, "B2: 6 seconds passed until W played, he has 9 seconds to play 2 more stones.");
+
+			timerEqual(board1.time.remain, test_remain, "B1: 6 seconds passed until W played, he has 9 seconds to play 2 more stones.");
+			timerEqual(board2.time.remain, test_remain, "B2: 6 seconds passed until W played, he has 9 seconds to play 2 more stones.");
+
 			equal(board1.time.actual_color, BLACK, "B1: Counting for Black");
 			equal(board2.time.actual_color, BLACK, "B2: Counting for Black");
 			start();
@@ -135,18 +130,10 @@ test("Configure Timer", function() {
 			test_remain[WHITE].period_time = PERIOD_TIME - 1;
 			test_remain[BLACK].period_stones = PERIOD_STONES - 1; // As exeeded main time, this stone counts as a period stone.
 			test_remain[WHITE].period_stones = PERIOD_STONES - 1;
-			equal(Math.floor(board1.time.remain[WHITE].main_time), test_remain[WHITE].main_time, "B1: 5 seconds passed until B played, 7 seconds left to play 2 stones.");
-			equal(Math.floor(board1.time.remain[BLACK].main_time), test_remain[BLACK].main_time, "B1: 5 seconds passed until B played, 7 seconds left to play 2 stones.");
-			equal(Math.floor(board2.time.remain[WHITE].main_time), test_remain[WHITE].main_time, "B2: 5 seconds passed until B played, 7 seconds left to play 2 stones.");
-			equal(Math.floor(board2.time.remain[BLACK].main_time), test_remain[BLACK].main_time, "B2: 5 seconds passed until B played, 7 seconds left to play 2 stones.");
-			equal(board1.time.remain[WHITE].period_stones, test_remain[WHITE].period_stones, "B1: 5 seconds passed until B played, 7 seconds left to play 2 stones.");
-			equal(board1.time.remain[BLACK].period_stones, test_remain[BLACK].period_stones, "B1: 5 seconds passed until B played, 7 seconds left to play 2 stones.");
-			equal(board2.time.remain[WHITE].period_stones, test_remain[WHITE].period_stones, "B2: 5 seconds passed until B played, 7 seconds left to play 2 stones.");
-			equal(board2.time.remain[BLACK].period_stones, test_remain[BLACK].period_stones, "B2: 5 seconds passed until B played, 7 seconds left to play 2 stones.");
-			equal(Math.floor(board1.time.remain[WHITE].period_time), test_remain[WHITE].period_time, "B1: 5 seconds passed until B played, 7 seconds left to play 2 stones.");
-			equal(Math.floor(board1.time.remain[BLACK].period_time), test_remain[BLACK].period_time, "B1: 5 seconds passed until B played, 7 seconds left to play 2 stones.");
-			equal(Math.floor(board2.time.remain[WHITE].period_time), test_remain[WHITE].period_time, "B2: 5 seconds passed until B played, 7 seconds left to play 2 stones.");
-			equal(Math.floor(board2.time.remain[BLACK].period_time), test_remain[BLACK].period_time, "B2: 5 seconds passed until B played, 7 seconds left to play 2 stones.");
+
+			timerEqual(board1.time.remain, test_remain, "B1: 5 seconds passed until B played, 7 seconds left to play 2 stones.");
+			timerEqual(board2.time.remain, test_remain, "B2: 5 seconds passed until B played, 7 seconds left to play 2 stones.");
+
 			equal(board1.time.actual_color, WHITE, "B1: Counting for White");
 			equal(board2.time.actual_color, WHITE, "B2: Counting for White");
 			start();
@@ -163,18 +150,10 @@ test("Configure Timer", function() {
 			test_remain[WHITE].period_time = PERIOD_TIME - 1 - 3; // 3 seconds more.
 			test_remain[BLACK].period_stones = PERIOD_STONES - 1;
 			test_remain[WHITE].period_stones = PERIOD_STONES - 1 - 1; // 2nd period stone.
-			equal(Math.floor(board1.time.remain[WHITE].main_time), test_remain[WHITE].main_time, "B1: 3 seconds passed until W played, he has 6 seconds to play 1 more stone.");
-			equal(Math.floor(board1.time.remain[BLACK].main_time), test_remain[BLACK].main_time, "B1: 3 seconds passed until W played, he has 6 seconds to play 1 more stone.");
-			equal(Math.floor(board2.time.remain[WHITE].main_time), test_remain[WHITE].main_time, "B2: 3 seconds passed until W played, he has 6 seconds to play 1 more stone.");
-			equal(Math.floor(board2.time.remain[BLACK].main_time), test_remain[BLACK].main_time, "B2: 3 seconds passed until W played, he has 6 seconds to play 1 more stone.");
-			equal(board1.time.remain[WHITE].period_stones, test_remain[WHITE].period_stones, "B1: 3 seconds passed until W played, he has 6 seconds to play 1 more stone.");
-			equal(board1.time.remain[BLACK].period_stones, test_remain[BLACK].period_stones, "B1: 3 seconds passed until W played, he has 6 seconds to play 1 more stone.");
-			equal(board2.time.remain[WHITE].period_stones, test_remain[WHITE].period_stones, "B2: 3 seconds passed until W played, he has 6 seconds to play 1 more stone.");
-			equal(board2.time.remain[BLACK].period_stones, test_remain[BLACK].period_stones, "B2: 3 seconds passed until W played, he has 6 seconds to play 1 more stone.");
-			equal(Math.floor(board1.time.remain[WHITE].period_time), test_remain[WHITE].period_time, "B1: 3 seconds passed until W played, he has 6 seconds to play 1 more stone.");
-			equal(Math.floor(board1.time.remain[BLACK].period_time), test_remain[BLACK].period_time, "B1: 3 seconds passed until W played, he has 6 seconds to play 1 more stone.");
-			equal(Math.floor(board2.time.remain[WHITE].period_time), test_remain[WHITE].period_time, "B2: 3 seconds passed until W played, he has 6 seconds to play 1 more stone.");
-			equal(Math.floor(board2.time.remain[BLACK].period_time), test_remain[BLACK].period_time, "B2: 3 seconds passed until W played, he has 6 seconds to play 1 more stone.");
+
+			timerEqual(board1.time.remain, test_remain, "B1: 3 seconds passed until W played, he has 6 seconds to play 1 more stone.");
+			timerEqual(board2.time.remain, test_remain, "B2: 3 seconds passed until W played, he has 6 seconds to play 1 more stone.");
+
 			equal(board1.time.actual_color, BLACK, "B1: Counting for Black");
 			equal(board2.time.actual_color, BLACK, "B2: Counting for Black");
 			start();
@@ -191,18 +170,10 @@ test("Configure Timer", function() {
 			test_remain[WHITE].period_time = PERIOD_TIME - 1 - 3;
 			test_remain[BLACK].period_stones = PERIOD_STONES - 1 - 1; // 2nd period stone.
 			test_remain[WHITE].period_stones = PERIOD_STONES - 1 - 1;
-			equal(Math.floor(board1.time.remain[WHITE].main_time), test_remain[WHITE].main_time, "B1: 5 seconds passed until B played, 2 seconds left to play 1 stone.");
-			equal(Math.floor(board1.time.remain[BLACK].main_time), test_remain[BLACK].main_time, "B1: 5 seconds passed until B played, 2 seconds left to play 1 stone.");
-			equal(Math.floor(board2.time.remain[WHITE].main_time), test_remain[WHITE].main_time, "B2: 5 seconds passed until B played, 2 seconds left to play 1 stone.");
-			equal(Math.floor(board2.time.remain[BLACK].main_time), test_remain[BLACK].main_time, "B2: 5 seconds passed until B played, 2 seconds left to play 1 stone.");
-			equal(board1.time.remain[WHITE].period_stones, test_remain[WHITE].period_stones, "B1: 5 seconds passed until B played, 2 seconds left to play 1 stone.");
-			equal(board1.time.remain[BLACK].period_stones, test_remain[BLACK].period_stones, "B1: 5 seconds passed until B played, 2 seconds left to play 1 stone.");
-			equal(board2.time.remain[WHITE].period_stones, test_remain[WHITE].period_stones, "B2: 5 seconds passed until B played, 2 seconds left to play 1 stone.");
-			equal(board2.time.remain[BLACK].period_stones, test_remain[BLACK].period_stones, "B2: 5 seconds passed until B played, 2 seconds left to play 1 stone.");
-			equal(Math.floor(board1.time.remain[WHITE].period_time), test_remain[WHITE].period_time, "B1: 5 seconds passed until B played, 2 seconds left to play 1 stone.");
-			equal(Math.floor(board1.time.remain[BLACK].period_time), test_remain[BLACK].period_time, "B1: 5 seconds passed until B played, 2 seconds left to play 1 stone.");
-			equal(Math.floor(board2.time.remain[WHITE].period_time), test_remain[WHITE].period_time, "B2: 5 seconds passed until B played, 2 seconds left to play 1 stone.");
-			equal(Math.floor(board2.time.remain[BLACK].period_time), test_remain[BLACK].period_time, "B2: 5 seconds passed until B played, 2 seconds left to play 1 stone.");
+
+			timerEqual(board1.time.remain, test_remain, "B1: 5 seconds passed until B played, 2 seconds left to play 1 stone.");
+			timerEqual(board2.time.remain, test_remain, "B2: 5 seconds passed until B played, 2 seconds left to play 1 stone.");
+
 			equal(board1.time.actual_color, WHITE, "B1: Counting for White");
 			equal(board2.time.actual_color, WHITE, "B2: Counting for White");
 			start();
@@ -219,18 +190,10 @@ test("Configure Timer", function() {
 			test_remain[WHITE].period_time = PERIOD_TIME; // 3rd stone: period time restarted.
 			test_remain[BLACK].period_stones = PERIOD_STONES - 1 - 1;
 			test_remain[WHITE].period_stones = PERIOD_STONES; // 3rd stone: period stones restarted.
-			equal(Math.floor(board1.time.remain[WHITE].main_time), test_remain[WHITE].main_time, "B1: 3 seconds passed until W played, he starts a new period.");
-			equal(Math.floor(board1.time.remain[BLACK].main_time), test_remain[BLACK].main_time, "B1: 3 seconds passed until W played, he starts a new period.");
-			equal(Math.floor(board2.time.remain[WHITE].main_time), test_remain[WHITE].main_time, "B2: 3 seconds passed until W played, he starts a new period.");
-			equal(Math.floor(board2.time.remain[BLACK].main_time), test_remain[BLACK].main_time, "B2: 3 seconds passed until W played, he starts a new period.");
-			equal(board1.time.remain[WHITE].period_stones, test_remain[WHITE].period_stones, "B1: 3 seconds passed until W played, he starts a new period.");
-			equal(board1.time.remain[BLACK].period_stones, test_remain[BLACK].period_stones, "B1: 3 seconds passed until W played, he starts a new period.");
-			equal(board2.time.remain[WHITE].period_stones, test_remain[WHITE].period_stones, "B2: 3 seconds passed until W played, he starts a new period.");
-			equal(board2.time.remain[BLACK].period_stones, test_remain[BLACK].period_stones, "B2: 3 seconds passed until W played, he starts a new period.");
-			equal(Math.floor(board1.time.remain[WHITE].period_time), test_remain[WHITE].period_time, "B1: 3 seconds passed until W played, he starts a new period.");
-			equal(Math.floor(board1.time.remain[BLACK].period_time), test_remain[BLACK].period_time, "B1: 3 seconds passed until W played, he starts a new period.");
-			equal(Math.floor(board2.time.remain[WHITE].period_time), test_remain[WHITE].period_time, "B2: 3 seconds passed until W played, he starts a new period.");
-			equal(Math.floor(board2.time.remain[BLACK].period_time), test_remain[BLACK].period_time, "B2: 3 seconds passed until W played, he starts a new period.");
+
+			timerEqual(board1.time.remain, test_remain, "B1: 3 seconds passed until W played, he starts a new period.");
+			timerEqual(board2.time.remain, test_remain, "B2: 3 seconds passed until W played, he starts a new period.");
+
 			equal(board1.time.actual_color, BLACK, "B1: Counting for Black");
 			equal(board2.time.actual_color, BLACK, "B2: Counting for Black");
 			start();
@@ -247,18 +210,10 @@ test("Configure Timer", function() {
 			test_remain[WHITE].period_time = PERIOD_TIME;
 			test_remain[BLACK].period_stones = PERIOD_STONES - 1 - 1; // Couldn't place the 3rd stone.
 			test_remain[WHITE].period_stones = PERIOD_STONES;
-			equal(Math.floor(board1.time.remain[WHITE].main_time), test_remain[WHITE].main_time, "B1: 5 seconds passed until B played, Game ended.");
-			equal(Math.floor(board1.time.remain[BLACK].main_time), test_remain[BLACK].main_time, "B1: 5 seconds passed until B played, Game ended.");
-			equal(Math.floor(board2.time.remain[WHITE].main_time), test_remain[WHITE].main_time, "B2: 5 seconds passed until B played, Game ended.");
-			equal(Math.floor(board2.time.remain[BLACK].main_time), test_remain[BLACK].main_time, "B2: 5 seconds passed until B played, Game ended.");
-			equal(board1.time.remain[WHITE].period_stones, test_remain[WHITE].period_stones, "B1: 5 seconds passed until B played, Game ended.");
-			equal(board1.time.remain[BLACK].period_stones, test_remain[BLACK].period_stones, "B1: 5 seconds passed until B played, Game ended.");
-			equal(board2.time.remain[WHITE].period_stones, test_remain[WHITE].period_stones, "B2: 5 seconds passed until B played, Game ended.");
-			equal(board2.time.remain[BLACK].period_stones, test_remain[BLACK].period_stones, "B2: 5 seconds passed until B played, Game ended.");
-			equal(Math.floor(board1.time.remain[WHITE].period_time), test_remain[WHITE].period_time, "B1: 5 seconds passed until B played, Game ended.");
-			equal(Math.floor(board1.time.remain[BLACK].period_time), test_remain[BLACK].period_time, "B1: 5 seconds passed until B played, Game ended.");
-			equal(Math.floor(board2.time.remain[WHITE].period_time), test_remain[WHITE].period_time, "B2: 5 seconds passed until B played, Game ended.");
-			equal(Math.floor(board2.time.remain[BLACK].period_time), test_remain[BLACK].period_time, "B2: 5 seconds passed until B played, Game ended.");
+
+			timerEqual(board1.time.remain, test_remain, "B1: 5 seconds passed until B played, Game ended.");
+			timerEqual(board2.time.remain, test_remain, "B2: 5 seconds passed until B played, Game ended.");
+
 			equal(board1.time.status, ST_STOPED, "B1: Not counting");
 			equal(board2.time.status, ST_STOPED, "B2: Not counting");
 			equal(board1.time.actual_color, null, "B1: No actual color");
