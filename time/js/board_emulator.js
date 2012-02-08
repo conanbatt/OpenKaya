@@ -24,7 +24,7 @@ function Board(config) {
 	} else if (config.time_system == "Byoyomi") {
 		this.time = new ByoyomiTimer(this, config.starting_time, config.period, config.period_time);
 	} else if (config.time_system == "Canadian") {
-		this.time = new CanadianTimer(this, config.starting_time, config.period_time, config.period_stone);
+		this.time = new CanadianTimer(this, config.main_time, config.period_time, config.period_stones);
 	} else {
 		throw new Error("No time system defined or time system not available.");
 	}
@@ -40,7 +40,7 @@ Board.prototype = {
 			throw new Error("Not my turn to play.");
 			return false;
 		}
-		var remain = this.time.pause(true); 
+		var remain = this.time.pause(true);
 		this.server.play(this.my_color, remain);
 	},
 
@@ -68,16 +68,16 @@ Board.prototype = {
 				this.div_clocks[WHITE].innerHTML = Math.round(remain[WHITE].time);
 			}
 		} else if (this.time.system.name == 'Canadian') {
-			if(remain[BLACK].stone > 0) {
-				this.div_clocks[BLACK].innerHTML = Math.round(remain[BLACK].time) + ' / ' + remain[BLACK].stone;
+			if (remain[BLACK].main_time > 0) {
+				this.div_clocks[BLACK].innerHTML = Math.floor(remain[BLACK].main_time + 0.99);
 			} else {
-				this.div_clocks[BLACK].innerHTML = Math.round(remain[BLACK].time);
+				this.div_clocks[BLACK].innerHTML = Math.floor(remain[BLACK].period_time + 0.99) + ' / ' + remain[BLACK].period_stones;
 			}
 
-			if(remain[WHITE].stone > 0) {
-				this.div_clocks[WHITE].innerHTML = Math.round(remain[WHITE].time) + ' / ' + remain[WHITE].stone;
+			if (remain[WHITE].main_time > 0) {
+				this.div_clocks[WHITE].innerHTML = Math.floor(remain[WHITE].main_time + 0.99);
 			} else {
-				this.div_clocks[WHITE].innerHTML = Math.round(remain[WHITE].time);
+				this.div_clocks[WHITE].innerHTML = Math.floor(remain[WHITE].period_time + 0.99) + ' / ' + remain[WHITE].period_stones;
 			}
 		} else {
 			this.div_clocks[BLACK].innerHTML = Math.round(remain[BLACK]);
