@@ -134,7 +134,7 @@ class SwissTournament < Tournament
   end
   
   def finished?
-    (rounds.size == rounds_count && rounds.last.finished?)
+    (rounds.size == rounds_count && !rounds.last.nil? && rounds.last.finished?)
   end
   
   def output
