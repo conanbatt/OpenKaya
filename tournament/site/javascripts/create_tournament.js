@@ -17,14 +17,18 @@ function ParticipantList(){
     var that = this;
     $("#participants").on("click", "button.delete", function(){
         id = Number($(this).parents("tr").attr("ip"));
-        participants.splice(id-1,id);
-        draw_participant_list();
+        that.participants.splice(id);
+        that.draw_participant_list();
     });
 
     this.draw_participant_list = function(){
         $("#participants").find("tr[ip]").remove();
         for(var i=0;i<that.participants.length;i++){
-            add_participant(that.participants[i]);
+            $("#participants").append("<tr ip="+i+" id=user-"+i+">"+
+                                    "<td>"+that.participants[i].name+"</td>"+
+                                    "<td>"+that.participants[i].rank+"</td>"+
+                                    "<td><button class='delete'>delete</button></td>"+
+                                  "</tr>");
         }
     }
     this.add_participant = function(participant){

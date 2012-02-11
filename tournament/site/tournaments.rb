@@ -15,7 +15,7 @@ Cuba.define do
     on "tournaments" do
       on ":id" do |id|
         @tournament = mock_single_elim 
-        res.write render("views/tournament.html.erb")
+        res.write render("views/tournament.html.erb", :tournament => @tournament)
       end
     end
     on "javascripts" do
@@ -39,6 +39,16 @@ Cuba.define do
 
   end
 
+end
+
+def partial(template, locals={})
+  render("views/partials/#{template}.html.erb", locals)
+end
+
+def render_tournament(tournament)
+  if(tournament.class == SingleElimination)
+    return partial("single_elim", :tournament => tournament)
+  end
 end
 
 def create_player_list(players)

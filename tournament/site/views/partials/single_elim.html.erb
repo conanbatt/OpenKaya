@@ -8,8 +8,11 @@
         <script src="/resources/js/lib/jquery.min.js"></script>
     </head>
     <body>
-        <div id="container">
-            <%= render_tournament(tournament) %>
+        <div id="fixture">
+            <h1><% (tournament.title || tournament.class.to_s) %> </h1>
+            <% tournament.pairings.each do |pairing|  %>
+              <span><%= pairing.to_s  %></span><br />
+            <% end %> 
         </div>
     </body>
 

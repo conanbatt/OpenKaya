@@ -2,6 +2,8 @@ class Tournament
 
   attr_accessor :rounds, :players 
 
+  attr_accessor :title
+
   def initialize(players)
     @players = players
     @rounds = []
