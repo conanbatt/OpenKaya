@@ -1,9 +1,18 @@
-var STARTING_TIME = 30;
+var MAIN_TIME = 30;
 var PERIOD_TIME = 5;
-var PERIOD = 3;
+var PERIODS = 3;
 
 function binder(method, object, args) {
 	return function(orig_args) { method.apply(object, [orig_args].concat(args)); };
+}
+
+function timerEqual(game_remain, test_remain, test_text) {
+	equal(Math.floor(game_remain[WHITE].main_time), test_remain[WHITE].main_time, test_text);
+	equal(Math.floor(game_remain[BLACK].main_time), test_remain[BLACK].main_time, test_text);
+	equal(game_remain[WHITE].periods, test_remain[WHITE].periods, test_text);
+	equal(game_remain[BLACK].periods, test_remain[BLACK].periods, test_text);
+	equal(Math.floor(game_remain[WHITE].period_time), test_remain[WHITE].period_time, test_text);
+	equal(Math.floor(game_remain[BLACK].period_time), test_remain[BLACK].period_time, test_text);
 }
 
 test("Configure Timer", function() {
@@ -14,9 +23,9 @@ test("Configure Timer", function() {
 		var server = new Server();
 		var config1 = {
 			time_system: "Byoyomi",
-			starting_time: STARTING_TIME,
+			main_time: MAIN_TIME,
 			period_time: PERIOD_TIME,
-			period: PERIOD,
+			periods: PERIODS,
 			div_clock_b: "divb1",
 			div_clock_w: "divw1",
 			div_result: "divr1",
@@ -25,9 +34,9 @@ test("Configure Timer", function() {
 
 		var config2 = {
 			time_system: "Byoyomi",
-			starting_time: STARTING_TIME,
+			main_time: MAIN_TIME,
 			period_time: PERIOD_TIME,
-			period: PERIOD,
+			periods: PERIODS,
 			div_clock_b: "divb2",
 			div_clock_w: "divw2",
 			div_result: "divr2",
@@ -38,17 +47,19 @@ test("Configure Timer", function() {
 		server.subscribe(board2);
 
 	// Init Tests
-		// Time and period
+		// Time and periods
 		test_remain[BLACK] = {
-			'time': STARTING_TIME,
-			'period':  PERIOD
+			'main_time': MAIN_TIME,
+			'periods': PERIODS,
+			'period_time': PERIOD_TIME,
 		};
 		test_remain[WHITE] = {
-			'time': STARTING_TIME,
-			'period':  PERIOD
+			'main_time': MAIN_TIME,
+			'periods': PERIODS,
+			'period_time': PERIOD_TIME,
 		};
-		deepEqual(board1.time.remain, test_remain, "B1: At startup the time is " + STARTING_TIME + " seconds AND " + PERIOD + " periods.");
-		deepEqual(board2.time.remain, test_remain, "B1: At startup the time is " + STARTING_TIME + " seconds AND " + PERIOD + " periods.");
+		deepEqual(board1.time.remain, test_remain, "B1: At startup the time is " + MAIN_TIME + " seconds AND " + PERIODS + " periods.");
+		deepEqual(board2.time.remain, test_remain, "B1: At startup the time is " + MAIN_TIME + " seconds AND " + PERIODS + " periods.");
 
 		// Status
 		equal(board1.time.status, ST_PAUSED, "B1: Starts paused.");
@@ -71,18 +82,16 @@ test("Configure Timer", function() {
 	asyncTest("Black plays after 6 seconds", function() {
 		setTimeout(function() {
 			board2.play();
-			test_remain[BLACK].time = STARTING_TIME - 6;
-			test_remain[WHITE].time = STARTING_TIME;
-		  test_remain[BLACK].period = PERIOD;
-		  test_remain[WHITE].period = PERIOD;
-			equal(Math.round(board1.time.remain[WHITE].time), test_remain[WHITE].time, "B1: 6 seconds passed until B played.");
-			equal(Math.round(board1.time.remain[BLACK].time), test_remain[BLACK].time, "B1: 6 seconds passed until B played.");
-			equal(Math.round(board2.time.remain[WHITE].time), test_remain[WHITE].time, "B2: 6 seconds passed until B played.");
-			equal(Math.round(board2.time.remain[BLACK].time), test_remain[BLACK].time, "B2: 6 seconds passed until B played.");
-			equal(board1.time.remain[WHITE].period, test_remain[WHITE].period, "B1: 6 seconds passed until B played.");
-			equal(board1.time.remain[BLACK].period, test_remain[BLACK].period, "B1: 6 seconds passed until B played.");
-			equal(board2.time.remain[WHITE].period, test_remain[WHITE].period, "B2: 6 seconds passed until B played.");
-			equal(board2.time.remain[BLACK].period, test_remain[BLACK].period, "B2: 6 seconds passed until B played.");
+			test_remain[BLACK].main_time = MAIN_TIME - 6;
+			test_remain[WHITE].main_time = MAIN_TIME;
+			test_remain[BLACK].periods = PERIODS;
+			test_remain[WHITE].periods = PERIODS;
+			test_remain[BLACK].period_time = PERIOD_TIME;
+			test_remain[WHITE].period_time = PERIOD_TIME;
+
+			timerEqual(board1.time.remain, test_remain, "B1: 6 seconds passed until B played.");
+			timerEqual(board2.time.remain, test_remain, "B2: 6 seconds passed until B played.");
+
 			equal(board1.time.actual_color, WHITE, "B1: Counting for White");
 			equal(board2.time.actual_color, WHITE, "B2: Counting for White");
 			start();
@@ -93,18 +102,16 @@ test("Configure Timer", function() {
 	asyncTest("White plays 10 seconds after black", function() {
 		setTimeout(function() {
 			board1.play();
-			test_remain[BLACK].time = STARTING_TIME - 6;
-			test_remain[WHITE].time = STARTING_TIME - 10;
-		  test_remain[BLACK].period = PERIOD;
-		  test_remain[WHITE].period = PERIOD;
-			equal(Math.round(board1.time.remain[WHITE].time), test_remain[WHITE].time, "B1: 10 seconds passed until W played.");
-			equal(Math.round(board1.time.remain[BLACK].time), test_remain[BLACK].time, "B1: 10 seconds passed until W played.");
-			equal(Math.round(board2.time.remain[WHITE].time), test_remain[WHITE].time, "B2: 10 seconds passed until W played.");
-			equal(Math.round(board2.time.remain[BLACK].time), test_remain[BLACK].time, "B2: 10 seconds passed until W played.");
-			equal(board1.time.remain[WHITE].period, test_remain[WHITE].period, "B1: 10 seconds passed until W played.");
-			equal(board1.time.remain[BLACK].period, test_remain[BLACK].period, "B1: 10 seconds passed until W played.");
-			equal(board2.time.remain[WHITE].period, test_remain[WHITE].period, "B2: 10 seconds passed until W played.");
-			equal(board2.time.remain[BLACK].period, test_remain[BLACK].period, "B2: 10 seconds passed until W played.");
+			test_remain[BLACK].main_time = MAIN_TIME - 6;
+			test_remain[WHITE].main_time = MAIN_TIME - 10;
+			test_remain[BLACK].periods = PERIODS;
+			test_remain[WHITE].periods = PERIODS;
+			test_remain[BLACK].period_time = PERIOD_TIME;
+			test_remain[WHITE].period_time = PERIOD_TIME;
+
+			timerEqual(board1.time.remain, test_remain, "B1: 10 seconds passed until W played.");
+			timerEqual(board2.time.remain, test_remain, "B2: 10 seconds passed until W played.");
+
 			equal(board1.time.actual_color, BLACK, "B1: Counting for Black");
 			equal(board2.time.actual_color, BLACK, "B2: Counting for Black");
 			start();
@@ -115,18 +122,16 @@ test("Configure Timer", function() {
 	asyncTest("Black plays after 12 seconds", function() {
 		setTimeout(function() {
 			board2.play();
-			test_remain[BLACK].time = STARTING_TIME - 6 - 12;
-			test_remain[WHITE].time = STARTING_TIME - 10;
-		  test_remain[BLACK].period = PERIOD;
-		  test_remain[WHITE].period = PERIOD;
-			equal(Math.round(board1.time.remain[WHITE].time), test_remain[WHITE].time, "B1: 12 seconds passed until B played again. It was a great move!");
-			equal(Math.round(board1.time.remain[BLACK].time), test_remain[BLACK].time, "B1: 12 seconds passed until B played again. It was a great move!");
-			equal(Math.round(board2.time.remain[WHITE].time), test_remain[WHITE].time, "B2: 12 seconds passed until B played again. It was a great move!");
-			equal(Math.round(board2.time.remain[BLACK].time), test_remain[BLACK].time, "B2: 12 seconds passed until B played again. It was a great move!");
-			equal(board1.time.remain[WHITE].period, test_remain[WHITE].period, "B1: 12 seconds passed until B played again. It was a great move!");
-			equal(board1.time.remain[BLACK].period, test_remain[BLACK].period, "B1: 12 seconds passed until B played again. It was a great move!");
-			equal(board2.time.remain[WHITE].period, test_remain[WHITE].period, "B2: 12 seconds passed until B played again. It was a great move!");
-			equal(board2.time.remain[BLACK].period, test_remain[BLACK].period, "B2: 12 seconds passed until B played again. It was a great move!");
+			test_remain[BLACK].main_time = MAIN_TIME - 6 - 12;
+			test_remain[WHITE].main_time = MAIN_TIME - 10;
+			test_remain[BLACK].periods = PERIODS;
+			test_remain[WHITE].periods = PERIODS;
+			test_remain[BLACK].period_time = PERIOD_TIME;
+			test_remain[WHITE].period_time = PERIOD_TIME;
+
+			timerEqual(board1.time.remain, test_remain, "B1: 12 seconds passed until B played again. It was a great move!");
+			timerEqual(board2.time.remain, test_remain, "B2: 12 seconds passed until B played again. It was a great move!");
+
 			equal(board1.time.actual_color, WHITE, "B1: Counting for White");
 			equal(board2.time.actual_color, WHITE, "B2: Counting for White");
 			start();
@@ -137,18 +142,16 @@ test("Configure Timer", function() {
 	asyncTest("White tries to play 22 seconds after black. He has used up his main time.", function() {
 		setTimeout(function() {
 			board1.play();
-			test_remain[BLACK].time = STARTING_TIME - 6 - 12;
-			test_remain[WHITE].time = STARTING_TIME - 10 - 20 + PERIOD_TIME;
-		  test_remain[BLACK].period = PERIOD;
-		  test_remain[WHITE].period = PERIOD - 1;
-			equal(Math.round(board1.time.remain[WHITE].time), test_remain[WHITE].time, "B1: 22 seconds passed until W played. He is now in his first byo-yomi.");
-			equal(Math.round(board1.time.remain[BLACK].time), test_remain[BLACK].time, "B1: 22 seconds passed until W played. He is now in his first byo-yomi.");
-			equal(Math.round(board2.time.remain[WHITE].time), test_remain[WHITE].time, "B2: 22 seconds passed until W played. He is now in his first byo-yomi.");
-			equal(Math.round(board2.time.remain[BLACK].time), test_remain[BLACK].time, "B2: 22 seconds passed until W played. He is now in his first byo-yomi.");
-			equal(board1.time.remain[WHITE].period, test_remain[WHITE].period, "B1: 22 seconds passed until W played. He is now in his first byo-yomi.");
-			equal(board1.time.remain[BLACK].period, test_remain[BLACK].period, "B1: 22 seconds passed until W played. He is now in his first byo-yomi.");
-			equal(board2.time.remain[WHITE].period, test_remain[WHITE].period, "B2: 22 seconds passed until W played. He is now in his first byo-yomi.");
-			equal(board2.time.remain[BLACK].period, test_remain[BLACK].period, "B2: 22 seconds passed until W played. He is now in his first byo-yomi.");
+			test_remain[BLACK].main_time = MAIN_TIME - 6 - 12;
+			test_remain[WHITE].main_time = 0; // end of main time.
+			test_remain[BLACK].periods = PERIODS;
+			test_remain[WHITE].periods = PERIODS;
+			test_remain[BLACK].period_time = PERIOD_TIME;
+			test_remain[WHITE].period_time = PERIOD_TIME;
+
+			timerEqual(board1.time.remain, test_remain, "B1: 22 seconds passed until W played. He is now in his first byo-yomi.");
+			timerEqual(board2.time.remain, test_remain, "B2: 22 seconds passed until W played. He is now in his first byo-yomi.");
+
 			equal(board1.time.actual_color, BLACK, "B1: Counting for Black");
 			equal(board2.time.actual_color, BLACK, "B2: Counting for Black");
 			start();
@@ -156,21 +159,19 @@ test("Configure Timer", function() {
 	});
 
 	// Play and test
-	asyncTest("Black plays after 18 seconds, he has 12 seconds main time, so uses one byoyomi period", function() {
+	asyncTest("Black plays after 18 seconds, he has 12 seconds main time, so uses one byoyomi periods", function() {
 		setTimeout(function() {
 			board2.play();
-			test_remain[BLACK].time = STARTING_TIME - 6 - 12 - 12 + PERIOD_TIME - 5 + PERIOD_TIME;
-			test_remain[WHITE].time = STARTING_TIME - 10 - 20 + PERIOD_TIME;
-		  test_remain[BLACK].period = PERIOD - 2;
-		  test_remain[WHITE].period = PERIOD - 1;
-			equal(Math.round(board1.time.remain[WHITE].time), test_remain[WHITE].time, "B1: 18 seconds passed until B played again. He has two periods left!");
-			equal(Math.round(board1.time.remain[BLACK].time), test_remain[BLACK].time, "B1: 18 seconds passed until B played again. He has two periods left!");
-			equal(Math.round(board2.time.remain[WHITE].time), test_remain[WHITE].time, "B2: 18 seconds passed until B played again. He has two periods left!");
-			equal(Math.round(board2.time.remain[BLACK].time), test_remain[BLACK].time, "B2: 18 seconds passed until B played again. He has two periods left!");
-			equal(board1.time.remain[WHITE].period, test_remain[WHITE].period, "B1: 18 seconds passed until B played again. He has two periods left!");
-			equal(board1.time.remain[BLACK].period, test_remain[BLACK].period, "B1: 18 seconds passed until B played again. He has two periods left!");
-			equal(board2.time.remain[WHITE].period, test_remain[WHITE].period, "B2: 18 seconds passed until B played again. He has two periods left!");
-			equal(board2.time.remain[BLACK].period, test_remain[BLACK].period, "B2: 18 seconds passed until B played again. He has two periods left!");
+			test_remain[BLACK].main_time = 0;
+			test_remain[WHITE].main_time = 0;
+			test_remain[BLACK].periods = PERIODS - 1;
+			test_remain[WHITE].periods = PERIODS;
+			test_remain[BLACK].period_time = PERIOD_TIME;
+			test_remain[WHITE].period_time = PERIOD_TIME;
+
+			timerEqual(board1.time.remain, test_remain, "B1: 18 seconds passed until B played again. He has two periods left!");
+			timerEqual(board2.time.remain, test_remain, "B2: 18 seconds passed until B played again. He has two periods left!");
+
 			equal(board1.time.actual_color, WHITE, "B1: Counting for White");
 			equal(board2.time.actual_color, WHITE, "B2: Counting for White");
 			start();
@@ -181,18 +182,16 @@ test("Configure Timer", function() {
 	asyncTest("White tries to play 2 seconds after black, this should cost no byoyomi periods.", function() {
 		setTimeout(function() {
 			board1.play();
-			test_remain[BLACK].time = STARTING_TIME - 6 - 12 - 12 + PERIOD_TIME - 5 + PERIOD_TIME;
-			test_remain[WHITE].time = STARTING_TIME - 10 - 20 + PERIOD_TIME;
-		  test_remain[BLACK].period = PERIOD - 2;
-		  test_remain[WHITE].period = PERIOD - 1;
-			equal(Math.round(board1.time.remain[WHITE].time), test_remain[WHITE].time, "B1: 2 seconds passed until W played. That was fast!");
-			equal(Math.round(board1.time.remain[BLACK].time), test_remain[BLACK].time, "B1: 2 seconds passed until W played. That was fast!");
-			equal(Math.round(board2.time.remain[WHITE].time), test_remain[WHITE].time, "B2: 2 seconds passed until W played. That was fast!");
-			equal(Math.round(board2.time.remain[BLACK].time), test_remain[BLACK].time, "B2: 2 seconds passed until W played. That was fast!");
-			equal(board1.time.remain[WHITE].period, test_remain[WHITE].period, "B1: 2 seconds passed until W played. That was fast!");
-			equal(board1.time.remain[BLACK].period, test_remain[BLACK].period, "B1: 2 seconds passed until W played. That was fast!");
-			equal(board2.time.remain[WHITE].period, test_remain[WHITE].period, "B2: 2 seconds passed until W played. That was fast!");
-			equal(board2.time.remain[BLACK].period, test_remain[BLACK].period, "B2: 2 seconds passed until W played. That was fast!");
+			test_remain[BLACK].main_time = 0;
+			test_remain[WHITE].main_time = 0;
+			test_remain[BLACK].periods = PERIODS - 1;
+			test_remain[WHITE].periods = PERIODS;
+			test_remain[BLACK].period_time = PERIOD_TIME;
+			test_remain[WHITE].period_time = PERIOD_TIME;
+
+			timerEqual(board1.time.remain, test_remain, "B1: 2 seconds passed until W played. That was fast!");
+			timerEqual(board2.time.remain, test_remain, "B2: 2 seconds passed until W played. That was fast!");
+
 			equal(board1.time.actual_color, BLACK, "B1: Counting for Black");
 			equal(board2.time.actual_color, BLACK, "B2: Counting for Black");
 			start();
@@ -203,18 +202,16 @@ test("Configure Timer", function() {
 	asyncTest("Black tries to play 11 seconds after white, but he only has two byoyomi periods left.", function() {
 		setTimeout(function() {
 			board2.play();
-			test_remain[BLACK].time = STARTING_TIME - 6 - 12 - 12 + PERIOD_TIME - 5 + PERIOD_TIME - 5 + PERIOD_TIME - 5; // Time ended and no period remain
-			test_remain[WHITE].time = STARTING_TIME - 10 - 20 + PERIOD_TIME;
-		  test_remain[BLACK].period = PERIOD - 3;
-		  test_remain[WHITE].period = PERIOD - 1;
-			equal(Math.round(board1.time.remain[WHITE].time), test_remain[WHITE].time, "B1: 11 seconds passed until B played. Game was ended before, so no effect.");
-			equal(Math.round(board1.time.remain[BLACK].time), test_remain[BLACK].time, "B1: 11 seconds passed until B played. Game was ended before, so no effect.");
-			equal(Math.round(board2.time.remain[WHITE].time), test_remain[WHITE].time, "B2: 11 seconds passed until B played. Game was ended before, so no effect.");
-			equal(Math.round(board2.time.remain[BLACK].time), test_remain[BLACK].time, "B2: 11 seconds passed until B played. Game was ended before, so no effect.");
-			equal(board1.time.remain[WHITE].period, test_remain[WHITE].period, "B1: 11 seconds passed until B played. Game was ended before, so no effect.");
-			equal(board1.time.remain[BLACK].period, test_remain[BLACK].period, "B1: 11 seconds passed until B played. Game was ended before, so no effect.");
-			equal(board2.time.remain[WHITE].period, test_remain[WHITE].period, "B2: 11 seconds passed until B played. Game was ended before, so no effect.");
-			equal(board2.time.remain[BLACK].period, test_remain[BLACK].period, "B2: 11 seconds passed until B played. Game was ended before, so no effect.");
+			test_remain[BLACK].main_time = 0;
+			test_remain[WHITE].main_time = 0;
+			test_remain[BLACK].periods = 0; // No more periods
+			test_remain[WHITE].periods = PERIODS;
+			test_remain[BLACK].period_time = 0; // No more time
+			test_remain[WHITE].period_time = PERIOD_TIME;
+
+			timerEqual(board1.time.remain, test_remain, "B1: 11 seconds passed until B played. Game was ended before, so no effect.");
+			timerEqual(board2.time.remain, test_remain, "B2: 11 seconds passed until B played. Game was ended before, so no effect.");
+
 			equal(board1.time.status, ST_STOPED, "B1: Not counting");
 			equal(board2.time.status, ST_STOPED, "B2: Not counting");
 			equal(board1.time.actual_color, null, "B1: No actual color");
