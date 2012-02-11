@@ -3,14 +3,85 @@
     <head>
         <title>OpenKaya</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <link rel="icon" type="image/png" href="/resources/img/favicon.png" />
-        <link rel="stylesheet" type="text/css" href="/resources/css/login.css"/>
-        <script src="/resources/js/lib/jquery.min.js"></script>
     </head>
     <body>
-        <div id="container">
-            <%= render_tournament(tournament) %>
-        </div>
+      <h1>View Tournament:  <%= @tournament.name %><a href="/list">(List)</a></h1>
+      <h2>Players</h2>
+        <table>
+          <tr>
+            <th>Name</th>
+            <th>Rank</th>
+            <th>Score</th>
+            <th>Actions</th>
+          </tr>
+        <% @tournament.players.each do |player| %>
+        <tr>
+          <td><%= player.name %></td>
+          <td><%= player.rank %></td>
+          <td><%= @tournament.score_by_player(player) %></td>
+          <td><a href="/delete_player/<%= player.id.to_s %>/<%= @tournament.id.to_s %>">Remove</a></td>
+        </tr>
+        <% end %>
+        </table>
+        <h3>Add player to tournament</h3>
+        <form id="add_player" action="/add_player" method=post>
+        Player: 
+        <select id="player_id" name="player_id">
+          <% @players.each do |p| %>
+            <option value="<%= p.id.to_s %>"><%= p.name %>(<%= p.rank %>)</option>
+          <% end %>
+        </select>
+        <input type="hidden" name="tournament_id" id="tournament_id" required="true" value="<%= @tournament.id.to_s %>">
+        <input type="submit" value="Submit" />
+      </form>
+      <h2>Current round</h2>
+      <% if @tournament.finished? %>
+        <p> Tournament already finished. </p>
+      <% else %>
+        <% unless @tournament.rounds.length == 0 %>
+        <table>
+          <tr>
+            <th>White Player</th>
+            <th>Black Player</th>
+            <th>Result</th>
+          </tr>
+        <% @tournament.pairings.each do |pairing| %>
+        <tr>
+          <td><%= pairing.white_player.name %></td>
+          <td><%= pairing.black_player.name %></td>
+          <td>
+          <% if pairing.result? %>
+            <%= pairing.result %>
+          <% else %>
+            <a href="/add_result/<%= pairing.id.to_s %>/W+R/<%= @tournament.id.to_s %>">W+R</a>|
+            <a href="/add_result/<%= pairing.id.to_s %>/B+R/<%= @tournament.id.to_s %>">B+R</a>
+          <% end %>
+          </td>
+        </tr>
+        <% end %>
+        </table> 
+          <a href="/start_round/<%= @tournament.id.to_s %>">Start next round</a>
+        <% else %>
+          <a href="/start_round/<%= @tournament.id.to_s %>">Start first round</a>
+        <% end %>
+      <% end %>
+      <h2>Previous rounds</h2>
+       <% @tournament.rounds.each do |round| %>
+         <h3>Round started at <%= round.start_time %></h3>
+        <table>
+          <tr>
+            <th>White Player</th>
+            <th>Black Player</th>
+            <th>Result</th>
+          </tr>
+          <% round.pairings.each do |pairing| %>
+            <tr>
+              <td><%= pairing.white_player.name %></td>
+              <td><%= pairing.black_player.name %></td>
+              <td><%= pairing.result %></td>
+            </tr>
+          <% end %>
+        </table> 
+        <% end %>
     </body>
-
 </html>

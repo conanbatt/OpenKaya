@@ -1,22 +1,8 @@
-<<<<<<< HEAD
 class Tournament < ActiveRecord::Base
   #TODO: fix cache issue
   has_and_belongs_to_many :players
   has_many :rounds
   
-=======
-class Tournament
-
-  attr_accessor :rounds, :players 
-
-  attr_accessor :title
-
-  def initialize(players)
-    @players = players
-    @rounds = []
-  end
-
->>>>>>> bbf52f2271e510b56b21a962d21cb1961e08fded
   def finished?
     raise "to be implemented by children"
   end
