@@ -16,11 +16,11 @@
                     <h2>Welcome to OpenKaya's tournament organizer </h2>
 
                     <h3>Tournament Rules</h3>
-                    <select>
+                    <select id="system">
                         <option value="Single Elimination">Single Elimination</option>
                     </select>
                     <form id="create_tournament">
-                     Tournament name: <input type="text" name="fname" /><br />
+                     Tournament name: <input type="text" name="fname" required="true" /><br />
                      <input type="submit" value="Submit" />
                     </form>
 
@@ -28,7 +28,7 @@
                     <br />
                     <h3>Participants</h3>
                     <form id="add_participant">
-                        <input type="text" id="name"/><br />
+                        <input type="text" id="name" required="true"/><br />
 
                         <select id="rank_select" name="rank">
                             <option value="k" selected="selected">Kyu</option>
@@ -43,6 +43,7 @@
                     <tr>
                         <td>Name</td>
                         <td>Rank</td>
+                        <td>Actions</td>
                     </tr>
                     </table>
         </div>

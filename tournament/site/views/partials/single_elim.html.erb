@@ -1,0 +1,19 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>OpenKaya</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="icon" type="image/png" href="/resources/img/favicon.png" />
+        <link rel="stylesheet" type="text/css" href="/resources/css/login.css"/>
+        <script src="/resources/js/lib/jquery.min.js"></script>
+    </head>
+    <body>
+        <div id="fixture">
+            <h1><% (tournament.title || tournament.class.to_s) %> </h1>
+            <% tournament.pairings.each do |pairing|  %>
+              <span><%= pairing.to_s  %></span><br />
+            <% end %> 
+        </div>
+    </body>
+
+</html>

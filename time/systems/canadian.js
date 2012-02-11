@@ -4,9 +4,9 @@ var ST_COUNTING = 2;
 var BLACK = 'B';
 var WHITE = 'W';
 
-function CanadianTimer(game, time, period_time, period_stone) {
+function CanadianTimer(game, main_time, period_time, period_stones) {
 	// Validation
-	if (!this.validate(time, period_time, period_stone)) {
+	if (!this.validate(main_time, period_time, period_stones)) {
 		return false;
 	}
 
@@ -16,12 +16,14 @@ function CanadianTimer(game, time, period_time, period_stone) {
 	// Remaining time and current stone
 	this.remain = {};
 	this.remain[BLACK] = {
-		'time': time,
-		'stone': 0
+		'main_time': main_time,
+		'period_time': period_time,
+		'period_stones': period_stones,
 	};
 	this.remain[WHITE] = {
-		'time': time,
-		'stone': 0
+		'main_time': main_time,
+		'period_time': period_time,
+		'period_stones': period_stones,
 	};
 
 	// Stats
@@ -33,19 +35,19 @@ function CanadianTimer(game, time, period_time, period_stone) {
 	// System
 	this.system = {};
 	this.system.name = "Canadian";
-	this.system.time = time;
+	this.system.main_time = main_time;
 	this.system.period_time = period_time;
-	this.system.period_stone = period_stone;
+	this.system.period_stones = period_stones;
 }
 
 CanadianTimer.prototype = {
 	// Validation
-	validate: function(time, period_time, period_stone) {
-		if (time == undefined) {
+	validate: function(main_time, period_time, period_stones) {
+		if (main_time == undefined) {
 			throw new Error("Must configure a main time.");
 			return false;
 		} else {
-			if (typeof time != "number" || parseInt(time, 10) != time || time < 0) {
+			if (typeof main_time != "number" || parseInt(main_time, 10) != main_time || main_time < 0) {
 				throw new Error("Main time parameter must be a non-negative integer indicating seconds.");
 				return false;
 			}
@@ -61,11 +63,11 @@ CanadianTimer.prototype = {
 			}
 		}
 
-		if (period_stone == undefined) {
+		if (period_stones == undefined) {
 			throw new Error("Must configure number of period stones.");
 			return false;
 		} else {
-			if (typeof period_stone != "number" || parseInt(period_stone, 10) != period_stone || period_stone <= 0) {
+			if (typeof period_stones != "number" || parseInt(period_stones, 10) != period_stones || period_stones <= 0) {
 				throw new Error("Period stones parameter must be a positive integer indicating number of stones per period.");
 				return false;
 			}
@@ -75,32 +77,27 @@ CanadianTimer.prototype = {
 	},
 
 	// Force a remaining time for a player.
-	set_remain: function(color, time) {
+	set_remain: function(color, remain) {
 		if (color != "B" && color != "W") {
 			throw new Error("Wrong color");
 		} else {
-			this.remain[color].time = time;
+			var remain_color = this.remain[color];
+			remain_color.main_time = remain.main_time;
+			remain_color.period_time = remain.period_time;
+			remain_color.period_stones = remain.period_stones;
 		}
 	},
 
-	// Force a remaining period for a player.
-	set_stone: function(color, stone) {
-		if (color != "B" && color != "W") {
-			throw new Error("Wrong color");
-		} else {
-			this.remain[color].period = stone;
-		}
-	},
-
-	// If it's not counting: update remain, color, last_resume and status, register interval, start!
 	// If it's not counting: update remain, color, last_resume and status, register interval, start!
 	resume: function(color, remain_b, remain_w) {
 		if (this.status == ST_PAUSED) {
 			if (remain_b && remain_w) {
-				this.remain[BLACK].time = remain_b.time;
-				this.remain[BLACK].stone = remain_b.stone;
-				this.remain[WHITE].time = remain_w.time;
-				this.remain[WHITE].stone = remain_w.stone;
+				this.remain[BLACK].main_time = remain_b.main_time;
+				this.remain[BLACK].period_time = remain_b.period_time;
+				this.remain[BLACK].period_stones = remain_b.period_stones;
+				this.remain[WHITE].main_time = remain_w.main_time;
+				this.remain[WHITE].period_time = remain_w.period_time;
+				this.remain[WHITE].period_stones = remain_w.period_stones;
 			}
 			this.actual_color = color;
 			this.status = ST_COUNTING;
@@ -110,31 +107,33 @@ CanadianTimer.prototype = {
 	},
 
 	// If it's counting: update last_pause, status and remain. Clear interval.
-	pause: function() {
+	pause: function(decrement_period_stones) {
 		if (this.status == ST_COUNTING) {
 			var remain_color = this.remain[this.actual_color];
 
 			this.last_pause = new Date();
 			window.clearInterval(this.clock);
 			this.status = ST_PAUSED;
-			remain_color.time -= ((this.last_pause - this.last_resume) / 1000);
+			remain_color.main_time -= ((this.last_pause - this.last_resume) / 1000);
 
-			// If we have stone == 0 then we are on main time, so if time < 0.5 switch to overtime display.
-			if (remain_color.time < 0.5 && remain_color.stone == 0) {
-				remain_color.stone = this.system.period_stone;
-				remain_color.time += this.system.period_time;
-			} 
+			// Delegate extra removed time from main_time to period_time.
+			if (remain_color.main_time < 0) {
+				remain_color.period_time += remain_color.main_time;
+				remain_color.main_time = 0;
+			}
 
- 			// If we're on overtime subtract a stone and reset the period if necessary
-			// This will actually work even if period_stone is 1.
-			if (remain_color.stone > 0) {
-				remain_color.stone--;
-				if (remain_color.stone <= 0) {
-					remain_color.stone = this.system.period_stone;
-					remain_color.time = this.system.period_time;
+			if (remain_color.main_time <= 0) {
+				// If we're on overtime subtract a stone and reset the period if necessary
+				// This will actually work even if period_stones is 1.
+				if (decrement_period_stones) {
+					remain_color.period_stones--;
+					if (remain_color.period_stones <= 0) {
+						remain_color.period_stones = this.system.period_stones;
+						remain_color.period_time = this.system.period_time;
+					}
 				}
 			}
-				
+
 			return this.remain;
 		}
 		return false;
@@ -145,9 +144,11 @@ CanadianTimer.prototype = {
 		window.clearInterval(this.clock);
 		if (remain) {
 			this.remain[BLACK].time = remain[BLACK].time;
-			this.remain[BLACK].stone = remain[BLACK].stone;
+			this.remain[BLACK].period_stones = remain[BLACK].period_stones;
+			this.remain[BLACK].period_time = remain[BLACK].period_time;
 			this.remain[WHITE].time = remain[WHITE].time;
-			this.remain[WHITE].stone = remain[WHITE].stone;
+			this.remain[WHITE].period_stones = remain[WHITE].period_stones;
+			this.remain[WHITE].period_time = remain[WHITE].period_time;
 		}
 		this.actual_color = null;
 		this.last_resume = null;
@@ -158,7 +159,7 @@ CanadianTimer.prototype = {
 	adjust: function(adjustment) {
 		if (this.status != ST_STOPED) {
 			var remain_color = this.remain[this.actual_color];
-			remain_color.time -= Number(adjustment);
+			remain_color.main_time -= Number(adjustment);
 		}
 	},
 
@@ -169,28 +170,30 @@ CanadianTimer.prototype = {
 
 		var tmp_remain = {};
 		tmp_remain[BLACK] = {
-			'time': this.remain[BLACK].time,
-			'stone': this.remain[BLACK].stone
+			'main_time': this.remain[BLACK].main_time,
+			'period_stones': this.remain[BLACK].period_stones,
+			'period_time': this.remain[BLACK].period_time,
 		};
 		tmp_remain[WHITE] = {
-			'time': this.remain[WHITE].time,
-			'stone': this.remain[WHITE].stone
+			'main_time': this.remain[WHITE].main_time,
+			'period_stones': this.remain[WHITE].period_stones,
+			'period_time': this.remain[WHITE].period_time,
 		};
 
 		var tmp_remain_color = tmp_remain[this.actual_color];
 
-		tmp_remain_color.time = remain_color.time - (new Date() - this.last_resume) / 1000;
+		tmp_remain_color.main_time = remain_color.main_time - (new Date() - this.last_resume) / 1000;
 
-		// If we have stone == 0 then we are on main time, so if time < 0.5 switch to overtime display.
-    if (tmp_remain_color.time < 0.5 && tmp_remain_color.stone == 0) {
-      tmp_remain_color.stone = this.system.period_stone;
-      tmp_remain_color.time += this.system.period_time;
-    }
+		// Delegate extra removed time from main_time to period_time.
+		if (tmp_remain_color.main_time < 0) {
+			tmp_remain_color.period_time += tmp_remain_color.main_time;
+			tmp_remain_color.main_time = 0;
+		}
 
 		this.game.update_clocks(tmp_remain);
-		if (tmp_remain_color.time <= 0) {
-			remain_color.time = 0;
-			remain_color.stone = 0;
+		if (tmp_remain_color.period_time <= 0) {
+			remain_color.main_time = 0;
+			remain_color.period_time = 0;
 			this.stop();
 			this.game.announce_time_loss(this.remain);
 		}
