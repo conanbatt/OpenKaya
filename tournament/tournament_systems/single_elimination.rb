@@ -21,67 +21,57 @@ class SingleElimination < Tournament
   
   def score_by_player(player)
     score = 0
-    
-    @rounds.each do |r|
+    rounds.each do |r|
         r.pairings.each do |p|
             if(p.winner == player || (p.is_playing(player) && p.draw?))
                 score=score+1
             end
         end
     end
-    
     return score
   end
   
   def do_pairings
     pairings = []
-    
     available_players = live_players.shuffle.sort { |x,y| score_by_player(x) <=> score_by_player(y) }
-    
     begin
       p1 = available_players.pop
       p2_index = available_players.index { |p| not already_played_together(p1, p) }
       p2 = nil
-      
       unless p2_index.nil?
             p2 = available_players[p2_index]
             available_players.delete_at(p2_index)
       else
             p2 = available_players.pop
       end
-      pairings << Pairing.new(p1,p2)
+      pairings << Pairing.new({:white_player => p1, :black_player =>p2})
     end while available_players.size > 1
-   
     #No handicap tournament? Do Nigiri
     pairings.each do |p|
         p.do_nigiri!
     end
-    
     if available_players.length == 1
         p1 = available_players.pop
-        pairing = Pairing.new(p1, p1)
+        pairing = Pairing.new({:white_player => p1, :black_player =>p1})
         pairing.result = "B+D"
+        pairing.save
         pairings << pairing
     end
-    
     return pairings
   end
   
-  
   def finished?
-    (live_players.size == 1)
+    (players.size < 2) || (live_players.size == 1)
   end
   
   def live_players
-  
     #first round, all players are live
-    if @rounds.last.nil? || @rounds.last.pairings.nil? 
-        return @players
+    if rounds.empty? || rounds.last.pairings.empty? 
+        return players.all
     end
-    
     #live players are all players from previous round minus those who lost
     live_players = []
-    @rounds.last.pairings.each do |p|
+    rounds.last.pairings.each do |p|
         if p.result.nil?
             live_players << p.black_player
             live_players << p.white_player
@@ -89,7 +79,6 @@ class SingleElimination < Tournament
             live_players << p.winner
         end
     end
-    
     return live_players
   end
 

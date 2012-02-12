@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>OpenKaya</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    </head>
+    <body>
+      <h1>Tournament List<a href="/home">(Home)</a></h1>
+      <table>
+        <tr>
+          <th>Id</th>
+          <th>Name</th>
+          <th>System</th>
+          <th>Players</th>
+          <th>Round</th>
+          <th>Actions</th>
+        </tr>
+      <% @tournaments.each do |tournament| %>
+      <tr>
+        <td><%= tournament.id.to_s %></td>
+        <td><%= tournament.name %></td>
+        <td><%= tournament.type %></td>
+        <td><%= tournament.players.count %></td>
+        <td><%= tournament.rounds.count %></td>
+        <td><a href="/tournaments/<%= tournament.id.to_s  %>">View</a></td>
+        <td><a href="/delete/<%= tournament.id.to_s  %>">Delete</a></td>
+      </tr>
+      <% end %>
+      </table>
+    </body>
+</html>
+

@@ -21,35 +21,30 @@ class DoubleElimination < Tournament
   
   def score_by_player(player)
     score = 0
-    
-    @rounds.each do |r|
+    rounds.each do |r|
         r.pairings.each do |p|
             if(p.winner == player || (p.is_playing(player) && p.draw?))
                 score=score+1
             end
         end
     end
-    
     return score
   end
   
   def do_pairings
     pairings = []
-    
     available_players = live_players.shuffle.sort { |x,y| score_by_player(x) <=> score_by_player(y) }
-    
     begin
       p1 = available_players.pop
       p2_index = available_players.index { |p| not already_played_together(p1, p) }
       p2 = nil
-      
       unless p2_index.nil?
             p2 = available_players[p2_index]
             available_players.delete_at(p2_index)
       else
             p2 = available_players.pop
       end
-      pairings << Pairing.new(p1,p2)
+      pairings << Pairing.new({:white_player=>p1,:black_player=>p2})
     end while available_players.size > 1
    
     #No handicap tournament? Do Nigiri
@@ -59,8 +54,9 @@ class DoubleElimination < Tournament
     
     if available_players.length == 1
         p1 = available_players.pop
-        pairing = Pairing.new(p1, p1)
+        pairing = Pairing.new({:white_player => p1, :black_player =>p1})
         pairing.result = "B+D"
+        pairing.save
         pairings << pairing
     end
 
@@ -71,7 +67,7 @@ class DoubleElimination < Tournament
   def count_loss(player)
     count = 0
     
-    @rounds.each do |r|
+    rounds.each do |r|
         r.pairings.each do |p|
             if((p.black_player == player || p.white_player == player) && p.winner != player && !p.draw?)
                 count=count+1
@@ -83,22 +79,19 @@ class DoubleElimination < Tournament
   end
   
   def finished?
-    (live_players.size == 1)
+    (players.size < 2) || (live_players.size == 1)
   end
   
   def live_players
-  
     #first round or secound round, all players are live
-    if @rounds.size < 2
-        return @players
+    if rounds.size < 2
+        return players.all
     end
-    
     #live players are all players from previous round minus those who lost twice
     live_players = []
-    @players.each do |p|
+    players.each do |p|
         live_players << p if (count_loss(p) < 2)
     end
-    
     return live_players
   end
 

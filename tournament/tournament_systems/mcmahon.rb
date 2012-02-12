@@ -42,20 +42,14 @@ class McMahonTournament < Tournament
           return (rank_a[0, rank_a.length-1].to_i > rank_b[0, rank_b.length-1].to_i) ? 1 : -1
       end
   end
-
-  def initialize(players, rounds_count, allow_mcmahon_handicap)
-    super players
-    @rounds_count = rounds_count
-    @allow_mcmahon_handicap = allow_mcmahon_handicap
-  end
   
   def podium()
-    podium = @players.sort! { |x,y| swiss_sorting(y,x) }.take(3)
+    podium = players.sort! { |x,y| swiss_sorting(y,x) }.take(3)
   end
   
   def fixture
     res = []
-    @players.each do |p|
+    players.each do |p|
       res << {:ip=> p.ip, :rank => p.rank, :player=> p.name, :score => score_by_player(p), :rounds => result_by_player(p), :sos => sos_by_player(p) }
     end
     res         
@@ -63,7 +57,7 @@ class McMahonTournament < Tournament
   
   def sos_by_player(player)
     sos = 0
-    @rounds.each do |r|
+    rounds.each do |r|
         r.pairings.each do |p|
             if(p.black_player == player)
               sos = sos + score_by_player(p.white_player)
@@ -77,7 +71,7 @@ class McMahonTournament < Tournament
   
   def score_by_player(player)
     score = mcmahon_initial_score(player.rank)
-    @rounds.each do |r|
+    rounds.each do |r|
         r.pairings.each do |p|
             if(p.winner == player)
               score = score + 1
@@ -91,7 +85,7 @@ class McMahonTournament < Tournament
   
   def mcmahon_bar_bga_style()
     #loosely based on the official table which only contains range
-    return @rounds_count*2+1
+    return rounds_count*2+1
   end
   
   def mcmahon_initial_score(rank)
@@ -165,7 +159,7 @@ class McMahonTournament < Tournament
         p2 = available_players[p2_index]
         available_players.delete_at(p2_index)
       end
-      pairings << Pairing.new(p1,p2)
+      pairings << Pairing.new(:white_player=>p1,:black_player=>p2)
     end while available_players.size > 1
    
     #No handicap tournament? Do Nigiri
@@ -175,7 +169,7 @@ class McMahonTournament < Tournament
     
     if available_players.length == 1
         p1 = available_players.shift
-        pairing = Pairing.new(p1, p1)
+        pairing = Pairing.new(:white_player=>p1,:black_player=>p1)
         pairing.result = "B+D"
         pairings << pairing
     end
@@ -184,12 +178,12 @@ class McMahonTournament < Tournament
   end
   
   def finished?
-    (@rounds.size == @rounds_count && @rounds.last.finished?)
+    (rounds.size == rounds_count && rounds.last.finished?)
   end
   
   def output
     round_index = 0
-    @rounds.each do |r|
+    rounds.each do |r|
       round_index = round_index + 1
       puts "Round " + round_index.to_s
       r.pairings.each do |p|
@@ -197,7 +191,7 @@ class McMahonTournament < Tournament
       end      
     end
     puts "Results:"
-    @players.each do |p|
+    players.each do |p|
       puts p.name + " (" + p.rank + ") Score: " + score_by_player(p).to_s + " SOS: "+ sos_by_player(p).to_s
     end
   end
