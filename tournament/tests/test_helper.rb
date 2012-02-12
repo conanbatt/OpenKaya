@@ -1,13 +1,25 @@
 require 'cutest'
+require 'sqlite3'
+require 'active_record'
+require 'logger'
 require File.expand_path("../organizer", File.dirname(__FILE__))
+
 Dir[File.dirname(__FILE__) + "/tournament_systems/*.rb"].each {|file| require file }
 Dir[File.dirname(__FILE__) + "/league_systems/*.rb"].each {|file| require file }
 
+DB_NAME = "../db/tournament.db"
+DB_OBJECT = SQLite3::Database.new(DB_NAME)
+ActiveRecord::Base.establish_connection(:adapter => 'sqlite3', :database => DB_NAME, :pool => 5, :timeout => 5000)
+ActiveRecord::Base.logger = Logger.new(File.open('../db/database.log', 'a'))
+
 def spawn_player_list(number)
   list =[]
-  number.times {|n| list << Player.new(rand(8**4).to_s, list.size, "1k")}
+  number.times do 
+    player = Player.new({:name => rand(8**4).to_s, :ip => list.size, :rank => "1k"})
+    player.save
+    list << player
+  end
   list
-
 end
 
 def mock_results(tournament)
