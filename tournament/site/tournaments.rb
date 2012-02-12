@@ -1,5 +1,5 @@
 require "cuba"
-
+require 'active_record'
 require File.expand_path("../organizer", File.dirname(__FILE__))
 require File.expand_path("players", File.dirname(__FILE__))
 
@@ -70,7 +70,8 @@ Cuba.define do
       on param("player_id"),param("tournament_id") do |player_id, tournament_id|
         @player = Player.find(player_id)
         @tournament = Tournament.find(tournament_id)
-        @tournament.players << @player
+        #the following operation already adds it to the db, so the validation framework doesnt stop it
+        @tournament.players << @player unless @tournament.players.include? @player
         @tournament.save
         res.redirect "/tournaments/" + tournament_id.to_s
       end

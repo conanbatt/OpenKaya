@@ -2,7 +2,14 @@ class Tournament < ActiveRecord::Base
   #TODO: fix cache issue
   has_and_belongs_to_many :players
   has_many :rounds
-  
+
+  validate :no_repeated_players  
+  def no_repeated_players
+    if(!(players.uniq.count == players.count))
+      errors.add(:repeated_players, "a same player cant be twice in the same tournament")
+    end
+  end
+
   def finished?
     raise "to be implemented by children"
   end

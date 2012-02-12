@@ -1,5 +1,6 @@
 Dir[File.dirname(__FILE__) + "/tournament_systems/*.rb"].each {|file| require file }
 Dir[File.dirname(__FILE__) + "/league_systems/*.rb"].each {|file| require file }
+require 'active_record'
 
 #Same as Player Class, but to be used with leagues system (persistency not yet implemented)
 class PlayerNotAR
@@ -14,6 +15,7 @@ end
 
 class Player < ActiveRecord::Base
   has_and_belongs_to_many :tournaments
+  validates_uniqueness_of :user_name 
 end
 
 class Organizer
