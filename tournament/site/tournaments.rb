@@ -1,10 +1,16 @@
 require "cuba"
 
 require File.expand_path("../organizer", File.dirname(__FILE__))
+require File.expand_path("players", File.dirname(__FILE__))
 
 Cuba.use Rack::Session::Cookie
 
 Cuba.define do
+
+  on "players" do
+    run PLAYERS_API
+  end 
+
   on get do
     on "home" do
       res.write render("views/home.html.erb")
@@ -46,12 +52,6 @@ Cuba.define do
       @pairing.save
       res.redirect "/tournaments/" + tournament_id.to_s
     end
-    on "start_round/:id" do |id|
-      @tournament = Tournament.find(id)
-      @tournament.start_round
-      @tournament.save
-      res.redirect "/tournaments/" + id.to_s
-    end    
     on default do
       res.redirect "/home"
     end
