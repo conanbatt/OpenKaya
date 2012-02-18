@@ -125,7 +125,7 @@ class SingleEliminationTeam < Tournament
   
   def live_teams
     #first round, all teams are live
-    if rounds.empty? || rounds.last.pairings.empty? 
+    unless rounds.last
         return teams
     end
     #live teams are all teams which never lost
