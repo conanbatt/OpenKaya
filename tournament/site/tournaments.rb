@@ -30,7 +30,7 @@ Cuba.define do
     on "delete_player/:player_id/:tournament_id" do |player_id, tournament_id|
       @player = Player.find(player_id)
       @tournament = Tournament.find(tournament_id)
-      @tournament.players.delete(@player)
+      @tournament.remove_player(@player)
       @tournament.save
       res.redirect "/tournaments/" + tournament_id.to_s
     end
@@ -67,10 +67,17 @@ Cuba.define do
       end
     end
     on "add_player" do
+      on param("player_id"),param("tournament_id"), param("team_id") do |player_id, tournament_id,team_id|
+        @player = Player.find(player_id)
+        @tournament = Tournament.find(tournament_id)
+        @tournament.add_player(@player, nil, team_id.to_i)
+        @tournament.save
+        res.redirect "/tournaments/" + tournament_id.to_s
+      end
       on param("player_id"),param("tournament_id") do |player_id, tournament_id|
         @player = Player.find(player_id)
         @tournament = Tournament.find(tournament_id)
-        @tournament.players << @player
+        @tournament.add_player(@player)
         @tournament.save
         res.redirect "/tournaments/" + tournament_id.to_s
       end

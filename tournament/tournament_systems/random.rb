@@ -10,7 +10,7 @@ class RandomTournament < Tournament
     (matching_players.length/2).times do 
       p1 = matching_players.pop
       p2 = matching_players.delete_at rand(matching_players.length)
-      pairings << Pairing.new(:white_player=>p1,:black_player=>p2)
+      pairings << Pairing.new(propose_color(p1,p2))
     end
     return pairings
   end

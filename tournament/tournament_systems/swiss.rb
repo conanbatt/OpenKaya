@@ -52,12 +52,12 @@ class SwissTournament < Tournament
     podium = players.sort! { |x,y| swiss_sorting(y,x) }.take(3)
   end
   
-  def fixture
+  def fixture       
     res = []
-    players.each do |p|
-      res << {:ip=> p.ip, :rank => p.rank, :player=> p.name, :score => score_by_player(p), :rounds => result_by_player(p), :sos => sos_by_player(p) }
+    tournament_players.all.each do |p|
+      res << {:seed=>p.seed, :player=> p.player.name, :score => score_by_player(p.player), :rounds => result_by_player(p.player), :sos => sos_by_player(p.player) }
     end
-    res         
+    res        
   end
   
   def sos_by_player(player)
@@ -102,10 +102,8 @@ class SwissTournament < Tournament
   
   def do_pairings
     pairings = []
-    
     #sort in descending order, using in priority score, then sos, then rank, then order in which the player was added to list
-    available_players = players.shuffle.sort! { |x,y| swiss_sorting(y,x) }
-
+    available_players = players.sort { |x,y| swiss_sorting(y,x) }
     begin
       p1 = available_players.shift
       p2_index = available_players.index { |p| !already_played_together(p1, p) }
@@ -115,21 +113,14 @@ class SwissTournament < Tournament
         p2 = available_players[p2_index]
         available_players.delete_at(p2_index)
       end
-      pairings << Pairing.new(:white_player=>p1,:black_player=>p2)
+      pairings << Pairing.new(propose_color(p1,p2))
     end while available_players.size > 1
-   
-    #No handicap tournament? Do Nigiri
-    pairings.each do |p|
-        p.do_nigiri!
-    end
-    
     if available_players.length == 1
         p1 = available_players.shift
         pairing = Pairing.new(:white_player=>p1,:black_player=>p1)
         pairing.result = "B+D"
         pairings << pairing
     end
-    
     return pairings
   end
   

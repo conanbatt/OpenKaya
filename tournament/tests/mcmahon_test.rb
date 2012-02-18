@@ -2,30 +2,31 @@ require File.expand_path("test_helper", File.dirname(__FILE__))
 
 test "McMahon Base functions" do
   test_players = []
-  test_players << Player.new(:name=>"Pierre", :ip=>"127.0.0.1", :rank=>"6d")
-  test_players << Player.new(:name=>"Kristina", :ip=>"127.0.0.1", :rank=>"6d")
-  test_players << Player.new(:name=>"Paige", :ip=>"127.0.0.1", :rank=>"6d")
-  test_players << Player.new(:name=>"Karen", :ip=>"127.0.0.1", :rank=>"6d")
-  test_players << Player.new(:name=>"Hazel", :ip=>"127.0.0.1", :rank=>"5d")
-  test_players << Player.new(:name=>"Malcolm", :ip=>"127.0.0.1", :rank=>"5d")
-  test_players << Player.new(:name=>"Dolores", :ip=>"127.0.0.1", :rank=>"5d")
-  test_players << Player.new(:name=>"Pierre", :ip=>"127.0.0.1", :rank=>"3d")
-  test_players << Player.new(:name=>"Paul", :ip=>"127.0.0.2", :rank=>"3d")
-  test_players << Player.new(:name=>"Marion", :ip=>"127.0.0.2", :rank=>"3d")
-  test_players << Player.new(:name=>"Neal", :ip=>"127.0.0.2",:rank=> "3d")
-  test_players << Player.new(:name=>"Eric", :ip=>"127.0.0.2", :rank=>"2d")
-  test_players << Player.new(:name=>"Alez", :ip=>"127.0.0.3", :rank=>"2d")
-  test_players << Player.new(:name=>"Crystal", :ip=>"127.0.0.3", :rank=>"1d")
-  test_players << Player.new(:name=>"Jack", :ip=>"127.0.0.3", :rank=>"1d")
-  test_players << Player.new(:name=>"Christina", :ip=>"127.0.0.4", :rank=>"1k")
-  test_players << Player.new(:name=>"Louis", :ip=>"127.0.0.4", :rank=>"2k")
-  test_players << Player.new(:name=>"Jerome", :ip=>"127.0.0.4", :rank=>"3k")
-  test_players << Player.new(:name=>"Simon", :ip=>"127.0.0.4", :rank=>"5k")
-  test_players << Player.new(:name=>"Marie", :ip=>"127.0.0.5", :rank=>"8k")
-  test_players << Player.new(:name=>"Peter", :ip=>"127.0.0.6", :rank=>"12k")
-  test_players << Player.new(:name=>"Julie", :ip=>"127.0.0.7", :rank=>"12k")
-  test_players << Player.new(:name=>"El Diablo", :ip=>"127.0.0.8", :rank=>"15k")
-  mcmahon_tournament = Organizer.create_tournament("McMahonTournament", {:name=>"McMahonTournament1", :players=>test_players, :rounds_count=>3, :allow_handicap=>false})
+  test_players << Player.new(:name=>"Pierre", :rank=>"6d")
+  test_players << Player.new(:name=>"Kristina",  :rank=>"6d")
+  test_players << Player.new(:name=>"Paige", :rank=>"6d")
+  test_players << Player.new(:name=>"Karen",  :rank=>"6d")
+  test_players << Player.new(:name=>"Hazel",  :rank=>"5d")
+  test_players << Player.new(:name=>"Malcolm",  :rank=>"5d")
+  test_players << Player.new(:name=>"Dolores",  :rank=>"5d")
+  test_players << Player.new(:name=>"Pierre",  :rank=>"3d")
+  test_players << Player.new(:name=>"Paul",  :rank=>"3d")
+  test_players << Player.new(:name=>"Marion",  :rank=>"3d")
+  test_players << Player.new(:name=>"Neal", :rank=> "3d")
+  test_players << Player.new(:name=>"Eric",  :rank=>"2d")
+  test_players << Player.new(:name=>"Alez",  :rank=>"2d")
+  test_players << Player.new(:name=>"Crystal",  :rank=>"1d")
+  test_players << Player.new(:name=>"Jack",  :rank=>"1d")
+  test_players << Player.new(:name=>"Christina",:rank=>"1k")
+  test_players << Player.new(:name=>"Louis", :rank=>"2k")
+  test_players << Player.new(:name=>"Jerome",  :rank=>"3k")
+  test_players << Player.new(:name=>"Simon",  :rank=>"5k")
+  test_players << Player.new(:name=>"Marie",  :rank=>"8k")
+  test_players << Player.new(:name=>"Peter",  :rank=>"12k")
+  test_players << Player.new(:name=>"Julie",  :rank=>"12k")
+  test_players << Player.new(:name=>"El Diablo",  :rank=>"15k")
+  mcmahon_tournament = Organizer.create_tournament("McMahonTournament", {:name=>"McMahonTournament1", :rounds_count=>3, :allow_handicap=>false})
+  mcmahon_tournament.add_players(test_players)
   assert_equal mcmahon_tournament.mcmahon_bar, "3d"
   assert_equal mcmahon_tournament.rank_to_scale_value("25k"), 0
   assert_equal mcmahon_tournament.rank_to_scale_value("20k"), 0
@@ -43,16 +44,16 @@ end
 
 test "Score computation and podium, 8 players with large rank difference, the 6d should win the tournament and 3 rounds is enough to sort out all players" do
   test_players = []
-  test_players << Player.new(:name=>"Pierre", :ip=>"127.0.0.1", :rank=>"6d")
-  test_players << Player.new(:name=>"Paul", :ip=>"127.0.0.2", :rank=>"3d")
-  test_players << Player.new(:name=>"Jack", :ip=>"127.0.0.3", :rank=>"1d")
-  test_players << Player.new(:name=>"Simon", :ip=>"127.0.0.4", :rank=>"5k")
-  test_players << Player.new(:name=>"Marie", :ip=>"127.0.0.5", :rank=>"8k")
-  test_players << Player.new(:name=>"Peter", :ip=>"127.0.0.6", :rank=>"12k")
-  test_players << Player.new(:name=>"Julie", :ip=>"127.0.0.7", :rank=>"12k")
-  test_players << Player.new(:name=>"El Diablo", :ip=>"127.0.0.8", :rank=>"15k")
-  mcmahon_tournament = Organizer.create_tournament("McMahonTournament", {:name=>"McMahonTournament2", :players=>test_players, :rounds_count=>5, :allow_handicap=>false})
-  mcmahon_tournament.mcmahon_bar
+  test_players << Player.new(:name=>"Pierre",:rank=>"6d")
+  test_players << Player.new(:name=>"Paul",  :rank=>"3d")
+  test_players << Player.new(:name=>"Jack",  :rank=>"1d")
+  test_players << Player.new(:name=>"Simon", :rank=>"5k")
+  test_players << Player.new(:name=>"Marie", :rank=>"8k")
+  test_players << Player.new(:name=>"Peter", :rank=>"12k")
+  test_players << Player.new(:name=>"Julie", :rank=>"12k")
+  test_players << Player.new(:name=>"El Diablo",:rank=>"15k")
+  mcmahon_tournament = Organizer.create_tournament("McMahonTournament", {:name=>"McMahonTournament2", :rounds_count=>5, :allow_handicap=>false})
+  mcmahon_tournament.add_players(test_players)
   mcmahon_tournament.start_round
   mock_results_based_on_rank(mcmahon_tournament)
   mcmahon_tournament.start_round
@@ -66,7 +67,8 @@ test "Score computation and podium, 8 players with large rank difference, the 6d
 end
 
 test "a fixture from a new tournament shouldnt explode :) " do
-  mcmahon = Organizer.create_tournament("McMahonTournament", {:name=>"McMahonTournament3", :players=>spawn_player_list(4), :rounds_count=>5, :allow_handicap=>false})
-  mcmahon .start_round
+  mcmahon = Organizer.create_tournament("McMahonTournament", {:name=>"McMahonTournament3", :rounds_count=>5, :allow_handicap=>false})
+  mcmahon.add_players(spawn_player_list(4))
+  mcmahon.start_round
   assert_equal mcmahon.fixture.size, 4
 end

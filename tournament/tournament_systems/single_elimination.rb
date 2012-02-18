@@ -9,7 +9,6 @@ class SingleElimination < Tournament
   #- P1 players shouldn't play each other again unless there is no choice
   #- P2 top players (by score) should play together if possible
   #- P3 odd number of players the last one to be picked gets a win by default
-  #- P4 add a bit of randomness so that the order of entry of the player has no influence
     
   # TODO
   
@@ -33,7 +32,7 @@ class SingleElimination < Tournament
   
   def do_pairings
     pairings = []
-    available_players = live_players.shuffle.sort { |x,y| score_by_player(x) <=> score_by_player(y) }
+    available_players = live_players.sort { |x,y| score_by_player(x) <=> score_by_player(y) }
     begin
       p1 = available_players.pop
       p2_index = available_players.index { |p| not already_played_together(p1, p) }
@@ -44,12 +43,8 @@ class SingleElimination < Tournament
       else
             p2 = available_players.pop
       end
-      pairings << Pairing.new({:white_player => p1, :black_player =>p2})
+      pairings << Pairing.new(propose_color(p1,p2))
     end while available_players.size > 1
-    #No handicap tournament? Do Nigiri
-    pairings.each do |p|
-        p.do_nigiri!
-    end
     if available_players.length == 1
         p1 = available_players.pop
         pairing = Pairing.new({:white_player => p1, :black_player =>p1})
@@ -72,7 +67,7 @@ class SingleElimination < Tournament
     #live players are all players from previous round minus those who lost
     live_players = []
     rounds.last.pairings.each do |p|
-        if p.result.nil?
+        if p.winner.nil?
             live_players << p.black_player
             live_players << p.white_player
         else
