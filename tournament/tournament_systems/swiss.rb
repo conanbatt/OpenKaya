@@ -60,6 +60,10 @@ class SwissTournament < Tournament
     res        
   end
   
+  def to_yaml_tournament
+    {:name => self.name, :type => self.type, :id => self.id, :rounds_count => self.rounds_count, :is_finished => finished?}
+  end
+  
   def sos_by_player(player)
     sos = 0
     rounds.each do |r|

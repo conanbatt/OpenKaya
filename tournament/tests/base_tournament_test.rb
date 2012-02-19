@@ -64,3 +64,33 @@ test "teams testing" do
   assert_equal random_tournament.teams[0][:players].length, 4
 end
 
+test "export/import testing" do
+  players = spawn_player_list(4)
+  random_tournament = Organizer.create_tournament("RandomTournament", {:name=>"BaseTournamentTest3"})
+  random_tournament.add_players(players)
+  random_tournament.start_round
+  mock_results(random_tournament)
+  random_tournament.start_round
+  mock_results(random_tournament)
+  #export + reimport, no change
+  yaml = random_tournament.to_yaml
+  tournament = Tournament.from_yaml(yaml)
+  assert_equal tournament.name, "BaseTournamentTest3"
+  assert_equal tournament.players.size, 4
+  assert_equal tournament.rounds.size, 2
+  #export + reimport, change tournament name
+  yaml = tournament.to_yaml
+  yaml.gsub!("name: BaseTournamentTest3", "name: YAMLChangeTest1")
+  tournament = Tournament.from_yaml(yaml)
+  assert_equal tournament.name, "YAMLChangeTest1"
+  #export + play a round + reimport old yaml + check status
+  yaml_save = tournament.to_yaml
+  tournament.start_round
+  mock_results(tournament)
+  tournament.save
+  tournament = Tournament.from_yaml(yaml_save)
+  assert_equal tournament.rounds.size, 2
+end
+
+
+

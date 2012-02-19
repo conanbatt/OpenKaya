@@ -16,6 +16,6 @@ class RandomTournament < Tournament
   end
   
   def finished?
-    (players.size < 2) || (live_players.size == 1)
+    true
   end
 end

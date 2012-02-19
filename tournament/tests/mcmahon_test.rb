@@ -66,9 +66,25 @@ test "Score computation and podium, 8 players with large rank difference, the 6d
   assert_equal mcmahon_tournament.podium[0].name, "Pierre"  
 end
 
-test "a fixture from a new tournament shouldnt explode :) " do
+test "fixture test" do
   mcmahon = Organizer.create_tournament("McMahonTournament", {:name=>"McMahonTournament3", :rounds_count=>5, :allow_handicap=>false})
   mcmahon.add_players(spawn_player_list(4))
   mcmahon.start_round
   assert_equal mcmahon.fixture.size, 4
+  assert_equal mcmahon.fixture[0].has_key?(:sos), true
+  assert_equal mcmahon.fixture[0][:sos], 19 # 1k = 19  base mcmahon score 
+  mock_results_based_on_rank(mcmahon)
+  assert_equal mcmahon.fixture[0][:sos]+mcmahon.fixture[0][:score], 39 # 19 bms + 19 bms + 1 win
+  assert_equal mcmahon.fixture[1][:sos]+mcmahon.fixture[1][:score], 39
+  assert_equal mcmahon.fixture[2][:sos]+mcmahon.fixture[2][:score], 39
+  assert_equal mcmahon.fixture[3][:sos]+mcmahon.fixture[3][:score], 39
+end
+
+test "import export" do
+  mcmahon = Organizer.create_tournament("McMahonTournament", {:name=>"McMahonTournament3", :rounds_count=>5, :allow_handicap=>false})
+  mcmahon.add_players(spawn_player_list(4))
+  mcmahon.start_round
+  yaml = mcmahon.to_yaml
+  tournament = Tournament.from_yaml(yaml)
+  assert_equal tournament.name, "McMahonTournament3"
 end

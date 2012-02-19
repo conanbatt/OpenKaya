@@ -1,3 +1,5 @@
+require "yaml"
+
 class Tournament < ActiveRecord::Base
   #TODO: fix cache issue
   
@@ -197,6 +199,132 @@ class Tournament < ActiveRecord::Base
     end
     return proposal
   end
+  
+  def to_yaml_tournament
+    {:name => self.name, :type => self.type, :id => self.id, :is_finished => finished?}
+  end
+  
+  def to_yaml
+    #player list
+    player_array = []
+    tournament_players.each do |tp|
+      player_array << {:name => tp.player.name, :rank => tp.player.rank, :id => tp.player.id, :team => tp.team, :seed => tp.seed}
+    end
+    #rounds + pairings
+    rounds_array = []
+    rounds.each do |round|
+      round = []
+      pairings.each do |pairing|
+        round += [{:black_player => {:id => pairing.black_player.id, :name => pairing.black_player.name}, :white_player => {:id => pairing.white_player.id, :name => pairing.white_player.name}, :result => pairing.result}]
+      end
+      rounds_array += [round]
+    end
+    output_array = {:tournament => to_yaml_tournament, :player_list => player_array, :rounds => rounds_array}
+    YAML::dump( output_array )
+  end
+  
+  def self.from_yaml(yaml, auto_create = true)
+    #load yaml
+    data = YAML::load(yaml)
+    #retrieve the tournament or create it if sufficient info is provided
+    raise "YAML file is missing basic tournament information" unless data.has_key?(:tournament)
+    tournament_data = data[:tournament]
+    tournament = nil
+    if(tournament_data.has_key?(:id) and !tournament_data[:id].nil?)
+      tournament = Tournament.find(tournament_data[:id].to_i)
+      if (tournament == nil)
+        raise "Couldn't find tournament " + tournament_data[:id].to_s + " while loading from YAML"
+      end
+      #do we need to update anything?
+      if(tournament_data.has_key?(:name))
+          tournament.name = tournament_data[:name]
+      end
+      if(tournament_data.has_key?(:allow_handicap))
+        tournament.allow_handicap = tournament_data[:allow_handicap]
+      end
+      if(tournament_data.has_key?(:rounds_count))
+        tournament.rounds_count = tournament_data[:rounds_count].to_i
+      end
+    else
+      if(tournament_data.has_key?(:name) and tournament_data.has_key?(:type))
+        tournaments = Tournament.find(:conditions => {:name => tournament_data[:name], :type => tournament_data[:type]})
+        if(tournaments.empty? and auto_create)
+          raise "Invalid tournament system while loading from YAML" unless Kernel.const_defined?(tournament_data[:type])
+          begin
+            tournament_class = Kernel.const_get(tournament_data[:type])
+            parameters = {:name => tournament_data[:name]}
+            if(tournament_data.has_key?(:rounds_count))
+              parameters[:rounds_count] = tournament_data[:rounds_count].to_i
+            end
+            if(tournament_data.has_key?(:allow_handicap))
+              parameters[:allow_handicap] = tournament_data[:allow_handicap]
+            end
+            tournament = tournament_class.new(parameters)
+            tournament.save
+          rescue
+            raise "Error while creating tournament from scratch while loading from YAML"
+          end
+        else
+          if(tournaments.length == 1)
+            tourmament = tournaments.first
+            #do we need to update anything?
+            if(tournament_data.has_key?(:name))
+                tournament.name = tournament_data[:name]
+            end
+            if(tournament_data.has_key?(:allow_handicap))
+              tournament.allow_handicap = tournament_data[:allow_handicap]
+            end
+            if(tournament_data.has_key?(:rounds_count))
+              tournament.rounds_count = tournament_data[:rounds_count].to_i
+            end
+          else
+            raise "Too many tournaments matching supplied name ("+tournament_data[:name]+") and type ("+tournament_data[:type]+") while loading from YAML"
+          end
+        end
+      else
+        raise "Couldn't find or recreate tournament while loading from YAML"
+      end
+    end
+    raise "Unable to load tournament from YAML file" if tournament.nil?
+    #is there a player list? if yes, delete current TournamentPlayer info and reload from YAML
+    if(data.has_key?(:player_list))
+      tournament.tournament_players.destroy_all
+      player_data = data[:player_list]
+      player_data.each do |p_data|
+          player = Player.find(p_data[:id].to_i)
+          raise "Couldn't find player (ID " + p_data[:id].to_s + ") in database to update tournament (ID " + tournament.id.to_s +  ") player's list" if player.nil?
+          seed = nil
+          team = nil
+          if(p_data.has_key?(:seed))
+            seed = p_data[:seed]
+          end
+          if(p_data.has_key?(:team))
+            team = p_data[:team]
+          end
+          tournament.tournament_players << TournamentPlayer.new({:seed => seed, :team => team, :player => player})
+      end
+    end
+    #is there a round list? if so, delete all rounds/pairings and reload from YAML
+    if(data.has_key?(:rounds))
+      tournament.rounds.destroy_all
+      round_data = data[:rounds]
+      round_data.each do |round|
+        pairings = []
+        round.each do |pairing|
+          black_player = Player.find(pairing[:black_player][:id].to_i)
+          white_player = Player.find(pairing[:white_player][:id].to_i)
+          raise "Couldn't find black player (ID " + pairing[:black_player][:id].to_s +  ") in database to create pairing" if black_player.nil?
+          raise "Couldn't find white player (ID " + pairing[:white_player][:id].to_s +  ") in database to create pairing" if white_player.nil?
+          result = pairing[:result]
+          pairings << Pairing.new({:white_player => white_player, :black_player => black_player, :result => result})
+        end
+        tournament.rounds << Round.new({:pairings => pairings})
+      end
+    end
+    #all done!
+    tournament.save
+    tournament
+  end
 end
 
 class TournamentPlayer  < ActiveRecord::Base
@@ -209,6 +337,10 @@ class Round < ActiveRecord::Base
 
   belongs_to :tournament
   has_many :pairings
+  
+  def before_destroy
+    Pairing.destroy_all(:round => self)
+  end
   
   def add_result(p1,p2, result)
     pairing = find_match_by_names(p1,p2)
