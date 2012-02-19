@@ -286,6 +286,32 @@ class Tournament < ActiveRecord::Base
       end
     end
     raise "Unable to load tournament from YAML file" if tournament.nil?
+    #is there a to_delete_player_list
+     if(data.has_key?(:to_delete_player_list))
+      player_data = data[:to_delete_player_list]
+      player_data.each do |p_data|
+          player = Player.find(p_data[:id].to_i)
+          raise "Couldn't find player (ID " + p_data[:id].to_s + ") in database to update tournament (ID " + tournament.id.to_s +  ") player's list" if player.nil?
+          tournament.remove_player(player)
+      end
+    end
+    #is there a to_add player list? 
+    if(data.has_key?(:to_add_player_list))
+      player_data = data[:to_add_player_list]
+      player_data.each do |p_data|
+          player = Player.find(p_data[:id].to_i)
+          raise "Couldn't find player (ID " + p_data[:id].to_s + ") in database to update tournament (ID " + tournament.id.to_s +  ") player's list" if player.nil?
+          seed = nil
+          team = nil
+          if(p_data.has_key?(:seed))
+            seed = p_data[:seed]
+          end
+          if(p_data.has_key?(:team))
+            team = p_data[:team]
+          end
+          tournament.tournament_players << TournamentPlayer.new({:seed => seed, :team => team, :player => player})
+      end
+    end
     #is there a player list? if yes, delete current TournamentPlayer info and reload from YAML
     if(data.has_key?(:player_list))
       tournament.tournament_players.destroy_all
@@ -302,6 +328,22 @@ class Tournament < ActiveRecord::Base
             team = p_data[:team]
           end
           tournament.tournament_players << TournamentPlayer.new({:seed => seed, :team => team, :player => player})
+      end
+    end
+    #is there a to add round list? if so, just append to current rounds
+    if(data.has_key?(:to_add_rounds))
+      round_data = data[:to_add_rounds]
+      round_data.each do |round|
+        pairings = []
+        round.each do |pairing|
+          black_player = Player.find(pairing[:black_player][:id].to_i)
+          white_player = Player.find(pairing[:white_player][:id].to_i)
+          raise "Couldn't find black player (ID " + pairing[:black_player][:id].to_s +  ") in database to create pairing" if black_player.nil?
+          raise "Couldn't find white player (ID " + pairing[:white_player][:id].to_s +  ") in database to create pairing" if white_player.nil?
+          result = pairing[:result]
+          pairings << Pairing.new({:white_player => white_player, :black_player => black_player, :result => result})
+        end
+        tournament.rounds << Round.new({:pairings => pairings})
       end
     end
     #is there a round list? if so, delete all rounds/pairings and reload from YAML
