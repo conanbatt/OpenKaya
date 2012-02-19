@@ -12,6 +12,7 @@
             <th>Name</th>
             <th>Rank</th>
             <th>Score</th>
+            <%= "<th> SOS </th>" if @tournament.methods.include?(:sos_by_player)%>
             <% if @tournament.type == "SingleEliminationTeam" %>
             <th>Team</th> 
             <% end %>
@@ -22,6 +23,7 @@
           <td><%= player.name %></td>
           <td><%= player.rank %></td>
           <td><%= @tournament.score_by_player(player) %></td>
+          <%= "<td>#{@tournament.sos_by_player(player)}</td> " if @tournament.methods.include?(:sos_by_player) %>
           <% if @tournament.type == "SingleEliminationTeam" %>
           <td><%= @tournament.get_team_by_player(player)%></td>
           <% end %>
