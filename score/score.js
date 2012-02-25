@@ -173,13 +173,15 @@ Score.prototype = {
           living_shape = (one_eye && this.living_shape(item.empty));
           if (item.owner == BLACK) {
             if(one_eye && !living_shape) {
-              result.black_points += (item.dead_count.W * this._deadStonesMultiplier);
+              result.black_points += item.dead_count.W;
+              item.owner = NO_OWNER;
             } else {
-               result.black_points += item.score + (item.dead_count.W * this._deadStonesMultiplier);
+              result.black_points += item.score + (item.dead_count.W * this._deadStonesMultiplier);
             }
           } else if (item.owner == WHITE) {
             if(one_eye && !living_shape) {
-              result.white_points += (item.dead_count.B * this._deadStonesMultiplier);
+              result.white_points += item.dead_count.B;
+              item.owner = NO_OWNER;
             } else {
               result.white_points += item.score + (item.dead_count.B * this._deadStonesMultiplier);
             }
