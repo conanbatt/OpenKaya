@@ -170,9 +170,38 @@ var chinese_score;
 		equal(score.black_points, 12);
 		equal(score.white_points, 18);
 	});
+  
+//Territory in the corner
+	module("Territory in the corner", {
+		setup: function() {
+			genericSetup([
+				["*","B","B","W","W","W"],
+				["B","*","B","W","W","W"],
+				["B","B","B","W","W","W"],
+				["B","B","B","W","W","W"],
+				["B","B","B","W","*","W"],
+				["B","B","B","W","W","*"]
+			]);
+		},
+		teardown: function() {
+			genericTeardown();
+		}
+	});
+
+	test("Should count territory for both(Japanese)", function(){
+		var score = japanese_score.calculate_score();
+		equal(score.black_points, 2);
+		equal(score.white_points, 2);
+	});
+
+	test("Should count territory for both(Chinese)", function(){
+		var score = chinese_score.calculate_score();
+		equal(score.black_points, 18);
+		equal(score.white_points, 18);
+	});
 
 
-// Seki board 1
+// Seki board 1 (eyes)
 	module("Seki board 1", {
 		setup: function() {
 			genericSetup([
@@ -194,12 +223,18 @@ var chinese_score;
 		equal(score.black_points, 0);
 		equal(score.white_points, 0);
 	});
+  
+  	test("should count points for both (Chinese)", function(){
+		var score = chinese_score.calculate_score();
+		equal(score.black_points, 17);
+		equal(score.white_points, 18);
+	});
 
 
 //TODO check this out : http://www.lifein19x19.com/forum/viewtopic.php?p=79204#p79204"
 
 
-// Seki board 2
+// Seki board 2 (eyes)
 	module("Seki board 2", {
 		setup: function() {
 			genericSetup([
@@ -226,6 +261,53 @@ var chinese_score;
 		var score = chinese_score.calculate_score();
 		equal(score.black_points,28);
 		equal(score.white_points,6);
+	});
+  
+// Seki board 3 (eyes + no eyes)
+	module("Seki board 3", {
+		setup: function() {
+			genericSetup([
+				["W","*","B","*","B","B"],
+				["*","W","B","B","B","B"],
+				["B","B","W","W","B","B"],
+				["*","B","W","W","W","W"],
+				["B","B","W","W","*","W"],
+				["B","B","W","W","W","*"]
+			]);
+		},
+		teardown: function() {
+			genericTeardown();
+		}
+	});
+
+    
+// Seki board 4 (big eyes, small eyes...)
+	module("Seki board 4", {
+		setup: function() {
+			genericSetup([
+				["*","*","B","*","W","*"],
+				["*","*","B","W","W","*"],
+				["B","B","B","W","W","*"],
+				["*","*","W","B","W","W"],
+				["W","W","*","B","B","B"],
+				["*","W","*","B","*","*"]
+			]);
+		},
+		teardown: function() {
+			genericTeardown();
+		}
+	});
+  
+	test("should count 0 for both (Japanese)", function(){
+		var score = japanese_score.calculate_score();
+		equal(score.black_points,0);
+		equal(score.white_points,3);
+	});
+
+	test("should count points for both (Chinese)", function(){
+		var score = chinese_score.calculate_score();
+		equal(score.black_points,16);
+		equal(score.white_points,15);
 	});
 
 
