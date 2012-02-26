@@ -93,21 +93,16 @@ def create_realistic_game_result(player_a, player_b, suggested_handicap)
     real_rank_handicap = -real_rank_handicap
   end
   winner = nil
+  winning_prob = (0.50 + (0.1 * (real_rank_handicap - played_handicap)))
+  winning_prob = 0 if winning_prob < 0
   #players evenly matched: assuming 50/50
-  if ((real_rank_handicap - played_handicap).abs < 0.5)  == 0
-    if rand < 0.5
-      winner = white_player
-    else
-      winner = black_player
-    end
-  #not evenly matched? adding 10% per missed stones!
+  #if ((real_rank_handicap - played_handicap).abs < 0.5)  == 0
+  if rand < winning_prob
+    winner = white_player
   else
-    if rand < (0.50 + (0.1 * (real_rank_handicap - played_handicap))) 
-      winner = white_player
-    else
-      winner = black_player
-    end
+    winner = black_player
   end
+  #puts "#{player_a[:id]}(#{player_a[:rank]}) vs  #{player_b[:id]}(#{player_b[:rank]}) with suggested handicap of #{handicap} given by #{white_player} instead of #{real_rank_handicap} and winner is #{winner} white winning prob #{winning_prob}"
   return {
         :white_player => white_player, 
         :black_player => black_player, 
@@ -138,7 +133,7 @@ def run_simulation(strategy, players_count, games_count)
     current_time = Time.now
     begin
       opponents = players.sample(2)
-      suggested_handicap = Glicko.suggest_handicap({:p1 => system.fetch_or_create[opponents[0][:id]], :p2 => system.fetch_or_create[opponents[0][:id]], :rules => "aga"})
+      suggested_handicap = Glicko.suggest_handicap({:p1 => system.fetch_or_create[opponents[0][:id]], :p2 => system.fetch_or_create[opponents[1][:id]], :rules => "aga"})
       result = create_realistic_game_result(opponents[0], opponents[1], suggested_handicap)
       unless result.nil?
         current_time += (200 + rand*5000).to_i
