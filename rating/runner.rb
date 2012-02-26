@@ -17,7 +17,7 @@ require 'date'
 =end
 VALIDATION_MODE = false
 
-SYSTEMS_TO_RUN = []
+SYSTEMS_TO_RUN = [Glicko]
 
 ARGV.each do|a|
   puts "Called with: #{a}"
@@ -34,16 +34,131 @@ def assert(boolean)
   raise "Expected #{boolean} to be true" unless boolean
 end
 
-def run_simulation(strategy, data_set)
+def spawn_static_players(count, min_rank, max_rank)
+  players = []
+  min_aga_rating = 0.0
+  max_aga_rating = 0.0
+  #convert KGS rank to AGA rating
+  if min_rank[-1,1] == "k"
+    min_aga_rating = - (min_rank[0, min_rank.length-1].to_i)
+  elsif min_rank[-1,1] == "d"
+    min_aga_rating =   (min_rank[0, min_rank.length-1].to_i)
+  else
+    raise "Error converting supplied min_rank ("+min_rank+") to aga rating"
+  end
+  if max_rank[-1,1] == "k"
+    max_aga_rating = - (max_rank[0, max_rank.length-1].to_i)
+  elsif max_rank[-1,1] == "d"
+    max_aga_rating =   (max_rank[0, max_rank.length-1].to_i)
+  else
+    raise "Error converting supplied max_rank ("+max_rank+") to aga rating"
+  end
+  min_rating = Rating.new_aga(min_aga_rating).elo
+  max_rating = Rating.new_aga(max_aga_rating).elo
+  count.times do |id|
+      rating = (min_rating + (max_rating - min_rating) * rand).to_i
+      rank = Rating.new_elo(rating).aga_rank_str
+      players << {:id => "player" + id.to_s, :rank => rank, :rating => rating, :played_games => 0, :won_games => 0, :winning_ratio => 0}
+  end
+  return players
+end
+
+def rank_distance(rank_a, rank_b)
+   if rank_a[-1,1] == "k" and rank_b[-1,1] == "d"
+        rank_a_k = rank_a[0, rank_a.length-1].to_f
+        rank_b_d = rank_b[0, rank_b.length-1].to_f
+        return (rank_a_k - rank_b_d  + 1.0)
+    end
+    if rank_b[-1,1] == "k" and rank_a[-1,1] == "d"
+        rank_a_d = rank_a[0, rank_a.length-1].to_f
+        rank_b_k = rank_b[0, rank_b.length-1].to_f
+        return (rank_a_d - rank_b_k  - 1.0)
+    end
+    if rank_a[-1,1] == "k" 
+       return (rank_a[0, rank_a.length-1].to_f - rank_b[0, rank_b.length-1].to_f)
+    end
+    if rank_a[-1,1] == "d"
+      return (rank_a[0, rank_a.length-1].to_f - rank_b[0, rank_b.length-1].to_f)
+    end
+end
+
+def create_realistic_game_result(player_a, player_b, suggested_handicap)
+  real_rank_handicap = rank_distance(player_a[:rank], player_b[:rank]).to_i
+  handicap = suggested_handicap[:handi]
+  komi = suggested_handicap[:komi]
+  played_handicap = handicap + ((komi == 0.5 || komi == -5.5) ? 1 : 0)
+  white_player = suggested_handicap[:white].id
+  black_player = suggested_handicap[:black].id
+  if black_player == player_a[:id]
+    real_rank_handicap = -real_rank_handicap
+  end
+  winner = nil
+  #players evenly matched: assuming 50/50
+  if ((real_rank_handicap - played_handicap).abs < 0.5)  == 0
+    if rand < 0.5
+      winner = white_player
+    else
+      winner = black_player
+    end
+  #not evenly matched? adding 10% per missed stones!
+  else
+    if rand < (0.50 + (0.1 * (real_rank_handicap - played_handicap))) 
+      winner = white_player
+    else
+      winner = black_player
+    end
+  end
+  return {
+        :white_player => white_player, 
+        :black_player => black_player, 
+        :rules        => "aga", 
+        :handicap     => handicap, 
+        :komi         => komi, 
+        :winner       => winner, 
+        :datetime     => nil
+  }
+end
+
+def rank_compare(rank_a, rank_b)
+  if(rank_a == rank_b)
+    return 0
+  end
+  if(rank_distance(rank_a, rank_b) < 0)
+    return -1
+  else
+    return 1
+  end
+end
+
+def run_simulation(strategy, players_count, games_count)
   system = System.new(strategy, VALIDATION_MODE)
-
+  players = spawn_static_players(players_count,"30k", "9d")
   time = Benchmark.measure {
-                            data_set.each do |result|
-                              system.add_result(result)
-                            end
-                           }
-  system.results_to_file(time)
-
+    result_count = 0
+    current_time = Time.now
+    begin
+      opponents = players.sample(2)
+      suggested_handicap = Glicko.suggest_handicap({:p1 => system.fetch_or_create[opponents[0][:id]], :p2 => system.fetch_or_create[opponents[0][:id]], :rules => "aga"})
+      result = create_realistic_game_result(opponents[0], opponents[1], suggested_handicap)
+      unless result.nil?
+        current_time += (200 + rand*5000).to_i
+        result[:datetime] = current_time
+        opponents[0][:played_games] += 1
+        opponents[1][:played_games] += 1
+        if result[:winner] ==  opponents[0][:id]
+          opponents[0][:won_games] += 1
+          opponents[0][:winning_ratio] = opponents[0][:won_games].to_f / opponents[0][:played_games].to_f
+        else
+          opponents[1][:won_games] += 1
+          opponents[1][:winning_ratio] = opponents[1][:won_games].to_f / opponents[1][:played_games].to_f
+        end
+        system.add_result(result)
+        result_count += 1
+      end
+    end while result_count < games_count
+  }
+  players = players.sort{ |b,a| rank_compare(a[:rank],b[:rank]) }
+  system.compared_results_to_file(players, time)
 end
 
 def read_data_set(filename)
@@ -71,9 +186,21 @@ def read_data_set(filename)
 return set
 end
 
-set = read_data_set("data/sample_data.txt")
+#Tests of new functions
+
+#--- rank distance
+assert(rank_distance("5d", "1d") == 4.0)
+assert(rank_distance("3d", "8d") == -5.0)
+assert(rank_distance("1d", "1d") == 0.0)
+assert(rank_distance("-1k", "-1k") == 0.0)
+assert(rank_distance("-1k", "1d") == -1.0)
+assert(rank_distance("1d", "-1k") == 1.0)
+assert(rank_distance("-4k", "1d") == -4.0)
+assert(rank_distance("1d", "-5k") == 5.0)
+assert(rank_distance("-1k", "-2k") == 1.0)
+assert(rank_distance("-7k", "-2k") == -5.0)
 
 SYSTEMS_TO_RUN.each do |rating_system|
-  run_simulation(rating_system, set)
+  run_simulation(rating_system, 1500, 300000)
 end
 
