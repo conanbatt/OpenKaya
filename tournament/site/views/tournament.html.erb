@@ -12,6 +12,10 @@
             <th>Name</th>
             <th>Rank</th>
             <th>Score</th>
+            <%= "<th> SOS </th>" if @tournament.methods.include?(:sos_by_player)%>
+            <% if @tournament.type == "SingleEliminationTeam" %>
+            <th>Team</th> 
+            <% end %>
             <th>Actions</th>
           </tr>
         <% @tournament.players.each do |player| %>
@@ -19,6 +23,10 @@
           <td><%= player.name %></td>
           <td><%= player.rank %></td>
           <td><%= @tournament.score_by_player(player) %></td>
+          <%= "<td>#{@tournament.sos_by_player(player)}</td> " if @tournament.methods.include?(:sos_by_player) %>
+          <% if @tournament.type == "SingleEliminationTeam" %>
+          <td><%= @tournament.get_team_by_player(player)%></td>
+          <% end %>
           <td><a href="/delete_player/<%= player.id.to_s %>/<%= @tournament.id.to_s %>">Remove</a></td>
         </tr>
         <% end %>
@@ -31,6 +39,9 @@
             <option value="<%= p.id.to_s %>"><%= p.name %>(<%= p.rank %>)</option>
           <% end %>
         </select>
+        <% if @tournament.type == "SingleEliminationTeam" %>
+          Team (id): <input type="text" name="team_id" id="team_id" required="true"/>
+        <% end %>
         <input type="hidden" name="tournament_id" id="tournament_id" required="true" value="<%= @tournament.id.to_s %>">
         <input type="submit" value="Submit" />
       </form>

@@ -15,7 +15,7 @@ ActiveRecord::Base.logger = Logger.new(File.open('../db/database.log', 'a'))
 def spawn_player_list(number)
   list =[]
   number.times do 
-    player = Player.new({:name => rand(8**4).to_s, :ip => list.size, :rank => "1k"})
+    player = Player.new({:name => rand(8**4).to_s, :rank => "1k"})
     player.save
     list << player
   end

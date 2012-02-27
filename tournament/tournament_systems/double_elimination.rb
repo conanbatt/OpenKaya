@@ -44,14 +44,8 @@ class DoubleElimination < Tournament
       else
             p2 = available_players.pop
       end
-      pairings << Pairing.new({:white_player=>p1,:black_player=>p2})
+      pairings << Pairing.new(propose_color(p1,p2))
     end while available_players.size > 1
-   
-    #No handicap tournament? Do Nigiri
-    pairings.each do |p|
-        p.do_nigiri!
-    end
-    
     if available_players.length == 1
         p1 = available_players.pop
         pairing = Pairing.new({:white_player => p1, :black_player =>p1})
@@ -59,10 +53,8 @@ class DoubleElimination < Tournament
         pairing.save
         pairings << pairing
     end
-
     return pairings
   end
-  
   
   def count_loss(player)
     count = 0
