@@ -51,7 +51,7 @@ class SGF
         value.each {|v| @config.add_comment(hash_to_comment(v))}
         next
       end
-      value.each{|v| @move_list[key.to_i - 1].add_comment(hash_to_comment(v))}
+      value.each{|v| @move_list[key.to_i - 1] && @move_list[key.to_i -1].add_comment(hash_to_comment(v))}
     end
   end
 
