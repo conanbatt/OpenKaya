@@ -4,9 +4,6 @@ Kaya Widgets are used on the main page, in a sliding menu on the right side of t
 
 Widgets are self-contained(they dont know about anything else than themselves) and small. They must fit in a fix space(yet to be determined).
 
-
-In the source there is the example of the Countdown which is *already used* in Kaya to mark events.
-
 We use the Jquery Widget Factory to configure them.
 
 Example:
@@ -20,7 +17,7 @@ Example:
 
             _create: function() {
                 //The DOM effect of the widget
-                (new MyWidget()).html.appendTo("#countdown");
+                (new MyWidget()).html.appendTo("#my-widget");
             },
 
             destroy: function() {
@@ -32,6 +29,14 @@ Example:
     });
 
 This way you can build your own Javascript Class, and inserting into this system makes it easy for us to add it to the server.
+
+## How can i get my widget into Kaya?
+
+First of all, the widget must have some basic tests. Check out the skeleton of the news widget to learn how to set them up. That way both you and I can see the widget running in a page before putting it anywhere else.
+
+If it depends of outside information, you can just mock it (provide false information) then we will worry about patching it up with server information.
+
+If the widget is practical, tested and working, adding it to the server can happen within a single release.
 
 ## Widget ideas
 
