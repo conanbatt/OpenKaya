@@ -35,20 +35,20 @@ This way you can build your own Javascript Class, and inserting into this system
 
 ## Widget ideas
 
-Widget ideas
+Widget ideas:
 
-*Google/Microsoft translate
-*News feed 
-*Problem solving
-*User Stats/graphs
-*Server Stats (Karma givent oday, games played, users connected , etc)
-*Streaming snapshots/thumbnails
-*Fan history
-*Event Calendar
-*Achievement/Progress(Badge Master)  on goals
-*Announcements
-*Mini-TV/Streaming
-*Tweaki
-*News
+* Google/Microsoft translate
+* News feed 
+* Problem solving
+* User Stats/graphs
+* Server Stats (Karma givent oday, games played, users connected , etc)
+* Streaming snapshots/thumbnails
+* Fan history
+* Event Calendar
+* Achievement/Progress(Badge Master)  on goals
+* Announcements
+* Mini-TV/Streaming
+* Tweaki
+* News
 
 Some require server collaboration, others like news feed, translation, thumbnails, calendar,etc, dont. Feel free to contact us to talk aobut a server collaboration widget at info@kaya.gs
