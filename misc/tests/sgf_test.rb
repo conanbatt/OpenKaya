@@ -6,6 +6,22 @@ setup do
 
 end
 
+test "should be able to write variations" do
+
+  sgf = SGF.new
+
+  sgf.add_move(";B[aa]")
+  sgf.add_move(";W[ab]")
+
+  sgf.add_branch(";W[ac]")
+  assert_equal sgf.move_list, ";B[aa](;W[ac]);W[ab]"
+
+  assert_equal sgf.focus.node_text, ";W[ac]"
+
+
+end
+
+
 test "Nodify moves" do
   
   sgf = SGF.new
@@ -294,3 +310,4 @@ test "should write the hadnicap info" do
   assert_equal sgf.to_s, "(;HA[9]PB[debil]PW[fuerte]SZ[19]FF[4]AB[dd][jd][pd][dj][jj][pj][dp][jp][pp];B[aa];W[bb];B[cc])"
 
 end
+

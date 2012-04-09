@@ -1,8 +1,10 @@
+require File.expand_path("node", File.dirname(__FILE__))
+
 class SGF
 
   BLACK = "B"
   WHITE = "W"
-  attr_accessor :move_list, :comment_buffer,:property
+  attr_accessor :move_list, :comment_buffer,:property, :focus
 
   def initialize(moves="", properties={})
     moves ||= ""
@@ -28,8 +30,14 @@ class SGF
   end
 
   def add_move(node) #TODO objetify node
-    @move_list << Node.new(node)
+    @focus = Node.new(node)
+    @move_list << @focus
     move_list
+  end
+
+  def add_branch(node)
+    @focus = Node.new(node)
+    @move_list.last.add_child(@focus) 
   end
 
   def last_play_color
@@ -62,7 +70,7 @@ class SGF
     
   def move_list
     buffer = ""
-    @move_list.each {|node| buffer += node.node_text}
+    @move_list.each {|node| buffer += node.play_nodes}
     buffer
   end
 
@@ -95,13 +103,16 @@ class SGF
   end
 
   def load_file(filename)
+    sgf =""
     File.open(filename, 'r') do |file|
       while (line = file.gets)
-        load_from_string(line)
+        sgf += line
       end
+      load_from_string(sgf)
     end
   end
   def load_from_string(input)
+    #require 'ruby-debug';debugger
     properties= input.split(";")[1]
     @config = ConfigNode.new(properties) #will process this later
     nodify_move_list(input.gsub(properties, "").chomp[2..-2])
@@ -220,124 +231,5 @@ class SGF
     end
   raise "Invalid handicap setting Size: #{size} and  handicap #{handicap}"
   end
-end
-
-
-class Node
-
-  attr_reader :node_text
-
-  def initialize(node_text= "")
-    validate_node_format(node_text)
-    @node_text = node_text
-    @comments = []
-  end
-
-  def to_s
-    comment_node = comments.empty? ? "" : "C[#{comments.gsub("]","\\]").gsub(")","\\)")}]"
-    node_text + comment_node
-  end
-
-  def add_comment(comment)
-    @comments << comment + "\n"
-  end
-  def comments
-    buffer = ""
-    @comments.each{|c| buffer += c}
-    buffer
-  end
-
-  def color
-    @node_text[1]
-  end
-
-  def x
-    @node_text[3] unless pass_node?
-  end
-  def y
-    @node_text[4] unless pass_node?
-  end
-  def coordinate
-    x+y
-  end
-  def pass_node?
-    @node_text.match(/[BW]\[\]/)
-  end
-
-  def validate_node_format(node)
-    valid = node.match(/;[BW]\[(|[a-z][a-z])\]/)
-    if node.include?("BL") || node.include?("WL")
-      valid = valid && node.match(/[BW]L\[\d{0,6}.\d{3}\]/)
-    end
-    raise "#{node} is invalid node format" unless valid
-  end
-
-  def time_left
-    @node_text.match(/[#{color}]L\[\d{0,6}.\d{3}\]/).to_s[3..-2].to_f
-  end
-  def time_left=(time_left)
-    @node_text.gsub!(/[#{color}]L\[\d{0,6}.\d{3}\]/, "#{color}L[%.3f]" % [time_left])
-  end
-
-
-end
-
-class ConfigNode
-
-  attr_accessor :node_text
-
-  def initialize(property="")
-    @node_text = property.dup
-    write_property(:file_format,4)
-    handicap = property(:handicap)
-    @comments = []
-  end
-
-  def validate_node_format
-    return true
-  end
-
-  def add_comment(comment)
-    @comments << (comment + "\n")
-  end
-  def comments
-    buffer = ""
-    @comments.each{|c| buffer += c}
-    #must escape ], )
-    buffer.empty? ? "" : "C[#{buffer.gsub("]","\\]").gsub(")","\\)")}]"
-  end
-
-  def to_s
-    #comment_node = comments.empty? ? "" : "C[#{comments}]"
-    ";"+node_text + comments
-  end
-
-  METALABELS= {:black_rank => "BR", :white_rank => "WR",:white_player => "PW", :black_player => "PB",
-               :komi => "KM", :date => "DT", :result => "RE",
-               :file_format => "FF", :black_country => "BC",
-               :white_country => "WC", :event => "EV", :source => "SO",
-               :encoding => "CA", :size => "SZ", :rules => "RU", :time_set => "OT",:handicap => "HA"}
-
-  def property(symbol)
-    return node_text if symbol == :all
-    dup = node_text.dup
-    dup.slice!(/.*#{METALABELS[symbol]}\[/)
-    return nil if dup.length == node_text.length #means it wasnt found
-    dup.slice!(/\].*/)
-    return dup
-  end
-
-  def write_property(symbol, value)
-    return unless value
-    raise "Invalid property #{symbol}" unless METALABELS[symbol]
-    node = "#{METALABELS[symbol]}[#{value}]"
-    @node_text.gsub!(/#{METALABELS[symbol]}\[\w*\]/, "") #in case it already had it
-    @node_text = node + @node_text 
-    size = property(:size)
-    #a little hackish to insert the AB node only
-    @node_text += SGF.handi_node(property(:size),value)[5..-1] if(size && 
-                                                           symbol == :handicap)
-  end
-
 end
 
