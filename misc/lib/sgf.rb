@@ -4,12 +4,13 @@ class SGF
 
   BLACK = "B"
   WHITE = "W"
-  attr_accessor :move_list, :comment_buffer,:property, :focus
+  attr_accessor :move_list, :comment_buffer,:property, :focus, :root_node
 
   def initialize(moves="", properties={})
     moves ||= ""
-    @move_list = []
+    #@move_list = []
     @config = ConfigNode.new
+    @focus = @config
     nodify_move_list(moves) unless moves.empty?
     @comment_buffer = ""
     @size = properties[:size]
@@ -30,14 +31,9 @@ class SGF
   end
 
   def add_move(node) #TODO objetify node
-    @focus = Node.new(node)
-    @move_list << @focus
+    #require 'ruby-debug';debugger
+    @focus = Node.new(@focus,node)
     move_list
-  end
-
-  def add_branch(node)
-    @focus = Node.new(node)
-    @move_list.last.add_child(@focus) 
   end
 
   def last_play_color
@@ -45,11 +41,7 @@ class SGF
   end
 
   def add_comment(comment)
-    if @move_list.empty?
-      @config.add_comment(comment)
-    else
-      @move_list.last.add_comment(comment)
-    end
+    @focus.add_comment(comment)
     move_list
   end
   #takes a hash and inputs the contents into the nodes
@@ -59,7 +51,7 @@ class SGF
         value.each {|v| @config.add_comment(hash_to_comment(v))}
         next
       end
-      value.each{|v| @move_list[key.to_i - 1] && @move_list[key.to_i -1].add_comment(hash_to_comment(v))}
+      value.each{|v| @move_list[key.to_i - 1] && @move_list[key.to_i - 1].add_comment(hash_to_comment(v))}
     end
   end
 
@@ -69,15 +61,11 @@ class SGF
   end
     
   def move_list
-    buffer = ""
-    @move_list.each {|node| buffer += node.play_nodes}
-    buffer
+     @config.children.first.to_move_list
   end
 
   def move_list_with_comments
-    buffer = ""
-    @move_list.each {|node| buffer += node.to_s}
-    buffer
+    @config.children.first.to_s
   end
 
 
@@ -135,7 +123,7 @@ class SGF
   end
 
   def to_s
-    "(#{@config.to_s}#{move_list_with_comments})"
+    "(#{@config.to_s})"
   end
 
   def time_left(player)

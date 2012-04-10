@@ -6,6 +6,7 @@ setup do
 
 end
 
+=begin
 test "should be able to write variations" do
 
   sgf = SGF.new
@@ -18,9 +19,12 @@ test "should be able to write variations" do
 
   assert_equal sgf.focus.node_text, ";W[ac]"
 
+  sgf.add_move(";B[ad]")
+
+  assert_equal sgf.move_list, ";B[aa](;W[ac];B[ad]);W[ab]"
 
 end
-
+=end
 
 test "Nodify moves" do
   
