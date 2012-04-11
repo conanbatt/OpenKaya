@@ -23,7 +23,7 @@ test "should get the move number" do
   sgf.add_move(";W[ad]")
   sgf.add_move(";B[ae]")
 
-  assert_equal sgf.move_by_number(3), sgf.focus.parent.parent
+  assert_equal sgf.move_by_number(2), sgf.focus.parent.parent
 end
 
 test "should be able to write variations" do
@@ -229,10 +229,10 @@ test 'Should create a node object' do
   assert_equal node.coordinate, "ac"
 
   node.add_comment("pepe")
-  assert_equal node.comments, "pepe\n"
+  assert_equal node.comments, "C[pepe\n]"
 
   node.add_comment("y yo")
-  assert_equal node.comments, "pepe\ny yo\n"
+  assert_equal node.comments, "C[pepe\ny yo\n]"
 end
 
 test 'should create the sgf node list with initialization' do

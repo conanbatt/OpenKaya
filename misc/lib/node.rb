@@ -22,17 +22,13 @@ class Node
   def children_to_s(with_comments=false)
     branches = ""
      if @children.size > 1
-      @children[1..-1].each {|node| branches += "(#{node.to_move_list})"}
+      @children[1..-1].each {|node| branches += "(#{node.children_to_s(with_comments)})"}
     end
     children_text =""
     if @children.first
-      children_text = @children.first.to_move_list
+      children_text = @children.first.children_to_s(with_comments)
     end
-
-    comment_node = ""
-    if with_comments
-      comment_node = comments.empty? ? "" : "C[#{comments.gsub("]","\\]").gsub(")","\\)")}]"
-    end
+    comment_node = with_comments ? comments : "" 
     node_text + comment_node + branches + children_text
   end
 
@@ -41,12 +37,10 @@ class Node
   end
 
   def add_comment(comment)
-    @comments << comment + "\n"
+    @comments << (comment + "\n")
   end
   def comments
-    buffer = ""
-    @comments.each{|c| buffer += c}
-    buffer
+    @comments.empty? ? "" : "C[#{@comments.join.gsub("]","\\]").gsub(")","\\)")}]"
   end
 
   def color
@@ -96,6 +90,10 @@ class ConfigNode
     @children = []
   end
 
+  def parent
+    #stub
+  end
+
   def add_child(node)
     @children.push(node)
   end
@@ -108,10 +106,7 @@ class ConfigNode
     @comments << (comment + "\n")
   end
   def comments
-    buffer = ""
-    @comments.each{|c| buffer += c}
-    #must escape ], )
-    buffer.empty? ? "" : "C[#{buffer.gsub("]","\\]").gsub(")","\\)")}]"
+    @comments.empty? ? "" : "C[#{@comments.join.gsub("]","\\]").gsub(")","\\)")}]"
   end
 
   def to_s

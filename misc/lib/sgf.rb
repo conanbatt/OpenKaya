@@ -1,3 +1,4 @@
+require File.expand_path("node", File.dirname(__FILE__))
 
 class SGF
 
@@ -35,7 +36,7 @@ class SGF
   end
 
   def last_play_color
-    @focus!= @config && @focus.color
+    @focus != @config && @focus.color
   end
 
   def add_comment(comment)
@@ -53,7 +54,7 @@ class SGF
         value.each {|v| @config.add_comment(hash_to_comment(v))}
         next
       end
-      value.each{|v| @move_list[key.to_i - 1] && @move_list[key.to_i - 1].add_comment(hash_to_comment(v))}
+      value.each{ |v| move_by_number(key.to_i-1) && move_by_number(key.to_i-1).add_comment(hash_to_comment(v))}
     end
   end
 
@@ -71,7 +72,9 @@ class SGF
   end
 
   def move_by_number(index)
-    node = @config
+    index = index.to_i
+    return if (index < 0)
+    node = @config.children.first
     while(index >0)
       node = node.children.first
       index -= 1
@@ -143,7 +146,8 @@ class SGF
   end
 
   def last_node_by_player(player)
-    if @focus && @focus.color == player
+    return if @focus == @config
+    if @focus.color == player
       return @focus
     elsif @focus.parent
       @focus.parent 
