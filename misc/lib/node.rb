@@ -33,7 +33,7 @@ class Node
     if with_comments
       comment_node = comments.empty? ? "" : "C[#{comments.gsub("]","\\]").gsub(")","\\)")}]"
     end
-    branches + node_text + comment_node + children_text
+    node_text + comment_node + branches + children_text
   end
 
   def to_s
@@ -115,8 +115,6 @@ class ConfigNode
   end
 
   def to_s
-    require 'ruby-debug';debugger
-    #comment_node = comments.empty? ? "" : "C[#{comments}]"
     children_text = @children.first.to_s
     ";"+node_text + comments + children_text
   end

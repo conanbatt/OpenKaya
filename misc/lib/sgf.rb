@@ -4,7 +4,7 @@ class SGF
 
   BLACK = "B"
   WHITE = "W"
-  attr_accessor :move_list, :comment_buffer,:property, :focus, :root_node
+  attr_accessor :move_list, :comment_buffer,:property, :focus
 
   def initialize(moves="", properties={})
     moves ||= ""
@@ -19,9 +19,10 @@ class SGF
   end
 
   def last_two_moves_are_pass?
-    if @move_list.count >= 2
-      return @move_list.last.pass_node? && @move_list[@move_list.count-2].pass_node?
+    if @focus && @focus.parent
+      return @focus.pass_node? && @focus.parent.pass_node?
     end
+    false
   end
 
   def nodify_move_list(moves)
@@ -31,7 +32,6 @@ class SGF
   end
 
   def add_move(node) #TODO objetify node
-    #require 'ruby-debug';debugger
     @focus = Node.new(@focus,node)
     move_list
   end
@@ -41,7 +41,11 @@ class SGF
   end
 
   def add_comment(comment)
-    @focus.add_comment(comment)
+    if @focus
+      @focus.add_comment(comment)
+    else
+      @config.add_comment(comment)
+    end
     move_list
   end
   #takes a hash and inputs the contents into the nodes
@@ -61,7 +65,7 @@ class SGF
   end
     
   def move_list
-     @config.children.first.to_move_list
+   @config.children.first.to_move_list unless @config.children.empty?
   end
 
   def move_list_with_comments
@@ -100,9 +104,8 @@ class SGF
     end
   end
   def load_from_string(input)
-    #require 'ruby-debug';debugger
     properties= input.split(";")[1]
-    @config = ConfigNode.new(properties) #will process this later
+    @focus = @config = ConfigNode.new(properties) #will process this later
     nodify_move_list(input.gsub(properties, "").chomp[2..-2])
   end
 
@@ -138,16 +141,17 @@ class SGF
   end
 
   def last_node_by_player(player)
-    if @move_list.last && @move_list.last.color == player
-      return @move_list.last
-    elsif @move_list.size >= 2
-      second_last =  @move_list[@move_list.count -2]
-      return second_last
+    if @focus && @focus.color == player
+      return @focus
+    elsif @focus.parent
+      @focus.parent 
     end 
   end
 
   def undo
-    @move_list.pop
+    to_del = @focus
+    @focus = @focus.parent
+    @focus.children.delete(to_del) 
   end
 
   def self.handi_node(size,handicap)

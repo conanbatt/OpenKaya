@@ -6,7 +6,6 @@ setup do
 
 end
 
-=begin
 test "should be able to write variations" do
 
   sgf = SGF.new
@@ -14,7 +13,8 @@ test "should be able to write variations" do
   sgf.add_move(";B[aa]")
   sgf.add_move(";W[ab]")
 
-  sgf.add_branch(";W[ac]")
+  sgf.focus = sgf.focus.parent
+  sgf.add_move(";W[ac]")
   assert_equal sgf.move_list, ";B[aa](;W[ac]);W[ab]"
 
   assert_equal sgf.focus.node_text, ";W[ac]"
@@ -24,7 +24,6 @@ test "should be able to write variations" do
   assert_equal sgf.move_list, ";B[aa](;W[ac];B[ad]);W[ab]"
 
 end
-=end
 
 test "Nodify moves" do
   
@@ -204,7 +203,7 @@ test 'Should be able to send a pass move' do
 end
 
 test 'Should create a node object' do
-  node = Node.new(";B[ac]")
+  node = Node.new(nil,";B[ac]")
 
   assert_equal node.color, "B"
   assert_equal node.coordinate, "ac"
@@ -220,8 +219,6 @@ test 'should create the sgf node list with initialization' do
 
   sgf = SGF.new(";B[ac];W[ed]")
   assert_equal sgf.move_list, ";B[ac];W[ed]"
-  sgf = SGF.new(nil)
-  assert_equal sgf.move_list, ""
 end
 
 test 'should have handicap node settings' do
