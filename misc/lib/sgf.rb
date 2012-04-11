@@ -1,4 +1,3 @@
-require File.expand_path("node", File.dirname(__FILE__))
 
 class SGF
 
@@ -8,7 +7,6 @@ class SGF
 
   def initialize(moves="", properties={})
     moves ||= ""
-    #@move_list = []
     @config = ConfigNode.new
     @focus = @config
     nodify_move_list(moves) unless moves.empty?
@@ -37,7 +35,7 @@ class SGF
   end
 
   def last_play_color
-    @move_list.last && @move_list.last.color
+    @focus!= @config && @focus.color
   end
 
   def add_comment(comment)
@@ -72,9 +70,13 @@ class SGF
     @config.children.first.to_s
   end
 
-
   def move_by_number(index)
-    @move_list[index].to_s unless index < 0 || index > @move_list.length - 1
+    node = @config
+    while(index >0)
+      node = node.children.first
+      index -= 1
+    end
+    node
   end
 
     #light validation to make sure the input is not totally bs. only makes sure the coordinate is in the board

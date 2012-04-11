@@ -1,9 +1,29 @@
 require "cutest"
 
 require File.expand_path("../lib/sgf", File.dirname(__FILE__))
+require File.expand_path("../lib/node", File.dirname(__FILE__))
 
 setup do
 
+end
+
+test "should return falsy on color for config node" do
+
+  sgf = SGF.new
+  assert !sgf.last_play_color
+end
+
+
+test "should get the move number" do
+
+  sgf = SGF.new
+  sgf.add_move(";B[aa]")
+  sgf.add_move(";W[ab]")
+  sgf.add_move(";B[ac]")
+  sgf.add_move(";W[ad]")
+  sgf.add_move(";B[ae]")
+
+  assert_equal sgf.move_by_number(3), sgf.focus.parent.parent
 end
 
 test "should be able to write variations" do
