@@ -34,8 +34,12 @@ test("Configure Timer", function() {
 
 	// Init Tests
 		// Time
-		test_remain[BLACK] = STARTING_TIME;
-		test_remain[WHITE] = STARTING_TIME;
+		test_remain[BLACK] = {
+			main_time: STARTING_TIME,
+		};
+		test_remain[WHITE] = {
+			main_time: STARTING_TIME,
+		};
 		deepEqual(board1.time.remain, test_remain, "B1: At startup the time is " + STARTING_TIME + " secconds.");
 		deepEqual(board2.time.remain, test_remain, "B2: At startup the time is " + STARTING_TIME + " secconds.");
 
@@ -44,14 +48,14 @@ test("Configure Timer", function() {
 		equal(board2.time.status, ST_PAUSED, "B2: Starts paused.");
 
 		// Actual color
-		equal(board1.time.actual_color, null, "B1: No color at startup.");
-		equal(board2.time.actual_color, null, "B2: No color at startup.");
+		equal(board1.time.actual_color, undefined, "B1: No color at startup.");
+		equal(board2.time.actual_color, undefined, "B2: No color at startup.");
 
 		// Timestamps
-		equal(board1.time.last_resume, null, "B1: No timestamp for last resume.");
-		equal(board2.time.last_resume, null, "B2: No timestamp for last resume.");
-		equal(board1.time.last_pause, null, "B1: No timestamp for last pause.");
-		equal(board2.time.last_pause, null, "B2: No timestamp for last pause.");
+		equal(board1.time.last_resume, undefined, "B1: No timestamp for last resume.");
+		equal(board2.time.last_resume, undefined, "B2: No timestamp for last resume.");
+		equal(board1.time.last_pause, undefined, "B1: No timestamp for last pause.");
+		equal(board2.time.last_pause, undefined, "B2: No timestamp for last pause.");
 
 	// Start game
 	server.start_game();
@@ -60,12 +64,16 @@ test("Configure Timer", function() {
 	asyncTest("Black plays after 6 seconds", function() {
 		setTimeout(function() {
 			board2.play();
-			test_remain[BLACK] = STARTING_TIME - 6;
-			test_remain[WHITE] = STARTING_TIME;
-			equal(Math.round(board1.time.remain[WHITE]), test_remain[WHITE], "B1: 6 seconds passed until B played.");
-			equal(Math.round(board1.time.remain[BLACK]), test_remain[BLACK], "B1: 6 seconds passed until B played.");
-			equal(Math.round(board2.time.remain[WHITE]), test_remain[WHITE], "B2: 6 seconds passed until B played.");
-			equal(Math.round(board2.time.remain[BLACK]), test_remain[BLACK], "B2: 6 seconds passed until B played.");
+			test_remain[BLACK] = {
+				main_time: STARTING_TIME - 6,
+			};
+			test_remain[WHITE] = {
+				main_time: STARTING_TIME,
+			};
+			equal(Math.round(board1.time.remain[WHITE].main_time), test_remain[WHITE].main_time, "B1: 6 seconds passed until B played.");
+			equal(Math.round(board1.time.remain[BLACK].main_time), test_remain[BLACK].main_time, "B1: 6 seconds passed until B played.");
+			equal(Math.round(board2.time.remain[WHITE].main_time), test_remain[WHITE].main_time, "B2: 6 seconds passed until B played.");
+			equal(Math.round(board2.time.remain[BLACK].main_time), test_remain[BLACK].main_time, "B2: 6 seconds passed until B played.");
 			equal(board1.time.actual_color, WHITE, "B1: Counting for White");
 			equal(board2.time.actual_color, WHITE, "B2: Counting for White");
 			start();
@@ -78,10 +86,10 @@ test("Configure Timer", function() {
 			board1.play();
 			test_remain[BLACK] = STARTING_TIME - 6;
 			test_remain[WHITE] = STARTING_TIME - 10;
-			equal(Math.round(board1.time.remain[WHITE]), test_remain[WHITE], "B1: 10 seconds passed until W played.");
-			equal(Math.round(board1.time.remain[BLACK]), test_remain[BLACK], "B1: 10 seconds passed until W played.");
-			equal(Math.round(board2.time.remain[WHITE]), test_remain[WHITE], "B2: 10 seconds passed until W played.");
-			equal(Math.round(board2.time.remain[BLACK]), test_remain[BLACK], "B2: 10 seconds passed until W played.");
+			equal(Math.round(board1.time.remain[WHITE].main_time), test_remain[WHITE], "B1: 10 seconds passed until W played.");
+			equal(Math.round(board1.time.remain[BLACK].main_time), test_remain[BLACK], "B1: 10 seconds passed until W played.");
+			equal(Math.round(board2.time.remain[WHITE].main_time), test_remain[WHITE], "B2: 10 seconds passed until W played.");
+			equal(Math.round(board2.time.remain[BLACK].main_time), test_remain[BLACK], "B2: 10 seconds passed until W played.");
 			equal(board1.time.actual_color, BLACK, "B1: Counting for Black");
 			equal(board2.time.actual_color, BLACK, "B2: Counting for Black");
 			start();
@@ -94,10 +102,10 @@ test("Configure Timer", function() {
 			board2.play();
 			test_remain[BLACK] = STARTING_TIME - 6 - 12;
 			test_remain[WHITE] = STARTING_TIME - 10;
-			equal(Math.round(board1.time.remain[WHITE]), test_remain[WHITE], "B1: 12 seconds passed until B played again. It was a great move!");
-			equal(Math.round(board1.time.remain[BLACK]), test_remain[BLACK], "B1: 12 seconds passed until B played again. It was a great move!");
-			equal(Math.round(board2.time.remain[WHITE]), test_remain[WHITE], "B2: 12 seconds passed until B played again. It was a great move!");
-			equal(Math.round(board2.time.remain[BLACK]), test_remain[BLACK], "B2: 12 seconds passed until B played again. It was a great move!");
+			equal(Math.round(board1.time.remain[WHITE].main_time), test_remain[WHITE], "B1: 12 seconds passed until B played again. It was a great move!");
+			equal(Math.round(board1.time.remain[BLACK].main_time), test_remain[BLACK], "B1: 12 seconds passed until B played again. It was a great move!");
+			equal(Math.round(board2.time.remain[WHITE].main_time), test_remain[WHITE], "B2: 12 seconds passed until B played again. It was a great move!");
+			equal(Math.round(board2.time.remain[BLACK].main_time), test_remain[BLACK], "B2: 12 seconds passed until B played again. It was a great move!");
 			equal(board1.time.actual_color, WHITE, "B1: Counting for White");
 			equal(board2.time.actual_color, WHITE, "B2: Counting for White");
 			start();
@@ -110,10 +118,10 @@ test("Configure Timer", function() {
 			board1.play();
 			test_remain[BLACK] = STARTING_TIME - 6 - 12;
 			test_remain[WHITE] = STARTING_TIME - 10 - 20;
-			equal(Math.round(board1.time.remain[WHITE]), test_remain[WHITE], "B1: 22 seconds passed until W played. Game was ended before, so no effect.");
-			equal(Math.round(board1.time.remain[BLACK]), test_remain[BLACK], "B1: 22 seconds passed until W played. Game was ended before, so no effect.");
-			equal(Math.round(board2.time.remain[WHITE]), test_remain[WHITE], "B2: 22 seconds passed until W played. Game was ended before, so no effect.");
-			equal(Math.round(board2.time.remain[BLACK]), test_remain[BLACK], "B2: 22 seconds passed until W played. Game was ended before, so no effect.");
+			equal(Math.round(board1.time.remain[WHITE].main_time), test_remain[WHITE], "B1: 22 seconds passed until W played. Game was ended before, so no effect.");
+			equal(Math.round(board1.time.remain[BLACK].main_time), test_remain[BLACK], "B1: 22 seconds passed until W played. Game was ended before, so no effect.");
+			equal(Math.round(board2.time.remain[WHITE].main_time), test_remain[WHITE], "B2: 22 seconds passed until W played. Game was ended before, so no effect.");
+			equal(Math.round(board2.time.remain[BLACK].main_time), test_remain[BLACK], "B2: 22 seconds passed until W played. Game was ended before, so no effect.");
 			equal(board1.time.status, ST_STOPED, "B1: Not counting");
 			equal(board2.time.status, ST_STOPED, "B2: Not counting");
 			equal(board1.time.actual_color, null, "B1: No actual color");

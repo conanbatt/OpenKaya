@@ -26,10 +26,10 @@ Server.prototype = {
 	broadcast: function(next_move, remain) {
 		if (remain) {
 			if (this.players[WHITE] != null) {
-				this.players[WHITE].update_game(next_move, remain.B, remain.W);
+				this.players[WHITE].update_game(next_move, remain);
 			}
 			if (this.players[BLACK] != null) {
-				this.players[BLACK].update_game(next_move, remain.B, remain.W);
+				this.players[BLACK].update_game(next_move, remain);
 			}
 		} else {
 			if (this.players[WHITE] != null) {

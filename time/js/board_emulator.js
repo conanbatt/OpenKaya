@@ -14,13 +14,13 @@ function Board(config) {
 
 	// Timer
 	if (config.time_system == "Absolute") {
-		this.time = new AbsoluteTimer(this, config.starting_time);
+		this.time = new AbsoluteTimer(this, {main_time: config.starting_time});
 	} else if (config.time_system == "Hourglass") {
 		this.time = new HourglassTimer(this, config.starting_time);
 	} else if (config.time_system == "Bronstein") {
 		this.time = new BronsteinTimer(this, config.starting_time, config.bonus);
 	} else if (config.time_system == "Fischer") {
-		this.time = new FischerTimer(this, config.starting_time, config.bonus);
+		this.time = new FischerTimer(this, {main_time: config.starting_time, bonus: config.bonus});
 	} else if (config.time_system == "Byoyomi") {
 		this.time = new ByoyomiTimer(this, config.main_time, config.periods, config.period_time);
 	} else if (config.time_system == "Canadian") {
@@ -44,10 +44,10 @@ Board.prototype = {
 		this.server.play(this.my_color, remain);
 	},
 
-	update_game: function(next_move, remain_b, remain_w) {
+	update_game: function(next_move, remain) {
 		this.time.pause();
 		this.next_move = next_move;
-		this.time.resume(this.next_move, remain_b, remain_w);
+		this.time.resume(this.next_move, remain);
 	},
 
 	update_clocks: function(remain) {
@@ -80,8 +80,8 @@ Board.prototype = {
 				this.div_clocks[WHITE].innerHTML = Math.floor(remain[WHITE].period_time + 0.99) + ' / ' + remain[WHITE].period_stones;
 			}
 		} else {
-			this.div_clocks[BLACK].innerHTML = Math.round(remain[BLACK]);
-			this.div_clocks[WHITE].innerHTML = Math.round(remain[WHITE]);
+			this.div_clocks[BLACK].innerHTML = Math.round(remain[BLACK].main_time);
+			this.div_clocks[WHITE].innerHTML = Math.round(remain[WHITE].main_time);
 		}
 	},
 
@@ -89,6 +89,7 @@ Board.prototype = {
 		if(this.next_move == this.my_color) {
 			this.next_move = null;
 			this.div_result.innerHTML = this.my_color + " LOSE";
+			this.time.stop(remain);
 			this.server.announce_loss(this.my_color, remain);
 		}
 	},
