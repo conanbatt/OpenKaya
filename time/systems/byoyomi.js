@@ -184,7 +184,7 @@ ByoyomiTimer.prototype = {
 		var tmp_remain_color = tmp_remain[this.actual_color];
 
 		// Always remove time from main_time, even if it would be negative afterwards
-		tmp_remain_color.main_time = remain_color.main_time - (new Date() - this.last_resume) / 1000;
+		tmp_remain_color.main_time -= (new Date() - this.last_resume) / 1000;
 
 		// Delegate extra removed time from main_time to period_time.
 		if (tmp_remain_color.main_time < 0) {
