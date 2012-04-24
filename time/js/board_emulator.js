@@ -22,7 +22,7 @@ function Board(config) {
 	} else if (config.time_system == "Fischer") {
 		this.time = new FischerTimer(this, {main_time: config.starting_time, bonus: config.bonus});
 	} else if (config.time_system == "Byoyomi") {
-		this.time = new ByoyomiTimer(this, config.main_time, config.periods, config.period_time);
+		this.time = new ByoyomiTimer(this, {main_time: config.main_time, periods: config.periods, period_time: config.period_time});
 	} else if (config.time_system == "Canadian") {
 		this.time = new CanadianTimer(this, config.main_time, config.period_time, config.period_stones);
 	} else {
