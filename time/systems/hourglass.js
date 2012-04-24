@@ -135,7 +135,6 @@ HourglassTimer.prototype = {
 				this.remain[WHITE] = 0;
 			}
 
-			this.stop();
 			this.game.announce_time_loss(this.remain);
 		}
 	},
