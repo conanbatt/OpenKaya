@@ -1,4 +1,6 @@
+QUnit.config.reorder = false;
 
+// Constants
 var STARTING_TIME = 10;
 
 function binder(method, object, args) {

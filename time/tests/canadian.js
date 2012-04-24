@@ -1,3 +1,6 @@
+QUnit.config.reorder = false;
+
+// Constants
 var MAIN_TIME = 5;
 var PERIOD_TIME = 10;
 var PERIOD_STONES = 3;

@@ -1,3 +1,6 @@
+QUnit.config.reorder = false;
+
+// Constants
 var MAIN_TIME = 30;
 var PERIOD_TIME = 5;
 var PERIODS = 3;
@@ -219,5 +222,4 @@ test("Configure Timer", function() {
 			start();
 		}, 10900);
 	});
-
 });
