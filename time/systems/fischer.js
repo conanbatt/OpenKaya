@@ -1,4 +1,4 @@
-// Absolute timer implementation based on timer prototype
+// Fischer timer implementation based on timer prototype
 
 function FischerTimer(game, timer_settings) {
 	this.init.call(this, game, timer_settings);
