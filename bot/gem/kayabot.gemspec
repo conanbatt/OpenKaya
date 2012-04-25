@@ -1,5 +1,5 @@
 Gem::Specification.new do |s|
-  s.name              = "kaya_bot"
+  s.name              = "kayabot"
   s.version           = "0.1.0"
   s.summary           = "Interface to run Go Bots on Kaya"
   s.description       = "This is an interface to run GTP compliant Go Bots on Kaya."

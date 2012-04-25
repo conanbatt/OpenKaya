@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
 
-require File.expand_path("../sgf", File.dirname(__FILE__))
+require File.expand_path("../lib/sgf", File.dirname(__FILE__))
 require 'rubygems'
 require 'mechanize'
 require 'json'
 require 'yaml'
-require File.expand_path("../kaya_bot", File.dirname(__FILE__))
-require File.expand_path("../gg", File.dirname(__FILE__))
+require File.expand_path("../lib/kayabot", File.dirname(__FILE__))
+require File.expand_path("../lib/gg", File.dirname(__FILE__))
 $0='kayabot'
 
 
@@ -31,5 +31,5 @@ if ARGV.length > 0
     k.listener_loop
   end
 else
-    puts "Usage:\n - ruby kaya_bot.rb <yaml_config_file>\n - ruby kaya_bot.rb <url> <bot_nickname> <password>"
+    puts "Usage:\n - kayabot <yaml_config_file>\n - kayabot <url> <bot_nickname> <password>"
 end
