@@ -6,11 +6,15 @@ Feel free to expand the gem to allow other bots with GTP interface, should work 
 
 
 On Ubuntu:
+
    sudo apt-get install gnugo
 
 To install :
+
     gem install kayabot
+
 To run:
+
     kayabot my_configuration.yaml
 
 The configuration yaml must look like this:
