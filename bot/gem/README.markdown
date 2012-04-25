@@ -1,13 +1,13 @@
 This is the official Gem to run a bot in Kaya.
 
-Right now only gnubot is default and has to be installed. 
 
 Feel free to expand the gem to allow other bots with GTP interface, should work plug-play easily.
 
+Requirements:
 
-On Ubuntu:
-
-   sudo apt-get install gnugo
+   gnugo (On ubuntu: sudo apt-get install gnugo)
+   ruby 1.9.2
+   rubygems
 
 To install :
 
