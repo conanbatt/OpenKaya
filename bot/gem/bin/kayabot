@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+
+require File.expand_path("../sgf", File.dirname(__FILE__))
+require 'rubygems'
+require 'mechanize'
+require 'json'
+require 'yaml'
+require File.expand_path("../kaya_bot", File.dirname(__FILE__))
+require File.expand_path("../gg", File.dirname(__FILE__))
+$0='kayabot'
+
+
+@url = ""
+
+if ARGV.length > 0
+  if ARGV.length == 1
+    config_file = ARGV.first
+    if File.exists?(config_file)
+      config = YAML.load_file(config_file)
+      if config["url"] && config["user"] && config["pass"]
+        k = KayaBot.new(config["url"], config["user"], config["pass"])
+        k.listener_loop
+      else
+        puts "Invalid config file."
+      end
+    else
+      puts "File does not exist."
+    end
+  elsif ARGV.length >= 3
+    k = KayaBot.new(ARGV[0], ARGV[1], ARGV[2])
+    k.listener_loop
+  end
+else
+    puts "Usage:\n - ruby kaya_bot.rb <yaml_config_file>\n - ruby kaya_bot.rb <url> <bot_nickname> <password>"
+end
