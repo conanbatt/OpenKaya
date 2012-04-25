@@ -5,7 +5,7 @@ Feel free to expand the gem to allow other bots with GTP interface, should work 
 
 Requirements:
 
-   gnugo (On ubuntu: sudo apt-get install gnugo)
+   gnugo 
    ruby 1.9.2
    rubygems
 
