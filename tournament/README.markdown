@@ -4,7 +4,7 @@
 
 Ruby 1.9.2, cutest gem. (for engine & tests)
 
-cutest, cuba, active record, gems, selenium, sqlite3. (for the site)
+    cutest, cuba, active record, gems, selenium, sqlite3. (for the site)
 
 ## Intro
 
@@ -15,6 +15,10 @@ The tournament engine is a core library to manage and organize a tournament. It 
 
 ### Site
 Install the gems detailed in the default.gems file. If you have rvm, do rvm gemset import.
+
+Run the db migration inside the tournament folder
+
+    rake migrate
 
 Go to the "site" folder and do 
 

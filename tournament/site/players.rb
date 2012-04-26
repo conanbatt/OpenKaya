@@ -21,7 +21,7 @@ PLAYERS_API = Cuba.new do
   on post do
     on "create" do 
       on param("name"),param("rank") do |name, rank|
-        player = Player.new(:ip => 1,:name => name, :rank => rank)
+        player = Player.new(:name => name, :rank => rank)
         player.save
         res.redirect "list"
       end

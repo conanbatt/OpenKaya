@@ -15,7 +15,7 @@ end
 
 class Player < ActiveRecord::Base
   has_and_belongs_to_many :tournaments
-  validates_uniqueness_of :user_name 
+  validates_uniqueness_of :name 
 end
 
 class Organizer
