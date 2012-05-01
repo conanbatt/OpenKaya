@@ -10,7 +10,7 @@ class SGF
     moves ||= ""
     @config = ConfigNode.new
     @focus = @config
-    nodify_move_list(moves) unless moves.empty?
+    nodify_move_list(moves, @config) unless moves.empty?
     @comment_buffer = ""
     @size = properties[:size]
     properties.keys.each {|k| @config.write_property(k,properties[k]) }
@@ -24,9 +24,27 @@ class SGF
     false
   end
 
-  def nodify_move_list(moves)
-    moves.split(";").each do |txt|
-      add_move(";"+txt) unless txt.empty?
+  def nodify_move_list(moves, root_node)
+
+    @focus = root_node
+    branch_less_var = moves.gsub(/(\(;.*\))/,"")
+    branch_less_var.split(";").each {|node| add_move(";#{node}") unless node.empty?}
+
+    #The regex has 3 parts
+    # 1.basic node ";B[aa]" : ;[BW]\[[a-z]?[a-z]?\]
+    # 2.time property "BL[222.000]" : ([BW]L\[\d{0,6}.\d{3}\])?
+    # 3.branches ";B[aa](;W[dd]) : (\(;.*\))?
+    # 2 and 3 might not be there.
+    total_reg = /(;[BW]\[[a-z]?[a-z]?\]([BW]L\[\d{0,6}.\d{3}\])?(\(;.*\))?)/
+
+    focus = root_node.children.first
+    moves.scan(total_reg).each do |match|
+
+      node_text = match.first
+      p "Warning! #{node_text} is not #{focus.node_text}" unless node_text.include?(focus.node_text)
+      branch = match[2]
+      nodify_move_list(branch[1..-2], focus) if branch
+      focus = focus.children.first
     end
   end
 
@@ -111,7 +129,7 @@ class SGF
   def load_from_string(input)
     properties= input.split(";")[1]
     @focus = @config = ConfigNode.new(properties) #will process this later
-    nodify_move_list(input.gsub(properties, "").chomp[2..-2])
+    nodify_move_list(input.gsub(properties, "").chomp[2..-2], @config)
   end
 
   def properties

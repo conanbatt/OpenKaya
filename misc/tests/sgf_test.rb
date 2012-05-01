@@ -43,6 +43,36 @@ test "should be able to write variations" do
 
   assert_equal sgf.move_list, ";B[aa](;W[ac];B[ad]);W[ab]"
 
+  sgf2 = SGF.new
+
+  sgf2.add_move(";B[bb]")
+  sgf2.add_move(";W[cc]")
+  sgf2.focus = sgf2.focus.parent
+
+  sgf2.add_move(";W[dd]")
+  sgf2.add_move(";B[ee]")
+  sgf2.focus = sgf2.focus.parent
+
+  sgf2.add_move(";B[ff]")
+
+  assert_equal sgf2.move_list, ";B[bb](;W[dd](;B[ff]);B[ee]);W[cc]"
+end
+
+
+test "should be able to re-create the sgf with the raw move list" do
+
+# (;[BW]\[[a-z][a-z]\](\(;.*\))?) 
+# (;.{5}(\(;.*\))?)
+
+  branched_move_list = ";B[hh];W[ii](;B[aa]);B[ee];W[ab];B[al]"
+  sgf = SGF.new(branched_move_list)
+
+  assert_equal sgf.move_list, ";B[hh];W[ii](;B[aa]);B[ee];W[ab];B[al]" 
+
+  branched_node = sgf.focus.parent
+
+  assert_equal branched_node.children.length, 2
+
 end
 
 test "Nodify moves" do
@@ -248,7 +278,7 @@ test 'should have handicap node settings' do
 end
 
 test 'should recognize if last two moves are pass' do
-
+ 
   sgf = SGF.new(";B[];W[]")
   assert_equal sgf.move_list, ";B[];W[]"
   assert sgf.last_two_moves_are_pass?
