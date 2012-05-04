@@ -16,7 +16,7 @@ function Board(config) {
 	if (config.time_system == "Absolute") {
 		this.time = new AbsoluteTimer(this, {main_time: config.starting_time});
 	} else if (config.time_system == "Hourglass") {
-		this.time = new HourglassTimer(this, config.starting_time);
+		this.time = new HourglassTimer(this, {main_time: config.starting_time});
 	} else if (config.time_system == "Bronstein") {
 		this.time = new BronsteinTimer(this, config.starting_time, config.bonus);
 	} else if (config.time_system == "Fischer") {
@@ -79,6 +79,12 @@ Board.prototype = {
 			} else {
 				this.div_clocks[WHITE].innerHTML = Math.floor(remain[WHITE].period_time + 0.99) + ' / ' + remain[WHITE].period_stones;
 			}
+		} else if (this.time.system.name == 'Hourglass') {
+			//var diff = remain[BLACK].main_time - remain[WHITE].main_time;
+			//this.div_clocks[BLACK].innerHTML = Math.floor(this.time.system.main_time - diff);
+			//this.div_clocks[WHITE].innerHTML = Math.floor(this.time.system.main_time + diff);
+			this.div_clocks[BLACK].innerHTML = Math.floor(remain[BLACK].main_time + 0.99);
+			this.div_clocks[WHITE].innerHTML = Math.floor(remain[WHITE].main_time + 0.99);
 		} else {
 			this.div_clocks[BLACK].innerHTML = Math.round(remain[BLACK].main_time);
 			this.div_clocks[WHITE].innerHTML = Math.round(remain[WHITE].main_time);

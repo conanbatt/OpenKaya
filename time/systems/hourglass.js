@@ -1,145 +1,63 @@
-var ST_STOPED = 0;
-var ST_PAUSED = 1;
-var ST_COUNTING = 2;
-var BLACK = "B";
-var WHITE = "W";
+// Hourglass timer implementation based on timer prototype
 
-function HourglassTimer(game, time) {
-	// Validation
-	if (!this.validate(time)) {
-		return false;
+function HourglassTimer(game, timer_settings) {
+	this.init.call(this, game, timer_settings);
+}
+
+HourglassTimer.prototype = (function() {
+	function F() {};
+	F.prototype = timer_prototype;
+	return new F();
+})();
+
+HourglassTimer.prototype.validate_settings = function(timer_settings) {
+	if (timer_settings.main_time == undefined) {
+		throw new Error("Invalid time: Hourglass without main_time property.");
 	}
+	if (typeof timer_settings.main_time !== "number" || parseInt(timer_settings.main_time, 10) != timer_settings.main_time) {
+		throw new Error("Main time parameter must be an integer indicating seconds.");
+	}
+};
 
-	// Game
-	this.game = game;
+HourglassTimer.prototype.configure_timer = function(timer_settings) {
+	var remain = {};
+	remain[BLACK] = timer_settings;
+	remain[WHITE] = timer_settings;
+	this.set_remain(remain);
+};
 
-	// Remaining time
-	this.remain = {};
-	this.remain[BLACK] = time;
-	this.remain[WHITE] = time;
-
-	// Stats
-	this.status = ST_PAUSED;
-	this.actual_color;
-	this.last_resume;
-	this.last_pause;
-
-	// System
-	this.system = {};
+HourglassTimer.prototype.configure_system = function(timer_settings) {
 	this.system.name = "Hourglass";
-	this.system.time = time;
-}
+	this.system.main_time = timer_settings.main_time;
+	this.system.zero_time = {
+		main_time: 0,
+	};
+};
 
-HourglassTimer.prototype = {
-	// Validation
-	validate: function(time) {
-		if (time == undefined) {
-			throw new Error("Must configure a main time.");
-			return false;
-		} else {
-			if (typeof time != "number" || parseInt(time, 10) != time) {
-				throw new Error("Main time parameter must be an integer indicating secconds.");
-				return false;
-			}
-		}
+HourglassTimer.prototype.copy_time = function(time_ref) {
+	return {
+		main_time: time_ref.main_time,
+	};
+};
 
-		return true;
-	},
+HourglassTimer.prototype.substract_time = function(target, color, snap_time) {
+	target[color].main_time -= (snap_time - this.last_resume) / 1000;
+	target[this.opposite_color(color)].main_time += (snap_time - this.last_resume) / 1000;
+};
 
-	// Force a remaining time for a player.
-	set_remain: function(color, time) {
-		if (color != "B" && color != "W") {
-			throw new Error("Wrong color");
-		} else {
-			this.remain[color] = time;
-		}
-	},
+HourglassTimer.prototype.pause_adjustments = function(target) {
+	var adj = 0;
+	if (target.main_time < 10 && target.main_time > 0) {
+		adj = 10 - target.main_time;
+	}
+	this.remain[this.actual_color].main_time += adj;
+	this.remain[this.opposite_color(this.actual_color)].main_time -= adj;
+};
 
-	// If it's not counting: update remain, color, last_resume and status, register interval, start!
-	resume: function(color, remain_b, remain_w) {
-		if (this.status == ST_PAUSED) {
-			if (remain_b && remain_w) {
-				this.remain[BLACK] = remain_b;
-				this.remain[WHITE] = remain_w;
-			}
-			this.actual_color = color;
-			this.status = ST_COUNTING;
-			this.last_resume = new Date();
-			this.clock = window.setInterval(this.binder(this.tick, this), 100);
-		}
-	},
+HourglassTimer.prototype.is_time_up = function(time) {
+	return time.main_time <= 0;
+};
 
-	// If it's counting: update last_pause, status and remain. Clear interval.
-	pause: function() {
-		if (this.status == ST_COUNTING) {
-			this.last_pause = new Date();
-			window.clearInterval(this.clock);
-			this.status = ST_PAUSED;
-
-			var tmp_resume = (new Date() - this.last_resume) / 1000;
-
-			if (this.actual_color == BLACK) {
-				this.remain[BLACK] -= tmp_resume;
-				this.remain[WHITE] += tmp_resume;
-			} else {
-				this.remain[BLACK] += tmp_resume;
-				this.remain[WHITE] -= tmp_resume;
-			}
-			return this.remain;
-		}
-		return false;
-	},
-
-	// Stop, clear everything up, update remain from arguments.
-	stop: function(remain) {
-		window.clearInterval(this.clock);
-		if (remain) {
-			this.remain = remain;
-		}
-		this.actual_color = null;
-		this.last_resume = null;
-		this.last_pause = null;
-		this.status = ST_STOPED;
-	},
-
-	adjust: function(adjustment) {
-		if (this.status != ST_STOPED) {
-			this.remain[this.actual_color] -= Number(adjustment);
-		}
-	},
-
-	// This handles the interval callback, creates a remain estimation and updates the clocks.
-	// if remaining time reaches 0, client announces loss to server.
-	tick: function() {
-		var tmp_remain = {};
-		tmp_remain[BLACK] = this.remain[BLACK];
-		tmp_remain[WHITE] = this.remain[WHITE];
-
-		var tmp_resume = (new Date() - this.last_resume) / 1000;
-		if (this.actual_color == BLACK) {
-			tmp_remain[BLACK] -= tmp_resume;
-			tmp_remain[WHITE] += tmp_resume;
-		} else {
-			tmp_remain[BLACK] += tmp_resume;
-			tmp_remain[WHITE] -= tmp_resume;
-		}
-
-		this.game.update_clocks(tmp_remain);
-		if (tmp_remain[this.actual_color] <= 0) {
-			// Correct the remaining time for both players
-			if (this.actual_color == BLACK) {
-				this.remain[WHITE] += this.remain[BLACK];
-				this.remain[BLACK] = 0
-			} else {
-				this.remain[BLACK] += this.remain[WHITE];
-				this.remain[WHITE] = 0;
-			}
-
-			this.game.announce_time_loss(this.remain);
-		}
-	},
-
-	binder: function (method, object, args) {
-		return function(orig_args) { method.apply(object, [orig_args].concat(args)); };
-	},
-}
+HourglassTimer.prototype.opposite_color = function(color) {
+	return (color == WHITE ? BLACK : WHITE);
+};

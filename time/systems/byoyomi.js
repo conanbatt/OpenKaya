@@ -57,20 +57,20 @@ ByoyomiTimer.prototype.copy_time = function(time_ref) {
 	};
 };
 
-ByoyomiTimer.prototype.substract_time = function(target, snap_time) {
+ByoyomiTimer.prototype.substract_time = function(target, color, snap_time) {
 	// Always remove time from main_time, even if it would be negative afterwards
-	target.main_time -= (snap_time - this.last_resume) / 1000;
+	target[color].main_time -= (snap_time - this.last_resume) / 1000;
 
 	// Delegate extra removed time from main_time to period_time.
-	if (target.main_time < 0) {
-		target.period_time += target.main_time;
-		target.main_time = 0;
+	if (target[color].main_time < 0) {
+		target[color].period_time += target[color].main_time;
+		target[color].main_time = 0;
 	}
 
 	// If the time is less than zeor, attempt to add periods
-	while(target.period_time <= 0 && target.periods > 1) {
-		target.periods--;
-		target.period_time += this.system.period_time;
+	while(target[color].period_time <= 0 && target[color].periods > 1) {
+		target[color].periods--;
+		target[color].period_time += this.system.period_time;
 	}
 };
 

@@ -37,8 +37,8 @@ AbsoluteTimer.prototype.copy_time = function(time_ref) {
 	};
 };
 
-AbsoluteTimer.prototype.substract_time = function(target, snap_time) {
-	target.main_time -= (snap_time - this.last_resume) / 1000;
+AbsoluteTimer.prototype.substract_time = function(target, color, snap_time) {
+	target[color].main_time -= (snap_time - this.last_resume) / 1000;
 };
 
 AbsoluteTimer.prototype.is_time_up = function(time) {
