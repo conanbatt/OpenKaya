@@ -59,7 +59,7 @@ ByoyomiTimer.prototype.copy_time = function(time_ref) {
 
 ByoyomiTimer.prototype.substract_time = function(target, color, snap_time) {
 	// Always remove time from main_time, even if it would be negative afterwards
-	target[color].main_time -= (snap_time - this.last_resume) / 1000;
+	target[color].main_time -= time_to_substract;
 
 	// Delegate extra removed time from main_time to period_time.
 	if (target[color].main_time < 0) {

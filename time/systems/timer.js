@@ -68,7 +68,8 @@ var timer_prototype = {
 			var remain_color = this.remain[this.actual_color];
 
 			// Substract corresponding time
-			this.substract_time(this.remain, this.actual_color, this.last_pause);
+			var time_to_substract = (this.last_pause - this.last_resume) / 1000;
+			this.substract_time(this.remain, this.actual_color, time_to_substract);
 
 			// Do pause adjustments
 			if (do_adjustment) {
@@ -109,7 +110,8 @@ var timer_prototype = {
 		var actual_color_remain_copy = remain_copy[this.actual_color];
 
 		// Substract time to the copy
-		this.substract_time(remain_copy, this.actual_color, new Date());
+		var time_to_substract = (new Date() - this.last_resume) / 1000;
+		this.substract_time(remain_copy, this.actual_color, time_to_substract);
 
 		// Update the clocks with info from the copy
 		this.game.update_clocks(remain_copy);
@@ -145,7 +147,7 @@ var timer_prototype = {
 	      validate_settings: function(timer_settings) {},
 	          validate_time: function(time) {},
 	              copy_time: function(time_ref) {},
-	         substract_time: function(target, color, snap_time) {},
+	         substract_time: function(target, color, time_to_substract) {},
           pause_adjustments: function(target) {},
 	             is_time_up: function(time) {},
 };

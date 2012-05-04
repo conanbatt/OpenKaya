@@ -45,8 +45,8 @@ FischerTimer.prototype.copy_time = function(time_ref) {
 	};
 };
 
-FischerTimer.prototype.substract_time = function(target, color, snap_time) {
-	target[color].main_time -= (snap_time - this.last_resume) / 1000;
+FischerTimer.prototype.substract_time = function(target, color, time_to_substract) {
+	target[color].main_time -= time_to_substract;
 };
 
 FischerTimer.prototype.pause_adjustments = function(target) {

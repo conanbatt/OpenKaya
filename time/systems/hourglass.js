@@ -40,9 +40,9 @@ HourglassTimer.prototype.copy_time = function(time_ref) {
 	};
 };
 
-HourglassTimer.prototype.substract_time = function(target, color, snap_time) {
-	target[color].main_time -= (snap_time - this.last_resume) / 1000;
-	target[this.opposite_color(color)].main_time += (snap_time - this.last_resume) / 1000;
+HourglassTimer.prototype.substract_time = function(target, color, time_to_substract) {
+	target[color].main_time -= time_to_substract;
+	target[this.opposite_color(color)].main_time += time_to_substract;
 };
 
 HourglassTimer.prototype.pause_adjustments = function(target) {
