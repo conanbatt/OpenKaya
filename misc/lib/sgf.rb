@@ -53,6 +53,15 @@ class SGF
     move_list
   end
 
+  def code_to_focus(focus_code)
+    @focus = @config
+    focus_code.split("-").each do |branch|
+      node = @focus.children[branch.to_i]
+      raise "There is no node here! #{focus_code}" unless node
+      @focus = node
+    end
+  end
+
   def last_play_color
     @focus != @config && @focus.color
   end

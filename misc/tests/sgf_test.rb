@@ -7,6 +7,9 @@ setup do
 
 end
 
+
+
+
 test "should return falsy on color for config node" do
 
   sgf = SGF.new
@@ -58,6 +61,23 @@ test "should be able to write variations" do
   assert_equal sgf2.move_list, ";B[bb](;W[dd](;B[ff]);B[ee]);W[cc]"
 end
 
+test "should change the focus with a code" do
+
+  sgf = SGF.new
+
+  sgf.add_move(";B[bb]")
+  sgf.add_move(";W[cc]")
+  sgf.code_to_focus "0"
+
+  sgf.add_move(";W[dd]")
+  sgf.add_move(";B[ee]")
+  sgf.code_to_focus "0-1"
+
+  sgf.add_move(";B[ff]")
+
+  assert_equal sgf.move_list, ";B[bb](;W[dd](;B[ff]);B[ee]);W[cc]"
+
+end
 
 test "should be able to re-create the sgf with the raw move list" do
 
