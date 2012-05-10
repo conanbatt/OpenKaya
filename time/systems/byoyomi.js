@@ -57,7 +57,7 @@ ByoyomiTimer.prototype.copy_time = function(time_ref) {
 	};
 };
 
-ByoyomiTimer.prototype.substract_time = function(target, color, snap_time) {
+ByoyomiTimer.prototype.substract_time = function(target, color, time_to_substract) {
 	// Always remove time from main_time, even if it would be negative afterwards
 	target[color].main_time -= time_to_substract;
 
