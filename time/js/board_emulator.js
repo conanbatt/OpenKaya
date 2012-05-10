@@ -50,7 +50,7 @@ Board.prototype = {
 		this.time.resume(this.next_move, remain);
 	},
 
-	update_clocks: function(remain) {
+	draw: function(remain) {
 		if (this.time.system.name == 'Byoyomi') {
 			if (remain[BLACK].main_time > 0) {
 				this.div_clocks[BLACK].innerHTML = Math.floor(remain[BLACK].main_time + 0.99);

@@ -5,14 +5,14 @@ var BLACK = "B";
 var WHITE = "W";
 
 var timer_prototype = {
-	init: function(game, timer_settings) {
+	init: function(time_manager, timer_settings) {
 		// Validation
 		if (!this.validate(timer_settings)) {
 			return false;
 		}
 
 		// Initialization
-		this.game = game;
+		this.time_manager = time_manager;
 		this.status = ST_PAUSED;
 
 		// Configuration
@@ -54,6 +54,7 @@ var timer_prototype = {
 			this.status = ST_COUNTING;
 			this.last_resume = new Date();
 			this.clock = window.setInterval(this.binder(this.tick, this), 100);
+			this.tick(true);
 		}
 	},
 
@@ -100,7 +101,7 @@ var timer_prototype = {
 
 	// This handles the interval callback, creates a remain estimation and updates the clocks.
 	// if remaining time reaches 0, client announces loss to server.
-	tick: function() {
+	tick: function(no_draw) {
 		// Copy remaining time
 		var remain_copy = {};
 		remain_copy[BLACK] = this.copy_time(this.remain[BLACK]);
@@ -113,8 +114,10 @@ var timer_prototype = {
 		var time_to_substract = (new Date() - this.last_resume) / 1000;
 		this.substract_time(remain_copy, this.actual_color, time_to_substract);
 
-		// Update the clocks with info from the copy
-		this.game.update_clocks(remain_copy);
+		// Draw the clocks with info from the copy
+		if (!no_draw) {
+			this.time_manager.draw(remain_copy);
+		}
 
 		// If the copy says that time is up, announce
 		if (this.is_time_up(actual_color_remain_copy)) {
@@ -133,7 +136,7 @@ var timer_prototype = {
 		this.set_remain(remain);
 
 		// Announce time loss
-		this.game.announce_time_loss(this.remain);
+		this.time_manager.announce_time_loss(this.remain);
 	},
 
 	// Binding helper
