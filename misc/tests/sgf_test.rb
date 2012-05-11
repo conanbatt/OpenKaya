@@ -67,10 +67,15 @@ test "should change the focus with a code" do
 
   sgf.add_move(";B[bb]")
   sgf.add_move(";W[cc]")
+  assert_equal sgf.focus_to_code, "0-0"
+
   sgf.code_to_focus "0"
 
   sgf.add_move(";W[dd]")
   sgf.add_move(";B[ee]")
+
+  assert_equal sgf.focus_to_code, "0-1-0"
+
   sgf.code_to_focus "0-1"
 
   sgf.add_move(";B[ff]")

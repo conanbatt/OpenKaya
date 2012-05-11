@@ -62,6 +62,21 @@ class SGF
     end
   end
 
+  def focus_to_code
+    temp_focus = @focus
+    code = ""
+    while(temp_focus)
+
+      parent = temp_focus.parent
+      if(parent)
+        code = "#{parent.children.index(temp_focus)}-#{code}" 
+      end
+      temp_focus = parent
+    end
+    return code.chop
+  end
+
+
   def last_play_color
     @focus != @config && @focus.color
   end
