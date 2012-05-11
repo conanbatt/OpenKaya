@@ -55,6 +55,7 @@ class SGF
 
   def code_to_focus(focus_code)
     @focus = @config
+    return if focus_code == "root"
     focus_code.split("-").each do |branch|
       node = @focus.children[branch.to_i]
       raise "There is no node here! #{focus_code}" unless node
@@ -63,6 +64,7 @@ class SGF
   end
 
   def focus_to_code
+    return "root" if @focus == @config
     temp_focus = @focus
     code = ""
     while(temp_focus)

@@ -33,6 +33,7 @@ test "should be able to write variations" do
 
   sgf = SGF.new
 
+
   sgf.add_move(";B[aa]")
   sgf.add_move(";W[ab]")
 
@@ -64,6 +65,8 @@ end
 test "should change the focus with a code" do
 
   sgf = SGF.new
+
+  assert_equal sgf.focus_to_code, "root"
 
   sgf.add_move(";B[bb]")
   sgf.add_move(";W[cc]")
