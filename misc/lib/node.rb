@@ -20,16 +20,16 @@ class Node
   end
 
   def children_to_s(with_comments=false)
-    branches = ""
-     if @children.size > 1
-      @children[1..-1].each {|node| branches += "(#{node.children_to_s(with_comments)})"}
+    moves = ""
+ 
+    if @children.size == 1
+      moves += @children.first.children_to_s(with_comments)
+    else
+      @children.each {|node| moves += "(#{node.children_to_s(with_comments)})"}
     end
-    children_text =""
-    if @children.first
-      children_text = @children.first.children_to_s(with_comments)
-    end
+
     comment_node = with_comments ? comments : "" 
-    node_text + comment_node + branches + children_text
+    node_text + comment_node + moves
   end
 
   def to_s

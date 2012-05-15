@@ -8,6 +8,20 @@ setup do
 end
 
 
+test "should be able to re-create the sgf with the raw move list" do
+
+# (;[BW]\[[a-z][a-z]\](\(;.*\))?) 
+# (;.{5}(\(;.*\))?)
+
+  branched_move_list = ";B[hh];W[ii](;B[ee];W[ab];B[al])(;B[aa])"
+  sgf = SGF.new(branched_move_list)
+
+  assert_equal sgf.move_list, ";B[hh];W[ii](;B[ee];W[ab];B[al])(;B[aa])" 
+
+  branched_node = sgf.focus.parent
+
+  assert_equal branched_node.children.length, 2
+end
 
 
 test "should return falsy on color for config node" do
@@ -16,6 +30,15 @@ test "should return falsy on color for config node" do
   assert !sgf.last_play_color
 end
 
+test "should be able to nodify a certain move list" do
+
+
+  mock_move_list  = ";B[pd];W[jd](;B[pj])(;B[pp];B[dd])"
+  sgf = SGF.new(mock_move_list)
+
+#  assert_equal sgf.move_list, mock_move_list
+
+end
 
 test "should get the move number" do
 
@@ -39,13 +62,13 @@ test "should be able to write variations" do
 
   sgf.focus = sgf.focus.parent
   sgf.add_move(";W[ac]")
-  assert_equal sgf.move_list, ";B[aa](;W[ac]);W[ab]"
+  assert_equal sgf.move_list, ";B[aa](;W[ab])(;W[ac])"
 
   assert_equal sgf.focus.node_text, ";W[ac]"
 
   sgf.add_move(";B[ad]")
 
-  assert_equal sgf.move_list, ";B[aa](;W[ac];B[ad]);W[ab]"
+  assert_equal sgf.move_list, ";B[aa](;W[ab])(;W[ac];B[ad])"
 
   sgf2 = SGF.new
 
@@ -59,7 +82,7 @@ test "should be able to write variations" do
 
   sgf2.add_move(";B[ff]")
 
-  assert_equal sgf2.move_list, ";B[bb](;W[dd](;B[ff]);B[ee]);W[cc]"
+  assert_equal sgf2.move_list, ";B[bb](;W[cc])(;W[dd](;B[ee])(;B[ff]))"
 end
 
 test "should change the focus with a code" do
@@ -83,25 +106,10 @@ test "should change the focus with a code" do
 
   sgf.add_move(";B[ff]")
 
-  assert_equal sgf.move_list, ";B[bb](;W[dd](;B[ff]);B[ee]);W[cc]"
+  assert_equal sgf.move_list, ";B[bb](;W[cc])(;W[dd](;B[ee])(;B[ff]))"
 
 end
 
-test "should be able to re-create the sgf with the raw move list" do
-
-# (;[BW]\[[a-z][a-z]\](\(;.*\))?) 
-# (;.{5}(\(;.*\))?)
-
-  branched_move_list = ";B[hh];W[ii](;B[aa]);B[ee];W[ab];B[al]"
-  sgf = SGF.new(branched_move_list)
-
-  assert_equal sgf.move_list, ";B[hh];W[ii](;B[aa]);B[ee];W[ab];B[al]" 
-
-  branched_node = sgf.focus.parent
-
-  assert_equal branched_node.children.length, 2
-
-end
 
 test "Nodify moves" do
   
