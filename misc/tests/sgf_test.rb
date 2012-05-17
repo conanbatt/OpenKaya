@@ -38,6 +38,9 @@ test "should be able to nodify a certain move list" do
 
 #  assert_equal sgf.move_list, mock_move_list
 
+  #bug case
+  bug_move_list = "(;B[pd](;W[pj](;B[jd];W[jj])(;B[lg];W[ih]))(;W[oh];B[kj];W[km]))(;B[ka])"
+  sgf = SGF.new(bug_move_list)
 end
 
 test "should get the move number" do

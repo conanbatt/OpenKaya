@@ -31,9 +31,9 @@ class SGF
     coma_index = moves.index(";",1) || 0 #not counting the first one
 
     node_text = moves[0..coma_index -1]
-
+    is_root = (node_text == "(")
     if  node_text.include?("(") #it has variations
-      add_move(node_text.chop) #removing the parenthesis
+      add_move(node_text.chop) unless is_root#removing the parenthesis
       temp_focus = @focus
       moves.scan(/((?<pg>\((?:\\[()]|[^()]|\g<pg>)*\)))/).each do |match|
         p "Warning! #{match.first} is not in #{focus.node_text}" unless match.first.include?(focus.node_text)
