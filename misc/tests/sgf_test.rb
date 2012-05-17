@@ -83,6 +83,14 @@ test "should be able to write variations" do
   sgf2.add_move(";B[ff]")
 
   assert_equal sgf2.move_list, ";B[bb](;W[cc])(;W[dd](;B[ee])(;B[ff]))"
+
+  sgf3 = SGF.new
+
+  sgf3.add_move(";B[aa]")
+  sgf3.focus = sgf3.focus.parent
+  sgf3.add_move(";B[bb]")
+  assert_equal sgf3.move_list, "(;B[aa])(;B[bb])"
+
 end
 
 test "should change the focus with a code" do

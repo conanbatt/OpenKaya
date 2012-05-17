@@ -115,8 +115,13 @@ class ConfigNode
   end
 
   def to_move_list
-    children_text = @children.first.to_move_list
-    ";"+node_text + children_text
+    result = ""
+    if @children.size == 1
+      result += @children.first.to_move_list
+    else 
+      @children.each {|node| result += "(#{node.to_s})"}
+    end
+    result
   end
 
   METALABELS= {:black_rank => "BR", :white_rank => "WR",:white_player => "PW", :black_player => "PB",

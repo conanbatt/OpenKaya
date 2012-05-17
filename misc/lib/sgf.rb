@@ -32,7 +32,6 @@ class SGF
 
     node_text = moves[0..coma_index -1]
 
-
     if  node_text.include?("(") #it has variations
       add_move(node_text.chop) #removing the parenthesis
       temp_focus = @focus
@@ -107,7 +106,7 @@ class SGF
   end
     
   def move_list
-   @config.children.first.to_move_list unless @config.children.empty?
+   @config.to_move_list 
   end
 
   def move_list_with_comments
