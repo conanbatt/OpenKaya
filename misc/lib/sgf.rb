@@ -36,7 +36,6 @@ class SGF
       add_move(node_text.chop) unless is_root#removing the parenthesis
       temp_focus = @focus
       moves.scan(/((?<pg>\((?:\\[()]|[^()]|\g<pg>)*\)))/).each do |match|
-        p "Warning! #{match.first} is not in #{focus.node_text}" unless match.first.include?(focus.node_text)
         nodify_move_list(match.first[1..-2], temp_focus) if match.first
         
       end
@@ -59,6 +58,7 @@ class SGF
       raise "There is no node here! #{focus_code}" unless node
       @focus = node
     end
+    @focus
   end
 
   def focus_to_code
