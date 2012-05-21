@@ -28,14 +28,15 @@ class KayaBot
   end
 
   def connect
+    return if @agent.cookies.last && @agent.cookies.last.name == "rack.session"
     page = @agent.post(@server_url+ "/session/create", {:id => @user, :password => @pass})
   end
 
   TIME_LAPSE = 4
 
   def listener_loop
-    connect
     while (true) do
+      connect
       fetch_and_parse_data
       open_game if @status=="connected" || @status=="finished"
       post_score if @status=="scoring"
@@ -76,6 +77,7 @@ class KayaBot
   def resign
     @agent.post(@server_url+ RESIGN_URL, {:result => "resign"})
   end
+
   def post_score
     result = score_game("temp", sgf_content)
     p result
