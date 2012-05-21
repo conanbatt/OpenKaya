@@ -367,6 +367,10 @@ test "should be able to parse comments into it" do
 
   assert_equal sgf.to_s, "(;FF[4]C[dp[7d\\]: fgsfgafha\nconanbatt[7d\\]: aaa\n];B[aa];W[bb])" 
 
+  sgf2 = SGF.new(";B[aa];W[bb]")
+
+  comments["5"] = comments["0"]
+  sgf.parse_comments!(comments)
 end
 
 test "should be able to read time by players" do
