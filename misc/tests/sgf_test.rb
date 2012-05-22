@@ -36,7 +36,7 @@ test "should be able to nodify a certain move list" do
   mock_move_list  = ";B[pd];W[jd](;B[pj])(;B[pp];B[dd])"
   sgf = SGF.new(mock_move_list)
 
-#  assert_equal sgf.move_list, mock_move_list
+  assert_equal sgf.move_list, mock_move_list
 
   #bug case
   bug_move_list = "(;B[pd](;W[pj](;B[jd];W[jj])(;B[lg];W[ih]))(;W[oh];B[kj];W[km]))(;B[ka])"
@@ -201,6 +201,31 @@ test "Should load an sgf file" do
   sgf = SGF.new
   sgf.load_file(filename)
   assert_equal sgf.move_list, ";B[qd];W[pp]"
+end
+
+test "should parse comments for node text" do
+
+  node_text = ";B[ac]C[conanbatt[5d\]: something wrong with scoring!
+Genych[3k\]: maybe we both tryin' in the same time?
+]"
+
+  node = Node.new(nil,node_text)
+
+  assert_equal node.comments, "C[conanbatt[5d\\]: something wrong with scoring!\nGenych[3k\\]: maybe we both tryin' in the same time?\n]"
+  assert_equal node.to_move_list, ";B[ac]"
+
+end
+
+test "Should load a full sgf file with comments" do
+
+  filename = "mocks/full_parse.sgf"
+  sgf = SGF.new
+  sgf.load_file(filename)
+
+  comment_hash = {"1"=>"C[conanbatt[5d\\\\]: sorry\nconanbatt[5d\\\\]: sound was off\nGenych[3k\\\\]: no problem\n]", "13"=>"C[Genych[3k\\\\]: i don't know what to do with 7 additional stones  :\\\\)\n]", "14"=>"C[conanbatt[5d\\\\]: neither do i\n]", "93"=>"C[Genych[3k\\\\]: oops :\\\\)\nconanbatt[5d\\\\]: :\\\\)\n]", "218"=>"C[Genych[3k\\\\]: we must fill neitrals, right?\n]", "219"=>"C[conanbatt[5d\\\\]: no\n]", "220"=>"C[conanbatt[5d\\\\]: mm\nconanbatt[5d\\\\]: something wrong with scoring!\nGenych[3k\\\\]: maybe we both tryin' in the same time?\nGenych[3k\\\\]: hm. no\nconanbatt[5d\\\\]: this is a definite bug\nconanbatt[5d\\\\]: we made some big changes last friday\nconanbatt[5d\\\\]: gimme a sec\nGenych[3k\\\\]: sure\nGenych[3k\\\\]: i'm glad to help find bugs :\\\\)\nconanbatt[5d\\\\]: :\\\\)\nconanbatt[5d\\\\]: i win by 2.5\nconanbatt[5d\\\\]: amazing\nGenych[3k\\\\]: cool!\nconanbatt[5d\\\\]: you lost  when i broke through on top\nGenych[3k\\\\]: your yose was incredible\nconanbatt[5d\\\\]: gimme a sec to debug this\nGenych[3k\\\\]: ok\nconanbatt[5d\\\\]: ook\nconanbatt[5d\\\\]: lets leave the game like this :\\\\)\nGenych[3k\\\\]: ok\nconanbatt[5d\\\\]: pato is going to fix it\nGenych[3k\\\\]: thanks for the game, btw!\nconanbatt[5d\\\\]: i would comment some vars for you\nconanbatt[5d\\\\]: Genych click done\n]"}
+
+  assert_equal sgf.hashify_comments , comment_hash
+
 end
 
 test "should be able to add a time property to a node" do

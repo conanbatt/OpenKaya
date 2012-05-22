@@ -4,11 +4,19 @@ class Node
 
   def initialize(parent,node_text= "")
     validate_node_format(node_text)
-    @node_text = node_text
     @comments = []
+    @node_text = strip_comments!(node_text)
     @children = []
     @parent = parent
     @parent.add_child(self) if parent
+  end
+
+  def strip_comments!(node_text)
+    comments = node_text.scan(/C\[(.*)/m).first
+    if comments
+      comments.first.split("\n")[0..-2].each {|c| add_comment(c) }
+    end
+    node_text.gsub(/C\[(.*)/m,"")  
   end
 
   def add_child(node)

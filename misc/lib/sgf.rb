@@ -100,6 +100,18 @@ class SGF
     end
   end
 
+  def hashify_comments
+    move_number = 0
+    pointer = @config
+    comments = {}
+    while(pointer)
+      comments[move_number.to_s] = pointer.comments unless pointer.comments.empty?
+      move_number += 1
+      pointer = pointer.children.last
+    end
+    comments
+  end
+
   def hash_to_comment(hash)
     raise "invalid hash" unless hash["user"] && hash["rank"] && hash["message"]
     "#{hash["user"]}#{hash["rank"]}: #{hash["message"]}"
