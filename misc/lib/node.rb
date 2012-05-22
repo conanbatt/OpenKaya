@@ -143,7 +143,7 @@ class ConfigNode
     dup = node_text.dup
     dup.slice!(/.*#{METALABELS[symbol]}\[/)
     return nil if dup.length == node_text.length #means it wasnt found
-    dup.slice!(/\].*/)
+    dup.slice!(/\].*/m)
     return dup
   end
 

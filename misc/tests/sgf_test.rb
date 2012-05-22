@@ -280,7 +280,7 @@ test "should be able to write a full sgf" do
   sgf = SGF.new
   sgf.load_file(filename)
 
-  assert_equal sgf.to_s, "(;FF[4]RU[Japanese]TM[1500]OT[5x30 byo-yomi]GM[1]SZ[19]CA[UTF-8]SO[gokifu.com]BC[kr]WC[kr]EV[7th Korean Wonik Cup Siptan]PB[Ryu Chaehyeong]BR[9p]PW[Kang Dongyun]WR[9p]KM[6.5]DT[2011-09-30]RE[W+R];B[qd];W[pp])"
+  assert_equal sgf.to_s, "(;FF[4]RU[Japanese]TM[1500]OT[5x30 byo-yomi]GM[1]SZ[19]CA[UTF-8]SO[gokifu.com]BC[kr]WC[kr]EV[7th Korean Wonik Cup Siptan]PB[Ryu Chaehyeong]BR[9p]PW[Kang Dongyun]WR[9p]KM[6.5]DT[2011-09-30]RE[W+R]C[Genych[3k\\]: onegaishimasu ^ ^\nGenych[3k\\]: can i stop your clock till you will be ready?\n];B[qd];W[pp])"
 
 end
 
