@@ -40,8 +40,22 @@ class GTP
 
   def list_stones(color)
     @io.puts [:list_stones, color].join(" ")
-    result = @io.take_while { |line| line != "\n" }.join
-    return result.sub(/^=\s/, "").sub(/\n/, "")
+    return self.clean_gtp_response
+  end
+
+  def final_score()
+    @io.puts [:final_score]
+    return self.clean_gtp_response
+  end
+
+  def list_dead_stones()
+    @io.puts [:final_status_list, "dead"].join(" ")
+    return self.clean_gtp_response
+  end
+
+  def clean_gtp_response()
+    response = @io.take_while { |line| line != "\n" }.join(" ")
+    return response.sub(/^=\s+/, "").gsub(/\n/, "").gsub(/ +/, " ")
   end
 
   def send_command(command, *arguments)
@@ -72,6 +86,12 @@ def score_game(game_id, game_sgf)
   IO.popen("gnugo --score aftermath #{filepath}") do |f|
     re = f.read
   end
+
+  # Alternative, for bots other than gnugo:
+  #GTP.run(game_bot) do |gtp|
+  #  gtp.loadsgf filepath
+  #  re = gtp.final_score
+  #end
 
   File.delete(filepath)
   return re
