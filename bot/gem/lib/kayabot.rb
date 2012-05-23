@@ -11,6 +11,7 @@ class KayaBot
   OPEN_GAME_URL = "/bot/open_game"
   RESIGN_URL = "/bot/resign"
   SCORE_URL = "/bot/score"
+  DEAD_URL = "/bot/deadstones"
 
   attr_accessor :challenger, :status, :move
 
@@ -82,6 +83,11 @@ class KayaBot
     result = score_game("temp", sgf_content)
     p result
     @agent.post(@server_url+ SCORE_URL, {:score => parse_result_from_bot(result)})
+  end
+  def post_dead_stones
+    result = list_dead_stones()
+    #p result
+    #@agent.post(@server_url+ DEAD_URL, {:dead => result})
   end
 
   #Black wins by 61.5 points
