@@ -11,21 +11,24 @@ class KayaBot
   OPEN_GAME_URL = "/bot/open_game"
   RESIGN_URL = "/bot/resign"
   SCORE_URL = "/bot/score"
-  DEAD_URL = "/bot/deadstones"
+  VERSION = "0.1.1"#Gem::Specification.find_by_name("kayabot").version.to_s
 
   attr_accessor :challenger, :status, :move
 
-  def initialize(server_url, user, pass)
-    @server_url = server_url
-    @user = user
-    @pass = pass
+  def initialize(config)
+    p config
+    @server_url = config["url"]
+    @user = config["user"]
+    @pass = config["pass"]
+    @size = config["size"]
+    @title = config["title"]
     @agent = Mechanize.new
     @status
     @sgf
   end
 
   def game_configuration
-     {:title => "Come at me bro"}
+     {:title => @title || "Come at me bro", :size => @size || 19}
   end
 
   def connect
@@ -47,7 +50,7 @@ class KayaBot
   end
 
   def fetch_and_parse_data
-     page = @agent.get(@server_url + "/bot/status")
+     page = @agent.get(@server_url + "/bot/status", {:version => VERSION })
      json = JSON.parse(page.body)
      p json
      @status = json["status"]
@@ -82,14 +85,8 @@ class KayaBot
   def post_score
     result = score_game("temp", sgf_content)
     p result
-    @agent.post(@server_url+ SCORE_URL, {:score => parse_result_from_bot(result)})
+    @agent.post(@server_url+ SCORE_URL, {:score => parse_result_from_bot(result[:score]), :dead_stones => result[:dead_stones]})
   end
-  def post_dead_stones
-    result = list_dead_stones()
-    #p result
-    #@agent.post(@server_url+ DEAD_URL, {:dead => result})
-  end
-
   #Black wins by 61.5 points
   def parse_result_from_bot(result)
     color = result[0]

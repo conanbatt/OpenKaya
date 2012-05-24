@@ -17,11 +17,13 @@ if ARGV.length > 0
     config_file = ARGV.first
     if File.exists?(config_file)
       config = YAML.load_file(config_file)
-      if config["url"] && config["user"] && config["pass"]
-        k = KayaBot.new(config["url"], config["user"], config["pass"])
+      if config["url"] && config["user"] && config["pass"] && config["title"] && config["size"]
+        sz = config["size"].to_i
+        raise "Invalid size!. only 9,13,19 are supported" unless sz == 9 || sz == 13 || sz == 19
+        k = KayaBot.new(config)
         k.listener_loop
       else
-        puts "Invalid config file."
+        puts "Invalid config file. url,user, pass, title, size required."
       end
     else
       puts "File does not exist."
