@@ -1,3 +1,5 @@
 url  : "http://alpha.kaya.gs:9292"
 user : "MyBot"
 pass : "MyBot's password"
+title : "my title"
+size : "19"
