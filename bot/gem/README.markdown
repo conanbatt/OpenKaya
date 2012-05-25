@@ -22,6 +22,8 @@ The configuration yaml must look like this:
     url  : "http://alpha.kaya.gs:9292"
     user : "MyBot"
     pass : "MyBot's password"
+    title : "my title"
+    size : (9,13 or 19 only)
 
 Ask for a bot account at info@kaya.gs to run it!
 
