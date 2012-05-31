@@ -2,3 +2,5 @@
 *.db
 *.zip
 *.exe
+bot/.rvmrc
+bot/local_sample.yaml
