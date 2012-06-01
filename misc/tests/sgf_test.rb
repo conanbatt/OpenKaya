@@ -427,6 +427,14 @@ test "should be able to undo even if there are comments still" do
   sgf.add_comment("wow")
   sgf.undo
   assert_equal sgf.move_list, ";B[aa];W[bb]"
+
+  sgf.undo
+  assert_equal sgf.focus_to_code, "0"
+  sgf.undo
+  assert_equal sgf.focus_to_code, "root"
+  sgf.undo
+  assert_equal sgf.focus_to_code, "root"
+
 end
 
 test "should write the hadnicap info" do

@@ -209,6 +209,7 @@ class SGF
   end
 
   def undo
+    return if @focus == @config
     to_del = @focus
     @focus = @focus.parent
     @focus.children.delete(to_del) 
