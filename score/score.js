@@ -413,15 +413,6 @@ Score.prototype = {
 					if(this.indirectly_connected_stones([x,y],[x+2,y])) {  stack_coord = stack_coord.concat([[x+2, y]]); }
 					if(this.indirectly_connected_stones([x,y],[x-2,y])) {  stack_coord = stack_coord.concat([[x-2, y]]); }
 					if(this.indirectly_connected_stones([x,y],[x,y-2])) {  stack_coord = stack_coord.concat([[x, y-2]]); }
-					if(this.indirectly_connected_stones([x,y],[x+1,y+1])) { stack_coord.concat([[x+1, y+1]]); }
-					if(this.indirectly_connected_stones([x,y],[x-1,y-1])) { stack_coord.concat([[x-1, y-1]]); }
-					if(this.indirectly_connected_stones([x,y],[x+1,y-1])) { stack_coord.concat([[x+1, y-1]]); }
-					if(this.indirectly_connected_stones([x,y],[x-1,y+1])) { stack_coord.concat([[x-1, y+1]]); }
-					//possible clean bamboo joints
-					if(this.indirectly_connected_stones([x,y],[x,y+2])) { stack_coord.concat([[x, y+2]]); }
-					if(this.indirectly_connected_stones([x,y],[x+2,y])) { stack_coord.concat([[x+2, y]]); }
-					if(this.indirectly_connected_stones([x,y],[x-2,y])) { stack_coord.concat([[x-2, y]]); }
-					if(this.indirectly_connected_stones([x,y],[x,y-2])) { stack_coord.concat([[x, y-2]]); }
 					break;
 				}
 			}
@@ -455,27 +446,6 @@ Score.prototype = {
         if(board[xa+delta_y/2][ya] != EMPTY) { return false; }
 				if(ya-1 >=0	&& board[xa+delta_x][ya-1] == owner && board[xa][ya-1] == owner) { return true; }
 				if(ya+1 < size && board[xa+delta_x][ya+1] == owner && board[xa][ya+1] == owner) { return true; }
-=======
-		var owner = board[coor_a[0]][coor_a[1]];
-		var xa = coor_a[0]; var xb = coor_a[1];
-		var ya = coor_b[0]; var yb = coor_b[1];
-		var delta_x = xb-xa; var delta_y = yb-ya;
-		if ( xa < 0 || xa >= size || ya < 0 || ya >= size) { return false; }
-		if ( xb < 0 || xb >= size || yb < 0 || yb >= size) { return false; }
-		//kosumi: both spots must be empty
-		if((delta_x == 1 && delta_y == 1) || (delta_x == 1 && delta_y == -1) || (delta_x == -1 && delta_y == 1) || (delta_x == -1 && delta_y == -1)) {
-			if(board[xa+delta_x][ya] == EMPTY && board[xa][ya+delta_y] == EMPTY) { return true; }
-		}
-		//bamboo joint
-		if((delta_x == 2 && delta_y == 0) || (delta_x == 0 && delta_y == 2) || (delta_x == -2 && delta_y == 0) || (delta_x == 0 && delta_y == -2)) {
-			if(delta_x == 0) {
-				if(xa-1 >=0	&& board[xa-1][ya+delta_y] == owner && board[xa-1][ya+delta_y] == owner) { return true; }
-				if(xa+1 < size && board[xa+1][ya+delta_y] == owner && board[xa+1][ya+delta_y] == owner) { return true; }
-			}
-			if(delta_y == 0) {
-				if(ya-1 >=0	&& board[xa+delta_x][ya-1] == owner && board[xa+delta_x][ya-1] == owner) { return true; }
-				if(ya+1 < size && board[xa+delta_x][ya+1] == owner && board[xa+delta_x][ya+1] == owner) { return true; }
->>>>>>> bc63bc2b8b296e4ff99109a4a061e65be3089964
 			}
 		}
 		return false;

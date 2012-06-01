@@ -196,6 +196,7 @@ var chinese_score;
 		equal(score.white_points, 2);
 	});
 
+
 //Territory in the corner
 	module("Territory in the corner", {
 		setup: function() {
@@ -359,11 +360,7 @@ var chinese_score;
 	test("should count points for both (Japanese)", function(){
 		var score = japanese_score.calculate_score();
 		equal(score.black_points, 8);
-<<<<<<< HEAD
 		equal(score.white_points, 30);
-=======
-		equal(score.white_points, 29);
->>>>>>> bc63bc2b8b296e4ff99109a4a061e65be3089964
 	});
 
 	test("should count points for both (Chinese)", function(){
@@ -374,11 +371,7 @@ var chinese_score;
 
 
 // Seki board 6 (single pointers...)
-<<<<<<< HEAD
 	module("Seki board 6", {
-=======
-	module("Seki board 5", {
->>>>>>> bc63bc2b8b296e4ff99109a4a061e65be3089964
 		setup: function() {
 			genericSetup([
 				["*","W","*","W","*","W"],
