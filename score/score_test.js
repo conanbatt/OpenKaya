@@ -170,7 +170,33 @@ var chinese_score;
 		equal(score.black_points, 12);
 		equal(score.white_points, 18);
 	});
-  
+
+//Life with 2 non touching groups of stones:
+	module("Life with 2 non touching groups", {
+		setup: function() {
+			genericSetup([
+				["*","*","*","*","*","*","*","*"],
+				["*","B","B","B","B","B","B","*"],
+				["*","B","W","W","W","B","B","*"],
+				["*","B","W","*","W","B","B","*"],
+				["*","B","B","W","*","W","B","*"],
+				["*","B","B","W","W","W","B","*"],
+				["*","B","B","B","B","B","B","*"],
+				["*","*","*","*","*","*","*","*"],
+			]);
+		},
+		teardown: function() {
+			genericTeardown();
+		}
+	});
+
+	test("Should count territory for both(Japanese)", function(){
+		var score = japanese_score.calculate_score();
+		equal(score.black_points, 28);
+		equal(score.white_points, 2);
+	});
+
+
 //Territory in the corner
 	module("Territory in the corner", {
 		setup: function() {
@@ -223,7 +249,7 @@ var chinese_score;
 		equal(score.black_points, 0);
 		equal(score.white_points, 0);
 	});
-  
+
   	test("should count points for both (Chinese)", function(){
 		var score = chinese_score.calculate_score();
 		equal(score.black_points, 17);
@@ -262,7 +288,7 @@ var chinese_score;
 		equal(score.black_points,28);
 		equal(score.white_points,6);
 	});
-  
+
 // Seki board 3 (eyes + no eyes)
 	module("Seki board 3", {
 		setup: function() {
@@ -280,7 +306,7 @@ var chinese_score;
 		}
 	});
 
-    
+
 // Seki board 4 (big eyes, small eyes...)
 	module("Seki board 4", {
 		setup: function() {
@@ -297,7 +323,7 @@ var chinese_score;
 			genericTeardown();
 		}
 	});
-  
+
 	test("should count 0 for both (Japanese)", function(){
 		var score = japanese_score.calculate_score();
 		equal(score.black_points,0);
@@ -308,6 +334,69 @@ var chinese_score;
 		var score = chinese_score.calculate_score();
 		equal(score.black_points,16);
 		equal(score.white_points,15);
+	});
+
+
+// Seki board 5 (real game example...)
+	module("Seki board 5", {
+		setup: function() {
+			genericSetup([
+				["*","B","B","B","W","*","*","*","*"],
+				["W","*","B","W","W","*","W","*","*"],
+				["W","W","B","W","*","*","W","*","*"],
+				["B","W","W","B","W","W","*","*","*"],
+				["B","B","B","B","W","*","W","*","*"],
+				["*","*","B","B","B","W","*","*","*"],
+				["*","*","B","B","W","*","W","*","*"],
+				["*","*","B","W","W","W","*","*","*"],
+				["*","*","B","B","W","*","*","*","*"]
+			]);
+		},
+		teardown: function() {
+			genericTeardown();
+		}
+	});
+
+	test("should count points for both (Japanese)", function(){
+		var score = japanese_score.calculate_score();
+		equal(score.black_points, 8);
+		equal(score.white_points, 30);
+	});
+
+	test("should count points for both (Chinese)", function(){
+		var score = chinese_score.calculate_score();
+		equal(score.black_points,27);
+		equal(score.white_points,52);
+	});
+
+
+// Seki board 6 (single pointers...)
+	module("Seki board 6", {
+		setup: function() {
+			genericSetup([
+				["*","W","*","W","*","W"],
+				["W","*","W","*","W","*"],
+				["*","W","*","W","*","W"],
+				["W","*","W","*","W","*"],
+				["*","W","*","W","*","W"],
+				["W","*","W","*","W","*"]
+			]);
+		},
+		teardown: function() {
+			genericTeardown();
+		}
+	});
+
+	test("should count points for white (Japanese)", function(){
+		var score = japanese_score.calculate_score();
+		equal(score.black_points, 0);
+		equal(score.white_points, 18);
+	});
+
+	test("should count points for both (Chinese)", function(){
+		var score = chinese_score.calculate_score();
+		equal(score.black_points, 0);
+		equal(score.white_points, 36);
 	});
 
 
