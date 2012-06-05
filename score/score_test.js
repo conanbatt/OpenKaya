@@ -399,6 +399,38 @@ var chinese_score;
 		equal(score.white_points, 36);
 	});
 
+// Seki board 7
+        module("Seki board 7", {
+                setup: function() {
+                        genericSetup([
+                                ["*","W","W","W","*","B","B","W","*"],
+                                ["B","B","W","B","B","B","W","W","W"],
+                                ["B","W","W","B","B","W","W","B","B"],
+                                ["B","B","B","B","W","W","*","B","*"],
+                                ["B","W","B","B","B","W","W","W","B"],
+                                ["W","W","B","W","W","B","W","B","B"],
+                                ["*","W","W","W","W","B","B","B","B"],
+                                ["W","B","W","W","B","B","B","B","*"],
+                                ["*","B","*","W","W","B","B","B","B"],
+
+                        ]);
+                },
+                teardown: function() {
+                        genericTeardown();
+                }
+        });
+
+        test("Full board jigo (Japanese)", function(){
+                var score = japanese_score.calculate_score();
+                equal(score.black_points, 0);
+                equal(score.white_points, 0);
+        });
+
+        test("Black wins on captures(Chinese)", function(){
+                var score = chinese_score.calculate_score();
+                equal(score.black_points, 42);
+                equal(score.white_points, 34);
+        });
 
 // Black dead stones board
 	module("Black dead stones board", {
