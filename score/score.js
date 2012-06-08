@@ -428,29 +428,26 @@ Score.prototype = {
 		var delta_x = xb-xa; var delta_y = yb-ya;
 		if ( xa < 0 || xa >= size || ya < 0 || ya >= size) { return false; }
 		if ( xb < 0 || xb >= size || yb < 0 || yb >= size) { return false; }
-    var owner = board[coor_a[0]][coor_a[1]];
-    var other_owner =  board[coor_b[0]][coor_b[1]];
-    if ( owner != other_owner) { return false; } 
+		var owner = board[coor_a[0]][coor_a[1]];
+		var other_owner = board[coor_b[0]][coor_b[1]];
+		if ( owner != other_owner) { return false; }
 		//kosumi: one of the spots must be empty! but... this empty spot must not be the empty space currently being investigated (b_empty_spaces)
 		if((delta_x == 1 && delta_y == 1) || (delta_x == 1 && delta_y == -1) || (delta_x == -1 && delta_y == 1) || (delta_x == -1 && delta_y == -1)) {
-			if(b_empty_spaces.length != 1)
-      {
-        if(board[xa+delta_x][ya] == EMPTY || board[xa][ya+delta_y] == EMPTY) { return true; }
-      }
-      else
-      {
-        if((board[xa+delta_x][ya] == EMPTY && (b_empty_spaces[0][0] != xa+delta_x && b_empty_spaces[0][1] != ya) ) || (board[xa][ya+delta_y] == EMPTY) && (b_empty_spaces[0][0] != xa && b_empty_spaces[0][1] != ya+delta_y))  { return true; }
-      }
+			if(b_empty_spaces.length != 1) {
+				if(board[xa+delta_x][ya] == EMPTY || board[xa][ya+delta_y] == EMPTY) { return true; }
+			} else {
+				if((board[xa+delta_x][ya] == EMPTY && (b_empty_spaces[0][0] != xa+delta_x && b_empty_spaces[0][1] != ya) ) || (board[xa][ya+delta_y] == EMPTY) && (b_empty_spaces[0][0] != xa && b_empty_spaces[0][1] != ya+delta_y)) { return true; }
+			}
 		}
 		//bamboo joint: the spot in between must be empty!
 		if((delta_x == 2 && delta_y == 0) || (delta_x == 0 && delta_y == 2) || (delta_x == -2 && delta_y == 0) || (delta_x == 0 && delta_y == -2)) {
 			if(delta_x == 0) {
-        if(board[xa][ya+delta_y/2] != EMPTY) { return false; }
+				if(board[xa][ya+delta_y/2] != EMPTY) { return false; }
 				if(xa-1 >=0	 && board[xa-1][ya+delta_y] == owner && board[xa-1][ya] == owner) { return true; }
 				if(xa+1 < size && board[xa+1][ya+delta_y] == owner && board[xa+1][ya] == owner) { return true; }
 			}
 			if(delta_y == 0) {
-        if(board[xa+delta_y/2][ya] != EMPTY) { return false; }
+				if(board[xa+delta_y/2][ya] != EMPTY) { return false; }
 				if(ya-1 >=0	&& board[xa+delta_x][ya-1] == owner && board[xa][ya-1] == owner) { return true; }
 				if(ya+1 < size && board[xa+delta_x][ya+1] == owner && board[xa][ya+1] == owner) { return true; }
 			}
