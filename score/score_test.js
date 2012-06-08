@@ -513,6 +513,27 @@ var chinese_score;
         equal(score.white_points,4);
     });
 
+    module("Ko marked dead (bugcase)", {
+        setup: function() {
+            genericSetup([
+                ["*","*","*","*","*","*"],
+                ["*","E","W","B","B","*"],
+                ["*","W","B","*","B","*"],
+                ["*","W","W","B","B","*"],
+                ["*","*","*","*","*","*"],
+                ["*","*","*","*","*","*"]
+            ]);
+        },
+        teardown: function() {
+            genericTeardown();
+        }
+    });
+    test("should count black point inside (bug case)", function(){
+        var score = japanese_score.calculate_score();
+        equal(score.black_points, 35);
+        equal(score.white_points, 0);
+    });
+
 // China breaker
 // Juego con reglas chinas. Archivo: ~/Downloads/sgf/juego_chino_rompe_scoring.sgf
     module("Single stone board", {
