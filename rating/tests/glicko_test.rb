@@ -173,6 +173,13 @@ test "" do
   assert (output[:handi] == 2)
   assert (output[:komi] == 0.5)
 
+
+  # Failing edge test case
+  p1.rating = Rating.new_aga(2.0).aga
+  p2.rating = Rating.new_aga(-1.0).aga
+  output = Glicko.suggest_handicap({:p1 => p1, :p2 => p2, :rules => "jpn"})
+  assert (output[:handi] == 2)
+  assert (output[:komi] == 0.5)
 end
 
 test "Equal wins" do
