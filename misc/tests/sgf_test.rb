@@ -55,6 +55,19 @@ test "should get the move number" do
   assert_equal sgf.move_by_number(2), sgf.focus.parent.parent
 end
 
+test "should be able to do add move without repeat rewrite" do
+
+  sgf = SGF.new
+  sgf.add_move(";B[aa]")
+  sgf.add_move(";W[ab]")
+
+  sgf.focus = sgf.focus.parent
+  sgf.add_move(";W[ab]", false)
+
+  assert_equal sgf.move_list, ";B[aa];W[ab]"
+
+end
+
 test "should be able to write variations" do
 
   sgf = SGF.new

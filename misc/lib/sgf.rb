@@ -45,8 +45,22 @@ class SGF
     end
   end
 
-  def add_move(node) #TODO objetify node
-    @focus = Node.new(@focus,node)
+  def add_move(node, rewrite=true) #TODO objetify node
+
+    if rewrite
+      @focus = Node.new(@focus,node) 
+    else
+      found_repeated_node = false
+      @focus.children.each do |child|
+        if child.node_text == node
+          found_repeated_node = true
+          @focus = child
+        end
+      end
+      unless found_repeated_node
+        @focus = Node.new(@focus,node) #only create a new node if there is no children with the same coordinate
+      end
+    end
     move_list
   end
 
