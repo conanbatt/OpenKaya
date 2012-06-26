@@ -89,7 +89,7 @@ class KayaBot
   end
   #Black wins by 61.5 points
   def parse_result_from_bot(result)
-    color = result[0]
+    color = result[0].chr
     points = result.match(/\d{0,3}\.\d/)[0]
     return "#{color}+#{points}"
   end
