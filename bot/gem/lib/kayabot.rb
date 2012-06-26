@@ -32,7 +32,7 @@ class KayaBot
   end
 
   def connect
-    return if @agent.cookies.last && @agent.cookies.last.name == "rack.session"
+    return if @agent.cookies.last && @agent.cookies.last.name == "kaya.session"
     page = @agent.post(@server_url+ "/session/create", {:id => @user, :password => @pass})
   end
 
