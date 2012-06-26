@@ -11,7 +11,7 @@ class KayaBot
   OPEN_GAME_URL = "/bot/open_game"
   RESIGN_URL = "/bot/resign"
   SCORE_URL = "/bot/score"
-  VERSION = "0.1.1"#Gem::Specification.find_by_name("kayabot").version.to_s
+  VERSION =  Gem::Specification.find_by_name("kayabot").version.to_s
 
   attr_accessor :challenger, :status, :move
 
