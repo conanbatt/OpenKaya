@@ -495,12 +495,12 @@ var chinese_score;
     module("Corner dead stones(bugcase)", {
         setup: function() {
             genericSetup([
-                ["*","*","B","*","W","*","*"],
-                ["E","*","B","*","W","*","*"],
-                ["B","B","B","*","W","W","W"],
-                ["*","*","*","*","*","*","*"],
-                ["*","*","B","*","*","*","*"],
-                ["*","*","*","*","*","*","*"]
+                ["*","*","B","W","*","*"],
+                ["E","*","B","W","*","*"],
+                ["*","*","B","W","*","W"],
+                ["B","B","*","*","W","*"],
+                ["*","*","B","*","*","*"],
+                ["*","*","*","*","*","*"]
             ]);
         },
         teardown: function() {
@@ -509,17 +509,17 @@ var chinese_score;
     });
     test("should count proper corner territory(bug case)", function(){
         var score = japanese_score.calculate_score();
-        equal(score.black_points,5);
-        equal(score.white_points,4);
+        equal(score.black_points,7);
+        equal(score.white_points,5);
     });
 
-    module("Ko marked dead (bugcase)", {
+    module("Point inside Ko not counted (bugcase)", {
         setup: function() {
             genericSetup([
                 ["*","*","*","*","*","*"],
-                ["*","E","W","B","B","*"],
-                ["*","W","B","*","B","*"],
-                ["*","W","W","B","B","*"],
+                ["*","E","E","B","B","*"],
+                ["*","E","B","*","B","*"],
+                ["*","E","E","B","B","*"],
                 ["*","*","*","*","*","*"],
                 ["*","*","*","*","*","*"]
             ]);
@@ -533,7 +533,68 @@ var chinese_score;
         equal(score.black_points, 35);
         equal(score.white_points, 0);
     });
+    
+// Side kosumi issue (false eye in the middle of two living groups = should be counted as 1 point)
+    module("Side kosumi issue", {
+        setup: function() {
+            genericSetup([
+                ["*","*","*","B","W","*"],
+                ["*","*","*","B","W","W"],
+                ["*","*","*","B","B","W"],
+                ["*","*","*","B","W","*"],
+                ["*","*","*","B","W","W"],
+                ["*","*","*","B","W","*"]
+            ]);
+        },
+        teardown: function() {
+            genericTeardown();
+        }
+    });
 
+    test("should count the point in the kosumi/false eye (Japanese)", function(){
+        var score = japanese_score.calculate_score();
+        equal(score.black_points,18);
+        equal(score.white_points,3);
+
+    });
+
+    test("should count the point in the kosumi/false eye (Chinese)", function(){
+        var score = chinese_score.calculate_score();
+        equal(score.black_points,25);
+        equal(score.white_points,11);
+    });
+    
+// Scoring should guess when a point isn't a point after full dame filling
+    module("Dame filling", {
+        setup: function() {
+            genericSetup([
+                ["*","B","*","*","B","*"],
+                ["W","W","B","B","B","B"],
+                ["*","W","W","W","B","B"],
+                ["W","*","W","*","W","*"],
+                ["*","*","W","W","B","B"],
+                ["*","*","W","W","B","*"]
+            ]);
+        },
+        teardown: function() {
+            genericTeardown();
+        }
+    });
+
+    test("shouldn't count the point in the false eyes as they'll be filled after dame filling (Japanese)", function(){
+        var score = japanese_score.calculate_score();
+        equal(score.black_points,3);
+        equal(score.white_points,6);
+
+    });
+
+    test("should count the points in the false eyes as after filling, it's still one point (Chinese)", function(){
+        var score = chinese_score.calculate_score();
+        equal(score.black_points,15);
+        equal(score.white_points,19);
+    });
+
+    
 // China breaker
 // Juego con reglas chinas. Archivo: ~/Downloads/sgf/juego_chino_rompe_scoring.sgf
     module("Single stone board", {
