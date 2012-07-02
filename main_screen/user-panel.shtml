@@ -1,0 +1,9 @@
+<div class="panel">
+  <a class="message" title="Message"><span>Message</span></a>
+  <a class="profile" title="Profile"><span>Profile</span></a>
+  <a class="friend" title="Friend"><span>Friend</span></a>
+  <a class="karma" title="Karma"><span>Karma</span></a>
+  <a class="challenge" title="Challenge"><span>Challenge</span></a>
+  <a class="muzzle" title="Muzzle"><span>Muzzle</span></a>
+  <img class="avatar" src="/images/fpo/conanbatt.jpg">
+</div>

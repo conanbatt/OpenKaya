@@ -1,0 +1,6 @@
+<div id=footer>
+  <span>Feedback: <a id=feedback-button>Tweaki</a></span> |
+  <a id=widgets-button>Widgets</a> |
+  <span>Kaya: <a id=version-button>0.24.0 Alpha</a></span> |
+  <span>Kaya/Local Time: <span id=kaya-time>21:34</span>/<span id=local-time>17:34</span>
+</div>
