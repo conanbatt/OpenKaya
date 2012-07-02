@@ -4,8 +4,7 @@ class GTP
     if bot_type == 'gnugo'
       new(IO.popen("gnugo --mode gtp", "r+"), &command)
     elsif bot_type == 'fuego'
-      raise "not supported yet"
-#      new(IO.popen("fuego --config #{RAILS_ROOT}/public/fuego.gtp", "r+"), &command)
+      new(IO.popen("fuego", "r+"), &command)
     end
   end
 
@@ -110,14 +109,10 @@ def ai_move(game_id, game_sgf, color)
     f.write game_sgf
   end
 
-  #why this?
-  if color == 'black' || color == 'white'
-    game_bot = 'gnugo'
-  end
   size = 19
-  GTP.run(game_bot) do |gtp|
+  GTP.run(@bot || "gnugo") do |gtp|
     gtp.loadsgf filepath
-    size = gtp.send_command(:query_boardsize)
+    size = @master_node.match(/SZ\[(\d+)\]/)[1]
     re = gtp.genmove color
   end
   p re
@@ -138,6 +133,6 @@ def convert_move(move, size=19)
     h = move[0].ord
     v = (size.to_i - move[1,2].to_i + 65)
     sgf_move = [h, v].map {|x| if x > 73 then (x - 1).chr else x.chr end}
-    return sgf_move.downcase
+    return sgf_move.join.downcase
   end
 end
