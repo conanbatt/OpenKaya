@@ -1,0 +1,27 @@
+﻿#footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30px;
+  padding-top: 20px;
+  text-align: center;
+  color: $text-light-green;
+  font-size: 16px;
+
+  > * {
+    margin: 0 10px;
+  }
+  
+  @media screen and (max-height: 480px) {
+    position: static;
+  }
+
+  -moz-transition: text-indent 1s 0.2s;
+  -webkit-transition: text-indent 1s 0.2s;
+  transition: text-indent 1s 0.2s;
+
+  .user-list-slid-open & {
+    text-indent: 1280px - 980px;
+  }
+}
