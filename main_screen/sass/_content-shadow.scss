@@ -1,0 +1,44 @@
+#content > div {
+  $angle: 3deg;
+  $adjust: -3px;
+  $up: 8px;
+
+  #content-shadow {
+    display: block;
+    position: absolute;
+    width: 980px;
+    height: 6px;
+    bottom: 0;
+    right: 0;
+    box-shadow: 0 6px 6px $content-shadow;
+
+    &:before,
+    &:after {
+      content: ' ';
+      display: block;
+      position: absolute;
+      height: 16px;
+      width: (980px / 3);
+      bottom: 0;
+      right: 0;
+      margin-bottom: $up;
+      margin-right: -$adjust;
+      box-shadow: 0 10px 16px $content-bottom-shadow;
+      z-index: -1;
+      -moz-transform: skew($angle) rotate($angle);
+      -ms-transform: skew($angle) rotate($angle);
+      -o-transform: skew($angle) rotate($angle);
+      -webkit-transform: skew($angle) rotate($angle);
+      transform: skew($angle) rotate($angle);
+    }
+    &:before {
+      right: (980px * 2/3);
+      margin-right: $adjust;
+      -moz-transform: skew(-$angle) rotate(-$angle);
+      -ms-transform: skew(-$angle) rotate(-$angle);
+      -o-transform: skew(-$angle) rotate(-$angle);
+      -webkit-transform: skew(-$angle) rotate(-$angle);
+      transform: skew(-$angle) rotate(-$angle);
+    }
+  }
+}

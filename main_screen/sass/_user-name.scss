@@ -1,0 +1,19 @@
+@if import-once("user-name") {
+
+// it's expected you'll specify a max-width when extending
+.user-name {
+  > span {
+    //max-width: 100px;
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  // need to specify the span too for some reason...
+  &:hover,
+  &:hover > span {
+    @extend .link;
+  }
+}
+
+}

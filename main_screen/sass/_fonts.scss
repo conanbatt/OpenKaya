@@ -1,0 +1,51 @@
+@import "global";
+
+@if import-once("fonts") {
+
+@font-face {
+	font-family: 'ProximaNova-Regular';
+		src: url('/fonts/13CE73_10.eot');
+		src: url('/fonts/13CE73_10.eot?#iefix') format('embedded-opentype'),
+					url('/fonts/13CE73_10.woff') format('woff'),
+					url('/fonts/13CE73_10.ttf') format('truetype'),
+					url('/fonts/13CE73_10.svg#wf') format('svg');
+					-moz-font-feature-settings: "calt=0,liga=0";
+}
+@font-face {
+	font-family: 'ProximaNova-Bold';
+	font-weight: bold;
+	src: url('/fonts/13CE73_14.eot');
+	src: url('/fonts/13CE73_14.eot?#iefix') format('embedded-opentype'),
+			url('/fonts/13CE73_14.woff') format('woff'),
+			url('/fonts/13CE73_14.ttf') format('truetype'),
+			url('/fonts/13CE73_14.svg#wf') format('svg');
+			-moz-font-feature-settings: "calt=0,liga=0";
+}
+
+@font-face {
+    font-family: 'EntypoRegular';
+    src: url('/fonts/entypo-webfont.eot');
+    src: url('/fonts/entypo-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/fonts/entypo-webfont.woff') format('woff'),
+         url('/fonts/entypo-webfont.ttf') format('truetype'),
+         url('/fonts/entypo-webfont.svg#EntypoRegular') format('svg');
+}
+
+@font-face {
+    font-family: 'AierbazziRegular';
+    src: url('/fonts/aierbazzi-webfont.eot');
+    src: url('/fonts/aierbazzi-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/fonts/aierbazzi-webfont.woff') format('woff'),
+         url('/fonts/aierbazzi-webfont.ttf') format('truetype'),
+         url('/fonts/aierbazzi-webfont.svg#AierbazziRegular') format('svg');
+}
+
+.font-bold {
+  font-family: $font-bold;
+  font-weight: bold;
+}
+.ie8 .font-bold {
+  font-weight: normal;
+}
+
+}
