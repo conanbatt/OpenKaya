@@ -84,6 +84,40 @@ class Node
   end
 
 
+  METALABELS2= {:black_play => "B", :white_play => "W",:black_rank => "BR", :white_rank => "WR",:white_player => "PW", :black_player => "PB",
+               :komi => "KM", :date => "DT", :result => "RE",
+               :file_format => "FF", :black_country => "BC",
+               :white_country => "WC", :event => "EV", :source => "SO",
+               :encoding => "CA", :size => "SZ", :rules => "RU", :time_set => "OT",:handicap => "HA"}
+
+
+  def add_properties(hash)
+    hash.each {|k,v| @node_text += ";#{k}[#{v}]"}
+  end
+
+  def property(symbol)
+    return node_text if symbol == :all
+    dup = node_text.dup
+    dup.slice!(/.*#{METALABELS2[symbol]}\[/)
+    return nil if dup.length == node_text.length #means it wasnt found
+    dup.slice!(/\].*/m)
+    return dup
+  end
+
+  def write_property(symbol, value)
+    return unless value
+    raise "Invalid property #{symbol}" unless METALABELS2[symbol]
+    node = "#{METALABELS2[symbol]}[#{value}]"
+    @node_text.gsub!(/#{METALABELS2[symbol]}\[\w*\]/, "") #in case it already had it
+    @node_text = node + @node_text
+    size = property(:size)
+    #a little hackish to insert the AB node only
+    @node_text += SGF.handi_node(property(:size),value)[5..-1] if(size &&
+                                                           symbol == :handicap)
+  end
+
+
+
 end
 
 class ConfigNode

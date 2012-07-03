@@ -61,7 +61,6 @@ class SGF
         @focus = Node.new(@focus,node) #only create a new node if there is no children with the same coordinate
       end
     end
-    move_list
   end
 
   def code_to_focus(focus_code)
