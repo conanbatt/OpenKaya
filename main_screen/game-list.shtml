@@ -1,0 +1,91 @@
+<div id=game-list>
+  <div id=game-list-controls>
+    <span>I want to:</span>
+    <a id=game-list-play-button class="selected">Play</a>
+    <a id=game-list-hot-button>See what's hot</a>
+    <a id=game-list-friend-button>See my friends</a>
+    <a id=game-list-all-button>See everything</a>
+  </div>
+  <div id=game-list-content>
+    <div class="scrollbar"><div class="track"><div class="thumb"><div class="end"></div></div></div></div>
+    <div class="viewport"><div class="overview">
+      <ol>
+        <li class=open>
+          <a class="black player-icon"></a>
+          <a class="white player-icon" data-user="conanbatt"><img src="/images/fpo/conanbatt.jpg"></a>
+          <div class=players>
+            <a class=black></a>
+            <span class=vs>vs.</span>
+            <a class=white data-user="conanbatt"><span>conanbatt</span><b>(6d)</b></a>
+          </div>
+          <a class=observe-game><img src="/images/fpo/board.png"></a>
+          <div class=status-bar>
+            <span class=age>1 min.</span><br>
+            <span class=speed>Medium</span><br>
+            <span class=observers>(0)</span>
+          </div>
+        </li>
+        <li>
+          <a class="black player-icon" data-user="gryn"><img src="/images/fpo/gryn.png"></a>
+          <a class="white player-icon" data-user="conanbatt"><img src="/images/fpo/conanbatt.jpg"></a>
+          <div class=players>
+            <a class=black data-user="gryn"><span>gryn</span><b>(1k)</b></a>
+            <span class=vs>vs.</span>
+            <a class=white data-user="conanbatt"><span>conanbatt</span><b>(6d)</b></a>
+          </div>
+          <a class=observe-game><img src="/images/fpo/board.png"></a>
+          <div class=status-bar>
+            <span class=age>1 min.</span><br>
+            <span class=speed>Medium</span><br>
+            <span class=observers>(0)</span>
+          </div>
+        </li>
+        <li>
+          <a class="black player-icon" data-user="gryn"><img src="/images/fpo/gryn.png"></a>
+          <a class="white player-icon" data-user="conanbatt"><img src="/images/fpo/conanbatt.jpg"></a>
+          <div class=players>
+            <a class=black data-user="gryn"><span>gryn</span><b>(1k)</b></a>
+            <span class=vs>vs.</span>
+            <a class=white data-user="conanbatt"><span>conanbatt</span><b>(6d)</b></a>
+          </div>
+          <a class=observe-game><img src="/images/fpo/board.png"></a>
+          <div class=status-bar>
+            <span class=age>1 min.</span><br>
+            <span class=speed>Medium</span><br>
+            <span class=observers>(0)</span>
+          </div>
+        </li>
+        <li>
+          <a class="black player-icon" data-user="gryn"><img src="/images/fpo/gryn.png"></a>
+          <a class="white player-icon" data-user="conanbatt"><img src="/images/fpo/conanbatt.jpg"></a>
+          <div class=players>
+            <a class=black data-user="gryn"><span>gryn</span><b>(1k)</b></a>
+            <span class=vs>vs.</span>
+            <a class=white data-user="conanbatt"><span>conanbatt</span><b>(6d)</b></a>
+          </div>
+          <a class=observe-game><img src="/images/fpo/board.png"></a>
+          <div class=status-bar>
+            <span class=age>1 min.</span><br>
+            <span class=speed>Medium</span><br>
+            <span class=observers>(0)</span>
+          </div>
+        </li>
+        <li>
+          <a class="black player-icon" data-user="gryn"><img src="/images/fpo/gryn.png"></a>
+          <a class="white player-icon" data-user="conanbatt"><img src="/images/fpo/conanbatt.jpg"></a>
+          <div class=players>
+            <a class=black data-user="gryn"><span>gryn</span><b>(1k)</b></a>
+            <span class=vs>vs.</span>
+            <a class=white data-user="conanbatt"><span>conanbatt</span><b>(6d)</b></a>
+          </div>
+          <a class=observe-game><img src="/images/fpo/board.png"></a>
+          <div class=status-bar>
+            <span class=age>1 min.</span><br>
+            <span class=speed>Medium</span><br>
+            <span class=observers>(0)</span>
+          </div>
+        </li>
+      </ol>
+    </div></div>
+  </div>
+</div>

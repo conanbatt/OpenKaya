@@ -1,0 +1,13 @@
+<!--
+  it's a faux pas to use a table when it's not a table,
+  but we need a few elements in the page to simulate a table layout.
+-->
+<header id=header><b><s></s></b><div>
+  <h1>
+    Welcome back,<br>
+    <span>Gryn</span>
+  </h1>
+  <a id=profile-button>Profile</a>
+  <a id=inbox-button>Inbox <span>2</span></a>
+  <a id=signout-button>Sign Out</a>
+</div><b><s></s></b></header>

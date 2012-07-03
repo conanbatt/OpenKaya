@@ -1,0 +1,27 @@
+@import "basic-button";
+
+@if import-once("basic-tab") {
+
+.basic-tab {
+  @extend .basic-button;
+  border-bottom: none;
+  border-left: 1px solid $basic-tab-side;
+  border-right: 1px solid $basic-tab-side;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  box-shadow: none;
+
+  &:hover, &:active, &.active, &.selected {
+    box-shadow: none;
+  }
+
+  .ie & {
+    &:hover, &:active, &.active, &.selected {
+    }
+  }
+}
+
+
+}

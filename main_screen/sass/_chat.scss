@@ -1,0 +1,17 @@
+﻿
+@import "chat-rooms";
+@import "chat-content";
+@import "chat-entry";
+
+#chat {
+  position: absolute;
+  // funny right and width to handle funny vertical rule
+  right: 551px;
+  top: 0;
+  bottom: 0;
+  width: 429px;
+  z-index: 1;
+  background: $background-dark-white;
+  border-right: 1px solid $background-white;
+  box-shadow: -3px 0px 3px $content-shadow;  
+}
