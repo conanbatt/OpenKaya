@@ -131,7 +131,7 @@ def convert_move(move, size=19)
     return 'resign'
   else
     h = move[0].ord
-    v = (size.to_i - move[1,2].to_i + 65)
+    v = (@size.to_i - move[1,2].to_i + 65)
     sgf_move = [h, v].map {|x| if x > 73 then (x - 1).chr else x.chr end}
     return sgf_move.join.downcase
   end
