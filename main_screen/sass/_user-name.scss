@@ -16,4 +16,12 @@
   }
 }
 
+// this is only to stop the hover effect
+.not-user-name {
+  &:hover,
+  &:hover > span {
+    @extend .not-link;
+  }
+}
+
 }

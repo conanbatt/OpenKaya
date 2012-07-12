@@ -1,0 +1,64 @@
+﻿#user-list-toolbar {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+  > a {
+    display: block;
+    float: right;
+    color: $icon-gray;
+    cursor: pointer;
+    margin-left: 6px;
+    overflow: hidden;
+    span {
+      display: none;
+    }
+    &:hover, &.selected {
+      color: $icon-green;
+    }
+    &:before {
+      font-family: $font-entypo;
+      font-size: 40px;
+      display: inline-block;
+      margin: -14px 0;
+    }
+  }
+  a.search:before {
+    content: 'ô'; // magnifying glass
+  }
+  a.sort:before {
+    content: 'l'; // boxed list
+  }
+
+  .toolbar-panel {
+    display: none;
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    line-height: 24px;
+    background: $background-dark-white;
+    text-align: right;
+  }
+
+  #user-list-toolbar-search {
+    @extend .toolbar-panel;
+    right: 48px;
+  }
+  a.search.selected ~ #user-list-toolbar-search {
+    display: block;
+  }
+  #user-list-toolbar-sort {
+    @extend .toolbar-panel;
+    right: 24px;
+    a {
+      margin-left: 0.3em;
+      cursor: pointer;
+      &:hover, &.selected {
+        color: $icon-green;
+      }
+    }
+  }
+  a.sort.selected ~ #user-list-toolbar-sort {
+    display: block;
+  }
+}
