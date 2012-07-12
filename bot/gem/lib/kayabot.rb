@@ -22,6 +22,7 @@ class KayaBot
     @pass = config["pass"]
     @size = config["size"]
     @title = config["title"]
+    @bot = config["bot"]
     @agent = Mechanize.new
     @status
     @sgf
