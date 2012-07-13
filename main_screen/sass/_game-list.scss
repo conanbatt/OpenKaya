@@ -22,7 +22,7 @@
     a {
       display: inline-block;
       margin-left: 0.3em;
-      @extend .basic-button;
+      @extend .basic-button-off-white;
     }
   }
 
@@ -42,18 +42,61 @@
       overflow: hidden;
       padding: 15px 0;
 
+      .player-icon.anonymous:before {
+        content: '+'; // person
+        display: inline-block;
+        font-family: $font-entypo;
+        font-size: 70px;
+        width: 80px;
+        height: 80px;
+        line-height: 65px;
+        text-align: center;
+        border: 1px solid $rule-gray;
+      }
+      .player-icon.anonymous-efon {
+        @extend .anonymous;
+      }
+      .player-icon.anonymous-efon:before {
+        font-family: $font-efon;
+        font-size: 50px;
+      }
+
+      &.broadcast {
+        .player-icon {
+          @extend .anonymous;
+          @extend .not-link;
+
+          color: $icon-dark-gray;
+
+          &:hover ~ .players .black,
+          &:hover ~ .players .white {
+            @extend .not-link;
+          }
+        }
+        .players .black,
+        .players .white {
+          @extend .not-user-name;
+        }
+        .observe-game:after {
+          content: 'D'; // camera
+        }
+      }
+
+      .player-icon.bot {
+        @extend .anonymous-efon;
+        &:before {
+          color: $icon-green;
+          content: 'x'; // robot
+        }
+      }
+
       &.open {
-        .player-icon.black:before {
-          content: '-'; // add person
-          display: inline-block;
-          font-family: $font-entypo;
-          font-size: 70px;
-          width: 80px;
-          height: 80px;
-          line-height: 65px;
-          text-align: center;
-          border: 1px solid $rule-gray;
+        .player-icon.black {
+          @extend .anonymous;
           color: $icon-red;
+          &:before {
+            content: '-'; // add person
+          }
         }
         .players .black {
           color: $text-red;
@@ -146,7 +189,7 @@
         }
 
         &:after {
-         content: 'ê'; // right arrow
+          content: 'ê'; // right arrow
           display: inline-block;
           font-family: $font-entypo;
           font-size: 40px;

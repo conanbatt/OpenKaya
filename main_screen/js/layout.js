@@ -57,6 +57,8 @@ function setupChat() {
 
   $('#user-list li .name, #chat-content h4, #game-list a.black, #game-list a.white').click(userNameClick);
 
+  $('#user-list-toolbar > a').click(userListToolbarClick);
+
   // for testing
   var addRoom = $('#chat-rooms-add-button');
   addRoom.click(function() {
@@ -161,7 +163,7 @@ function userNameClick(e) {
 
   var wasVisible = ensureUserListVisible();
 
-  user.siblings().removeClass('selected');
+  $('#user-list li').not(user).removeClass('selected');
   if( wasVisible ) {
     user.toggleClass('selected');
   } else {
@@ -173,3 +175,8 @@ function userNameClick(e) {
   user.one($.transitionEnd, updateUserListContent);
 }
 
+function userListToolbarClick(e) {
+  var a = $(this);
+  a.siblings().removeClass('selected');
+  a.toggleClass('selected');
+}
