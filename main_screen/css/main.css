@@ -65,12 +65,17 @@ body {
   src: url("/fonts/aierbazzi-webfont.eot");
   src: url("/fonts/aierbazzi-webfont.eot?#iefix") format("embedded-opentype"), url("/fonts/aierbazzi-webfont.woff") format("woff"), url("/fonts/aierbazzi-webfont.ttf") format("truetype"), url("/fonts/aierbazzi-webfont.svg#AierbazziRegular") format("svg"); }
 
-/* line 43, ../sass/_fonts.scss */
+@font-face {
+  font-family: 'EfonRegular';
+  src: url("/fonts/EFON-webfont.eot");
+  src: url("/fonts/EFON-webfont.eot?#iefix") format("embedded-opentype"), url("/fonts/EFON-webfont.woff") format("woff"), url("/fonts/EFON-webfont.ttf") format("truetype"), url("/fonts/EFON-webfont.svg#EfonRegular") format("svg"); }
+
+/* line 52, ../sass/_fonts.scss */
 .font-bold, #header a[id*="button"], #chat #chat-rooms, #chat #chat-content li p, #chat #chat-entry #chat-entry-input, #game-list #game-list-content li .players .black, #game-list #game-list-content li .players .white, #game-list #game-list-content li .status-bar {
   font-family: "ProximaNova-Bold", "Helvetica Neue", Helvetica, Arial, "Helmet", "Freesans", sans-serif;
   font-weight: bold; }
 
-/* line 47, ../sass/_fonts.scss */
+/* line 56, ../sass/_fonts.scss */
 .ie8 .font-bold, .ie8 #header a[id*="button"], #header .ie8 a[id*="button"], .ie8 #chat #chat-rooms, #chat .ie8 #chat-rooms, .ie8 #chat #chat-content li p, #chat #chat-content li .ie8 p, .ie8 #chat #chat-entry #chat-entry-input, #chat #chat-entry .ie8 #chat-entry-input, .ie8 #game-list #game-list-content li .players .black, #game-list #game-list-content li .players .ie8 .black, .ie8 #game-list #game-list-content li .players .white, #game-list #game-list-content li .players .ie8 .white, .ie8 #game-list #game-list-content li .status-bar, #game-list #game-list-content li .ie8 .status-bar {
   font-weight: normal; }
 
@@ -104,6 +109,13 @@ a:link:hover,
 #game-list #game-list-content li .player-icon.white:hover ~ .players .white {
   cursor: pointer;
   text-decoration: underline; }
+
+/* line 21, ../sass/main.scss */
+.not-link, .not-user-name:hover, #game-list #game-list-content li.broadcast .players .black:hover,
+#game-list #game-list-content li.broadcast .players .white:hover, .not-user-name:hover > span, #game-list #game-list-content li.broadcast .players .black:hover > span,
+#game-list #game-list-content li.broadcast .players .white:hover > span, #game-list #game-list-content li.broadcast .player-icon, #game-list #game-list-content li.broadcast .player-icon:hover ~ .players .black, #game-list #game-list-content li.broadcast .player-icon:hover ~ .players .white {
+  cursor: default;
+  text-decoration: none; }
 
 /* line 3, ../sass/_scrollbar.scss */
 .scrollbar-container, #user-list #user-list-content, #chat #chat-content, #game-list #game-list-content {
@@ -154,7 +166,7 @@ a:link:hover,
       position: absolute; }
 
 /* line 3, ../sass/_basic-button.scss */
-.basic-button, #header a[id*="button"], .basic-tab, #chat #chat-rooms #chat-rooms-content a, #game-list #game-list-controls a {
+.basic-button, .basic-button-off-white, #game-list #game-list-controls a, #header a[id*="button"], .basic-tab, #chat #chat-rooms #chat-rooms-content a {
   display: inline-block;
   padding: 5px 15px 5px 15px;
   line-height: 20px;
@@ -164,20 +176,28 @@ a:link:hover,
   background: rgba(255, 255, 255, 0.4);
   box-shadow: inset 0px -1px 2px rgba(0, 0, 0, 0.1); }
   /* line 13, ../sass/_basic-button.scss */
-  .basic-button:hover, #header a[id*="button"]:hover, .basic-tab:hover, #chat #chat-rooms #chat-rooms-content a:hover, #game-list #game-list-controls a:hover, .basic-button:active, #header a[id*="button"]:active, .basic-tab:active, #chat #chat-rooms #chat-rooms-content a:active, #game-list #game-list-controls a:active, .basic-button.active, #header a.active[id*="button"], .active.basic-tab, #chat #chat-rooms #chat-rooms-content a.active, #game-list #game-list-controls a.active, .basic-button.selected, #header a.selected[id*="button"], .selected.basic-tab, #chat #chat-rooms #chat-rooms-content a.selected, #game-list #game-list-controls a.selected {
+  .basic-button:hover, .basic-button-off-white:hover, #game-list #game-list-controls a:hover, #header a[id*="button"]:hover, .basic-tab:hover, #chat #chat-rooms #chat-rooms-content a:hover, .basic-button:active, .basic-button-off-white:active, #game-list #game-list-controls a:active, #header a[id*="button"]:active, .basic-tab:active, #chat #chat-rooms #chat-rooms-content a:active, .basic-button.active, .active.basic-button-off-white, #game-list #game-list-controls a.active, #header a.active[id*="button"], .active.basic-tab, #chat #chat-rooms #chat-rooms-content a.active, .basic-button.selected, .selected.basic-button-off-white, #game-list #game-list-controls a.selected, #header a.selected[id*="button"], .selected.basic-tab, #chat #chat-rooms #chat-rooms-content a.selected {
     text-decoration: none;
     color: #111111;
     background: rgba(255, 255, 255, 0.8);
     box-shadow: inset 0px -1px 2px rgba(50, 50, 50, 0.1); }
   /* line 20, ../sass/_basic-button.scss */
-  .ie .basic-button, .ie #header a[id*="button"], #header .ie a[id*="button"], .ie .basic-tab, .ie #chat #chat-rooms #chat-rooms-content a, #chat #chat-rooms #chat-rooms-content .ie a, .ie #game-list #game-list-controls a, #game-list #game-list-controls .ie a {
+  .ie .basic-button, .ie .basic-button-off-white, .ie #game-list #game-list-controls a, #game-list #game-list-controls .ie a, .ie #header a[id*="button"], #header .ie a[id*="button"], .ie .basic-tab, .ie #chat #chat-rooms #chat-rooms-content a, #chat #chat-rooms #chat-rooms-content .ie a {
     border-left: 1px solid #ccc;
     border-right: 1px solid #ccc; }
     /* line 23, ../sass/_basic-button.scss */
-    .ie .basic-button:hover, .ie #header a[id*="button"]:hover, #header .ie a[id*="button"]:hover, .ie .basic-tab:hover, .ie #chat #chat-rooms #chat-rooms-content a:hover, #chat #chat-rooms #chat-rooms-content .ie a:hover, .ie #game-list #game-list-controls a:hover, #game-list #game-list-controls .ie a:hover, .ie .basic-button:active, .ie #header a[id*="button"]:active, #header .ie a[id*="button"]:active, .ie .basic-tab:active, .ie #chat #chat-rooms #chat-rooms-content a:active, #chat #chat-rooms #chat-rooms-content .ie a:active, .ie #game-list #game-list-controls a:active, #game-list #game-list-controls .ie a:active, .ie .basic-button.active, .ie #header a.active[id*="button"], #header .ie a.active[id*="button"], .ie .active.basic-tab, .ie #chat #chat-rooms #chat-rooms-content a.active, #chat #chat-rooms #chat-rooms-content .ie a.active, .ie #game-list #game-list-controls a.active, #game-list #game-list-controls .ie a.active, .ie .basic-button.selected, .ie #header a.selected[id*="button"], #header .ie a.selected[id*="button"], .ie .selected.basic-tab, .ie #chat #chat-rooms #chat-rooms-content a.selected, #chat #chat-rooms #chat-rooms-content .ie a.selected, .ie #game-list #game-list-controls a.selected, #game-list #game-list-controls .ie a.selected {
+    .ie .basic-button:hover, .ie .basic-button-off-white:hover, .ie #game-list #game-list-controls a:hover, #game-list #game-list-controls .ie a:hover, .ie #header a[id*="button"]:hover, #header .ie a[id*="button"]:hover, .ie .basic-tab:hover, .ie #chat #chat-rooms #chat-rooms-content a:hover, #chat #chat-rooms #chat-rooms-content .ie a:hover, .ie .basic-button:active, .ie .basic-button-off-white:active, .ie #game-list #game-list-controls a:active, #game-list #game-list-controls .ie a:active, .ie #header a[id*="button"]:active, #header .ie a[id*="button"]:active, .ie .basic-tab:active, .ie #chat #chat-rooms #chat-rooms-content a:active, #chat #chat-rooms #chat-rooms-content .ie a:active, .ie .basic-button.active, .ie .active.basic-button-off-white, .ie #game-list #game-list-controls a.active, #game-list #game-list-controls .ie a.active, .ie #header a.active[id*="button"], #header .ie a.active[id*="button"], .ie .active.basic-tab, .ie #chat #chat-rooms #chat-rooms-content a.active, #chat #chat-rooms #chat-rooms-content .ie a.active, .ie .basic-button.selected, .ie .selected.basic-button-off-white, .ie #game-list #game-list-controls a.selected, #game-list #game-list-controls .ie a.selected, .ie #header a.selected[id*="button"], #header .ie a.selected[id*="button"], .ie .selected.basic-tab, .ie #chat #chat-rooms #chat-rooms-content a.selected, #chat #chat-rooms #chat-rooms-content .ie a.selected {
       background: #fafafa; }
 
 /* line 29, ../sass/_basic-button.scss */
+.basic-button-off-white, #game-list #game-list-controls a {
+  background: rgba(245, 245, 245, 0.8); }
+  /* line 32, ../sass/_basic-button.scss */
+  .basic-button-off-white:hover, #game-list #game-list-controls a:hover, .basic-button-off-white:active, #game-list #game-list-controls a:active, .basic-button-off-white.active, #game-list #game-list-controls a.active, .basic-button-off-white.selected, #game-list #game-list-controls a.selected {
+    background: rgba(91, 122, 47, 0.8);
+    color: white; }
+
+/* line 38, ../sass/_basic-button.scss */
 .button-note, #header a[id*="button"] > span {
   display: inline-block;
   background: black;
@@ -307,7 +327,7 @@ a:link:hover,
   .user-list-slid-open #footer {
     text-indent: 300px; }
 
-/* line 29, ../sass/main.scss */
+/* line 33, ../sass/main.scss */
 #content {
   position: absolute;
   left: 0;
@@ -315,11 +335,11 @@ a:link:hover,
   top: 73px;
   bottom: 50px; }
   @media screen and (max-height: 480px) {
-    /* line 29, ../sass/main.scss */
+    /* line 33, ../sass/main.scss */
     #content {
       position: static; } }
 
-/* line 40, ../sass/main.scss */
+/* line 44, ../sass/main.scss */
 #content > div {
   position: relative;
   width: 980px;
@@ -332,13 +352,13 @@ a:link:hover,
   -moz-transition: width 1s 0.2s;
   transition: width 1s 0.2s; }
   @media screen and (max-height: 480px) {
-    /* line 40, ../sass/main.scss */
+    /* line 44, ../sass/main.scss */
     #content > div {
       min-height: 357px; } }
-  /* line 56, ../sass/main.scss */
+  /* line 60, ../sass/main.scss */
   .user-list-slid-open #content > div {
     width: 1260px; }
-  /* line 60, ../sass/main.scss */
+  /* line 64, ../sass/main.scss */
   .ie8 #content > div {
     border: 1px solid #aaa; }
 
@@ -488,26 +508,165 @@ a:link:hover,
 .user-list-popped-up #user-list-toggle-button {
   opacity: 0.3; }
 
-/* line 7, ../sass/_user-list.scss */
+/* line 1, ../sass/_user-list-panel.scss */
+#user-list li .panel {
+  position: absolute;
+  bottom: 10px;
+  left: 15px;
+  right: 15px;
+  height: 40px;
+  visibility: hidden;
+  opacity: 0;
+  -webkit-transition: visibility 0s 0.5s, opacity 0.5s 0s;
+  -moz-transition: visibility 0s 0.5s, opacity 0.5s 0s;
+  transition: visibility 0s 0.5s, opacity 0.5s 0s; }
+  /* line 13, ../sass/_user-list-panel.scss */
+  #user-list li .panel p {
+    position: absolute;
+    right: 0;
+    left: 105px;
+    top: 3px;
+    height: 42px;
+    overflow: hidden; }
+  /* line 22, ../sass/_user-list-panel.scss */
+  #user-list li .panel a {
+    display: block;
+    float: left;
+    color: #999999;
+    cursor: pointer;
+    margin-right: 6px;
+    overflow: hidden; }
+    /* line 29, ../sass/_user-list-panel.scss */
+    #user-list li .panel a span {
+      display: none; }
+    /* line 32, ../sass/_user-list-panel.scss */
+    #user-list li .panel a:hover {
+      color: #5a7b2a; }
+    /* line 35, ../sass/_user-list-panel.scss */
+    #user-list li .panel a:before {
+      font-family: "EntypoRegular", sans-serif;
+      font-size: 40px;
+      display: inline-block;
+      margin: -14px 0; }
+  /* line 42, ../sass/_user-list-panel.scss */
+  #user-list li .panel a:first-child + a + a + a {
+    clear: left; }
+  /* line 45, ../sass/_user-list-panel.scss */
+  #user-list li .panel a.message:before {
+    content: '&'; }
+  /* line 48, ../sass/_user-list-panel.scss */
+  #user-list li .panel a.profile:before {
+    content: '.'; }
+  /* line 51, ../sass/_user-list-panel.scss */
+  #user-list li .panel a.challenge:before {
+    content: ','; }
+  /* line 54, ../sass/_user-list-panel.scss */
+  #user-list li .panel a.friend.selected {
+    color: #941c1e; }
+  /* line 57, ../sass/_user-list-panel.scss */
+  #user-list li .panel a.friend:before {
+    content: '6'; }
+  /* line 60, ../sass/_user-list-panel.scss */
+  #user-list li .panel a.karma:before {
+    content: '8'; }
+  /* line 63, ../sass/_user-list-panel.scss */
+  #user-list li .panel a.muzzle:before {
+    content: '\00E0'; }
+  /* line 66, ../sass/_user-list-panel.scss */
+  #user-list li .panel img.avatar {
+    position: absolute;
+    right: 0;
+    top: -21px;
+    width: 60px;
+    height: 60px;
+    border: 1px solid #ededed; }
+
+/* line 1, ../sass/_user-list-toolbar.scss */
+#user-list-toolbar {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  right: 10px; }
+  /* line 6, ../sass/_user-list-toolbar.scss */
+  #user-list-toolbar > a {
+    display: block;
+    float: right;
+    color: #999999;
+    cursor: pointer;
+    margin-left: 6px;
+    overflow: hidden; }
+    /* line 13, ../sass/_user-list-toolbar.scss */
+    #user-list-toolbar > a span {
+      display: none; }
+    /* line 16, ../sass/_user-list-toolbar.scss */
+    #user-list-toolbar > a:hover, #user-list-toolbar > a.selected {
+      color: #5a7b2a; }
+    /* line 19, ../sass/_user-list-toolbar.scss */
+    #user-list-toolbar > a:before {
+      font-family: "EntypoRegular", sans-serif;
+      font-size: 40px;
+      display: inline-block;
+      margin: -14px 0; }
+  /* line 26, ../sass/_user-list-toolbar.scss */
+  #user-list-toolbar a.search:before {
+    content: 'ô'; }
+  /* line 29, ../sass/_user-list-toolbar.scss */
+  #user-list-toolbar a.sort:before {
+    content: 'l'; }
+  /* line 33, ../sass/_user-list-toolbar.scss */
+  #user-list-toolbar .toolbar-panel, #user-list-toolbar #user-list-toolbar-search, #user-list-toolbar #user-list-toolbar-sort {
+    display: none;
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    line-height: 24px;
+    background: #e9e9e9;
+    text-align: right; }
+  /* line 43, ../sass/_user-list-toolbar.scss */
+  #user-list-toolbar #user-list-toolbar-search {
+    right: 48px; }
+  /* line 47, ../sass/_user-list-toolbar.scss */
+  #user-list-toolbar a.search.selected ~ #user-list-toolbar-search {
+    display: block; }
+  /* line 50, ../sass/_user-list-toolbar.scss */
+  #user-list-toolbar #user-list-toolbar-sort {
+    right: 24px; }
+    /* line 53, ../sass/_user-list-toolbar.scss */
+    #user-list-toolbar #user-list-toolbar-sort a {
+      margin-left: 0.3em;
+      cursor: pointer; }
+      /* line 56, ../sass/_user-list-toolbar.scss */
+      #user-list-toolbar #user-list-toolbar-sort a:hover, #user-list-toolbar #user-list-toolbar-sort a.selected {
+        color: #5a7b2a; }
+  /* line 61, ../sass/_user-list-toolbar.scss */
+  #user-list-toolbar a.sort.selected ~ #user-list-toolbar-sort {
+    display: block; }
+
+/* line 9, ../sass/_user-list.scss */
 #user-list {
   position: absolute;
   top: 30px;
   bottom: 70px;
   width: 280px;
   background: #e9e9e9; }
-  /* line 13, ../sass/_user-list.scss */
+  /* line 15, ../sass/_user-list.scss */
   .ie8 #user-list {
     border: 1px solid #ccc; }
-  /* line 17, ../sass/_user-list.scss */
+  /* line 19, ../sass/_user-list.scss */
   #user-list #user-list-content {
     position: absolute;
     top: 20px;
-    bottom: 20px;
+    bottom: 40px;
     left: 10px;
     right: 10px;
     z-index: 1;
     background: white; }
-    /* line 31, ../sass/_user-list.scss */
+    /* line 33, ../sass/_user-list.scss */
+    #user-list #user-list-content h4 {
+      padding: 10px 15px 10px 15px;
+      background: #eff5e5;
+      color: #799058; }
+    /* line 39, ../sass/_user-list.scss */
     #user-list #user-list-content li {
       position: relative;
       z-index: 0;
@@ -516,19 +675,19 @@ a:link:hover,
       -webkit-transition: height 0.5s 0.2s;
       -moz-transition: height 0.5s 0.2s;
       transition: height 0.5s 0.2s; }
-      /* line 40, ../sass/_user-list.scss */
+      /* line 48, ../sass/_user-list.scss */
       #user-list #user-list-content li:not(.sleeping) .name {
         color: #799058; }
-      /* line 44, ../sass/_user-list.scss */
+      /* line 52, ../sass/_user-list.scss */
       #user-list #user-list-content li .name {
         display: inline-block;
         line-height: 1.5;
         z-index: 1;
         position: relative; }
-        /* line 51, ../sass/_user-list.scss */
+        /* line 59, ../sass/_user-list.scss */
         #user-list #user-list-content li .name > span {
           max-width: 175px; }
-      /* line 56, ../sass/_user-list.scss */
+      /* line 64, ../sass/_user-list.scss */
       #user-list #user-list-content li .type {
         float: right;
         z-index: 1;
@@ -540,10 +699,10 @@ a:link:hover,
         -webkit-transition: right 0.5s 0.2s;
         -moz-transition: right 0.5s 0.2s;
         transition: right 0.5s 0.2s; }
-      /* line 68, ../sass/_user-list.scss */
+      /* line 76, ../sass/_user-list.scss */
       #user-list #user-list-content li:not(.sleeping) .type {
         color: #799058; }
-      /* line 72, ../sass/_user-list.scss */
+      /* line 80, ../sass/_user-list.scss */
       #user-list #user-list-content li > .karma {
         display: none;
         font-family: "AierbazziRegular", sans-serif;
@@ -556,94 +715,25 @@ a:link:hover,
         line-height: 40px;
         font-size: 40px;
         color: rgba(90, 123, 42, 0.1); }
-        /* line 86, ../sass/_user-list.scss */
+        /* line 94, ../sass/_user-list.scss */
         .ie8 #user-list #user-list-content li > .karma {
           color: #eef1ea; }
-      /* line 91, ../sass/_user-list.scss */
+      /* line 99, ../sass/_user-list.scss */
       #user-list #user-list-content li:nth-child(even) {
         background: #f5f5f5; }
-      /* line 95, ../sass/_user-list.scss */
+      /* line 103, ../sass/_user-list.scss */
       #user-list #user-list-content li.even {
         background: #f5f5f5; }
-      /* line 99, ../sass/_user-list.scss */
-      #user-list #user-list-content li .panel {
-        position: absolute;
-        bottom: 10px;
-        left: 15px;
-        right: 15px;
-        height: 40px;
-        visibility: hidden;
-        opacity: 0;
-        -webkit-transition: visibility 0s 0.5s, opacity 0.5s 0s;
-        -moz-transition: visibility 0s 0.5s, opacity 0.5s 0s;
-        transition: visibility 0s 0.5s, opacity 0.5s 0s; }
-        /* line 111, ../sass/_user-list.scss */
-        #user-list #user-list-content li .panel p {
-          position: absolute;
-          right: 0;
-          left: 105px;
-          top: 3px;
-          height: 42px;
-          overflow: hidden; }
-        /* line 120, ../sass/_user-list.scss */
-        #user-list #user-list-content li .panel a {
-          display: block;
-          float: left;
-          color: #999999;
-          cursor: pointer;
-          margin-right: 6px;
-          overflow: hidden; }
-          /* line 127, ../sass/_user-list.scss */
-          #user-list #user-list-content li .panel a span {
-            display: none; }
-          /* line 130, ../sass/_user-list.scss */
-          #user-list #user-list-content li .panel a:hover {
-            color: #5a7b2a; }
-          /* line 133, ../sass/_user-list.scss */
-          #user-list #user-list-content li .panel a:before {
-            font-family: "EntypoRegular", sans-serif;
-            font-size: 40px;
-            display: inline-block;
-            margin: -14px 0; }
-        /* line 140, ../sass/_user-list.scss */
-        #user-list #user-list-content li .panel a:first-child + a + a + a {
-          clear: left; }
-        /* line 143, ../sass/_user-list.scss */
-        #user-list #user-list-content li .panel a.message:before {
-          content: '&'; }
-        /* line 146, ../sass/_user-list.scss */
-        #user-list #user-list-content li .panel a.profile:before {
-          content: '.'; }
-        /* line 149, ../sass/_user-list.scss */
-        #user-list #user-list-content li .panel a.challenge:before {
-          content: ','; }
-        /* line 152, ../sass/_user-list.scss */
-        #user-list #user-list-content li .panel a.friend:before {
-          content: '6'; }
-        /* line 155, ../sass/_user-list.scss */
-        #user-list #user-list-content li .panel a.karma:before {
-          content: '8'; }
-        /* line 158, ../sass/_user-list.scss */
-        #user-list #user-list-content li .panel a.muzzle:before {
-          content: '\00E0'; }
-        /* line 161, ../sass/_user-list.scss */
-        #user-list #user-list-content li .panel img.avatar {
-          position: absolute;
-          right: 0;
-          top: -21px;
-          width: 60px;
-          height: 60px;
-          border: 1px solid #ededed; }
-      /* line 174, ../sass/_user-list.scss */
+      /* line 110, ../sass/_user-list.scss */
       #user-list #user-list-content li.selected {
         height: 60px; }
-        /* line 177, ../sass/_user-list.scss */
+        /* line 113, ../sass/_user-list.scss */
         #user-list #user-list-content li.selected .name > span {
           max-width: 105px; }
-        /* line 180, ../sass/_user-list.scss */
+        /* line 116, ../sass/_user-list.scss */
         #user-list #user-list-content li.selected .type {
           right: 70px; }
-        /* line 183, ../sass/_user-list.scss */
+        /* line 119, ../sass/_user-list.scss */
         #user-list #user-list-content li.selected .panel {
           visibility: visible;
           opacity: 1;
@@ -859,9 +949,9 @@ a:link:hover,
       border-top: 1px solid #ededed;
       overflow: hidden;
       padding: 15px 0; }
-      /* line 46, ../sass/_game-list.scss */
-      #game-list #game-list-content li.open .player-icon.black:before {
-        content: '-';
+      /* line 45, ../sass/_game-list.scss */
+      #game-list #game-list-content li .player-icon.anonymous:before, #game-list #game-list-content li .player-icon.anonymous-efon:before, #game-list #game-list-content li .player-icon.bot:before, #game-list #game-list-content li.broadcast .player-icon:before, #game-list #game-list-content li.open .player-icon.black:before {
+        content: '+';
         display: inline-block;
         font-family: "EntypoRegular", sans-serif;
         font-size: 70px;
@@ -869,15 +959,34 @@ a:link:hover,
         height: 80px;
         line-height: 65px;
         text-align: center;
-        border: 1px solid #ededed;
+        border: 1px solid #ededed; }
+      /* line 59, ../sass/_game-list.scss */
+      #game-list #game-list-content li .player-icon.anonymous-efon:before, #game-list #game-list-content li .player-icon.bot:before {
+        font-family: "EfonRegular", sans-serif;
+        font-size: 50px; }
+      /* line 65, ../sass/_game-list.scss */
+      #game-list #game-list-content li.broadcast .player-icon {
+        color: #666666; }
+      /* line 80, ../sass/_game-list.scss */
+      #game-list #game-list-content li.broadcast .observe-game:after {
+        content: 'D'; }
+      /* line 87, ../sass/_game-list.scss */
+      #game-list #game-list-content li .player-icon.bot:before {
+        color: #5a7b2a;
+        content: 'x'; }
+      /* line 94, ../sass/_game-list.scss */
+      #game-list #game-list-content li.open .player-icon.black {
         color: #941c1e; }
-      /* line 58, ../sass/_game-list.scss */
+        /* line 97, ../sass/_game-list.scss */
+        #game-list #game-list-content li.open .player-icon.black:before {
+          content: '-'; }
+      /* line 101, ../sass/_game-list.scss */
       #game-list #game-list-content li.open .players .black {
         color: #941c1e; }
-        /* line 60, ../sass/_game-list.scss */
+        /* line 103, ../sass/_game-list.scss */
         #game-list #game-list-content li.open .players .black:before {
           content: 'Join Match'; }
-      /* line 65, ../sass/_game-list.scss */
+      /* line 108, ../sass/_game-list.scss */
       #game-list #game-list-content li.open .observe-game:after {
         content: 'R';
         background: transparent;
@@ -885,57 +994,57 @@ a:link:hover,
         box-shadow: none;
         text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
         font-size: 60px; }
-      /* line 74, ../sass/_game-list.scss */
+      /* line 117, ../sass/_game-list.scss */
       #game-list #game-list-content li.open .observe-game:hover:after {
         background: transparent;
         color: #5a7b2a; }
-      /* line 81, ../sass/_game-list.scss */
+      /* line 124, ../sass/_game-list.scss */
       #game-list #game-list-content li .player-icon {
         float: left;
         cursor: pointer; }
-        /* line 85, ../sass/_game-list.scss */
+        /* line 128, ../sass/_game-list.scss */
         #game-list #game-list-content li .player-icon.black {
           margin-left: 15px; }
-        /* line 93, ../sass/_game-list.scss */
+        /* line 136, ../sass/_game-list.scss */
         #game-list #game-list-content li .player-icon.white {
           margin-left: 140px; }
-        /* line 102, ../sass/_game-list.scss */
+        /* line 145, ../sass/_game-list.scss */
         #game-list #game-list-content li .player-icon img {
           border: 1px solid #ededed;
           width: 80px;
           height: 80px; }
-      /* line 109, ../sass/_game-list.scss */
+      /* line 152, ../sass/_game-list.scss */
       #game-list #game-list-content li .players {
         position: absolute;
         left: 107px;
         width: 120px;
         color: #799058; }
-        /* line 115, ../sass/_game-list.scss */
+        /* line 158, ../sass/_game-list.scss */
         #game-list #game-list-content li .players > span, #game-list #game-list-content li .players > a {
           display: block; }
-        /* line 122, ../sass/_game-list.scss */
+        /* line 165, ../sass/_game-list.scss */
         #game-list #game-list-content li .players .black > span, #game-list #game-list-content li .players .white > span {
           max-width: 90px; }
-        /* line 126, ../sass/_game-list.scss */
+        /* line 169, ../sass/_game-list.scss */
         #game-list #game-list-content li .players .vs {
           line-height: 40px;
           color: #cccccc;
           font-size: 24px;
           text-align: center; }
-        /* line 132, ../sass/_game-list.scss */
+        /* line 175, ../sass/_game-list.scss */
         #game-list #game-list-content li .players .white {
           text-align: right; }
-      /* line 137, ../sass/_game-list.scss */
+      /* line 180, ../sass/_game-list.scss */
       #game-list #game-list-content li .observe-game {
         float: left;
         margin: 0 0 0 20px;
         cursor: pointer; }
-        /* line 142, ../sass/_game-list.scss */
+        /* line 185, ../sass/_game-list.scss */
         #game-list #game-list-content li .observe-game img {
           width: 82px;
           height: 82px;
           vertical-align: middle; }
-        /* line 148, ../sass/_game-list.scss */
+        /* line 191, ../sass/_game-list.scss */
         #game-list #game-list-content li .observe-game:after {
           content: 'ê';
           display: inline-block;
@@ -950,17 +1059,17 @@ a:link:hover,
           vertical-align: middle;
           border-radius: 100px;
           box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2); }
-        /* line 163, ../sass/_game-list.scss */
+        /* line 206, ../sass/_game-list.scss */
         #game-list #game-list-content li .observe-game:hover:after {
           background: #5a7b2a; }
-      /* line 168, ../sass/_game-list.scss */
+      /* line 211, ../sass/_game-list.scss */
       #game-list #game-list-content li .status-bar {
         float: left;
         margin: -4px 0;
         width: 63px;
         text-align: right;
         line-height: 30px; }
-        /* line 177, ../sass/_game-list.scss */
+        /* line 220, ../sass/_game-list.scss */
         #game-list #game-list-content li .status-bar .observers:before {
           content: ',';
           display: inline-block;
