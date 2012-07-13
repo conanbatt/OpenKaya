@@ -20,6 +20,29 @@ var chinese_score;
         japanese_score = undefined;
         chinese_score = undefined;
     }
+    
+    function sameBoards(array1, array2)
+    {
+        if(array1.length != array2.length)
+          return false;
+          
+        for(var row_index in array1)
+        {
+          var row1 = array1[row_index];
+          var row2 = array2[row_index];
+          
+          if(row1.length != row2.length)
+            return false;
+            
+          for(var col_index in array2)
+          {
+            if (row1[col_index] != row2[col_index])
+              return false;
+          }
+        }
+        
+        return true;
+    }
 
 //NOTE: standard test board is 6x6
 
@@ -594,6 +617,184 @@ var chinese_score;
         equal(score.white_points,19);
     });
 
+// Scoring should guess when a point isn't a point after full dame filling (bugcase)
+    module("Dame filling", {
+        setup: function() {
+            genericSetup([
+                ["*","*","*","*","*","*","*","*","*"],
+                ["B","B","*","*","*","*","*","*","*"],
+                ["W","W","B","B","B","B","B","B","B"],
+                ["*","W","W","W","W","W","W","W","W"],
+                ["W","*","*","*","*","*","*","*","*"],
+                ["*","W","*","*","*","*","*","*","*"],
+                ["B","W","W","W","W","W","W","W","W"],
+                ["B","B","B","W","B","B","B","B","B"],
+                ["B","B","*","B","B","*","*","*","*"]
+            ]);
+        },
+        teardown: function() {
+            genericTeardown();
+        }
+    });
+
+    test("shouldn't count the point in the false eyes as they'll be filled after dame filling (Japanese) - bugcase", function(){
+        var score = japanese_score.calculate_score();
+        equal(score.black_points,20);
+        equal(score.white_points,16);
+
+    });
+
+    test("should count the points in the false eyes as after filling, it's still one point (Chinese) - bugcase", function(){
+        var score = chinese_score.calculate_score();
+        equal(score.black_points,43);
+        equal(score.white_points,37);
+    });
+
+    
+/* Grid coloring testing */
+
+    module("Basic coloring", {
+        setup: function() {
+            genericSetup([
+                ["*","*","*","*","*","*","*","*","*"],
+                ["*","*","*","*","*","*","*","*","*"],
+                ["B","B","B","B","B","B","B","B","B"],
+                ["W","W","W","W","W","W","W","W","W"],
+                ["*","*","*","*","*","*","*","*","*"],
+                ["*","*","*","*","*","*","*","*","*"],
+                ["*","*","*","*","*","*","*","*","*"],
+                ["*","*","*","*","*","*","*","*","*"],
+                ["*","*","*","*","*","*","*","*","*"],
+            ]);
+        },
+        teardown: function() {
+            genericTeardown();
+        }
+    });
+
+    test("should count the points correctly and set all the points with the respective color", function(){
+        var score = chinese_score.calculate_score();
+        equal(score.black_points,27);
+        equal(score.white_points,54);
+        equal(sameBoards(score.scoring_grid, 
+          [
+                  ["+","+","+","+","+","+","+","+","+"],
+                  ["+","+","+","+","+","+","+","+","+"],
+                  ["B","B","B","B","B","B","B","B","B"],
+                  ["W","W","W","W","W","W","W","W","W"],
+                  ["-","-","-","-","-","-","-","-","-"],
+                  ["-","-","-","-","-","-","-","-","-"],
+                  ["-","-","-","-","-","-","-","-","-"],
+                  ["-","-","-","-","-","-","-","-","-"],
+                  ["-","-","-","-","-","-","-","-","-"],
+          ]), true);
+        });
+
+        
+    module("Advanced coloring - dead stones, seki", {
+        setup: function() {
+            genericSetup([
+                ["*","W","W","W","*","B","B","W","*"],
+                ["B","B","W","B","B","B","W","W","W"],
+                ["B","W","W","B","B","W","W","B","B"],
+                ["B","B","B","B","W","W","*","B","B"],
+                ["B","W","B","B","B","W","W","W","B"],
+                ["W","W","B","W","W","B","W","B","B"],
+                ["*","W","W","W","W","B","B","B","B"],
+                ["W","B","W","W","B","B","B","E","*"],
+                ["*","B","*","W","W","B","B","B","B"],
+            ]);
+        },
+        teardown: function() {
+            genericTeardown();
+        }
+    });
+
+    test("should count the points correctly and set all the points with the respective color", function(){
+        var score = japanese_score.calculate_score();
+        equal(score.black_points,1);
+        equal(score.white_points,0);
+        equal(sameBoards(score.scoring_grid, 
+          [
+                ["X","W","W","W","X","B","B","W","X"],
+                ["B","B","W","B","B","B","W","W","W"],
+                ["B","W","W","B","B","W","W","B","B"],
+                ["B","B","B","B","W","W","X","B","B"],
+                ["B","W","B","B","B","W","W","W","B"],
+                ["W","W","B","W","W","B","W","B","B"],
+                ["X","W","W","W","W","B","B","B","B"],
+                ["W","B","W","W","B","B","B","E","X"],
+                ["X","B","X","W","W","B","B","B","B"],
+          ]), true);
+        });
+        
+    module("Advanced coloring based on previous bugcase", {
+        setup: function() {
+            genericSetup([
+                ["*","*","B","W","*","*"],
+                ["E","*","B","W","*","*"],
+                ["*","*","B","W","*","W"],
+                ["B","B","*","*","W","*"],
+                ["*","*","B","*","*","*"],
+                ["*","*","*","*","*","*"]
+            ]);
+        },
+        teardown: function() {
+            genericTeardown();
+        }
+    });
+    test("should count proper corner territory(bug case)", function(){
+        var score = japanese_score.calculate_score();
+        equal(score.black_points,7);
+        equal(score.white_points,5);
+        equal(sameBoards(score.scoring_grid, 
+          [
+                ["+","+","B","W","-","-"],
+                ["E","+","B","W","-","-"],
+                ["+","+","B","W","-","W"],
+                ["B","B","X","X","W","X"],
+                ["X","X","B","X","X","X"],
+                ["X","X","X","X","X","X"]
+          ]), true);
+    });
+
+    
+    module("Advanced coloring - dame", {
+        setup: function() {
+            genericSetup([
+                ["*","*","*","*","*","*","*","*","*"],
+                ["B","B","*","*","*","*","*","*","*"],
+                ["W","W","B","B","B","B","B","B","B"],
+                ["*","W","W","W","W","W","W","W","W"],
+                ["W","*","*","*","*","*","*","*","*"],
+                ["*","W","*","*","*","*","*","*","*"],
+                ["B","W","W","W","W","W","W","W","W"],
+                ["B","B","B","W","B","B","B","B","B"],
+                ["B","B","*","B","B","*","*","*","*"]
+            ]);
+        },
+        teardown: function() {
+            genericTeardown();
+        }
+    });
+
+    test("should count the points correctly and set all the points with the respective color", function(){
+        var score = japanese_score.calculate_score();
+        equal(score.black_points,20);
+        equal(score.white_points,16);
+        equal(sameBoards(score.scoring_grid, 
+          [
+                ["+","+","+","+","+","+","+","+","+"],
+                ["B","B","+","+","+","+","+","+","+"],
+                ["W","W","B","B","B","B","B","B","B"],
+                ["-","W","W","W","W","W","W","W","W"],
+                ["W","-","-","-","-","-","-","-","-"],
+                ["X","W","-","-","-","-","-","-","-"],
+                ["B","W","W","W","W","W","W","W","W"],
+                ["B","B","B","W","B","B","B","B","B"],
+                ["B","B","X","B","B","+","+","+","+"]
+          ]), true);
+        });
     
 // China breaker
 // Juego con reglas chinas. Archivo: ~/Downloads/sgf/juego_chino_rompe_scoring.sgf
