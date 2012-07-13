@@ -3,6 +3,8 @@ var WHITE = "W";
 var EMPTY = "*";
 var BLACK_DEAD = "N";
 var WHITE_DEAD = "E";
+var BLACK_OWNED = "+";
+var WHITE_OWNED = "-";
 var NO_OWNER = "X";
 var READY = "R";
 
@@ -20,6 +22,7 @@ Score.prototype = {
       this._deadStonesMultiplier = 1
     }
     this.grid = this.clone_board(board_original);
+    this.scoring_grid = this.clone_board(board_original);
     this.ruleset = ruleset;
     this.dead_groups = [];
   },
@@ -169,9 +172,12 @@ Score.prototype = {
     var result = {
       white_points: 0,
       black_points: 0,
+      scoring_grid: this.scoring_grid,
       groups: []
     };
 
+    //Update the scoring grid to the latest content = dead groups have not been updated since init //!\\
+    this.scoring_grid = this.clone_board(this.grid);
     this.clear_visited();
 
     for (var i = 0, li = this.dead_groups.length; i < li; ++i) {
@@ -206,11 +212,19 @@ Score.prototype = {
     
     for (var index in result.groups) {
       item = result.groups[index];
+      
+      if(item.owner == NO_OWNER)
+      {
+        this.color_grid_based_on_group(item, EMPTY, NO_OWNER);
+      }
+      
       if (this.ruleset == 'Chinese') {
         if (item.owner == BLACK) {
           result.black_points += item.score + (item.dead_count.W * this._deadStonesMultiplier);
+          this.color_grid_based_on_group(item, EMPTY, BLACK_OWNED);
         } else if (item.owner == WHITE) {
           result.white_points += item.score + (item.dead_count.B * this._deadStonesMultiplier);
+          this.color_grid_based_on_group(item, EMPTY, WHITE_OWNED);
         }
       }
       if (this.ruleset == 'Japanese') {
@@ -222,16 +236,20 @@ Score.prototype = {
           if (item.owner == BLACK) {
             if (one_eye && !living_shape) {
               result.black_points += item.dead_count.W;
+              this.color_grid_based_on_group(item, EMPTY, NO_OWNER);
               item.owner = NO_OWNER;
             } else {
               result.black_points += item.score + (item.dead_count.W * this._deadStonesMultiplier);
+              this.color_grid_based_on_group(item, EMPTY, BLACK_OWNED);
             }
           } else if (item.owner == WHITE) {
             if (one_eye && !living_shape) {
               result.white_points += item.dead_count.B;
-              item.owner = NO_OWNER;
+              this.color_grid_based_on_group(item, EMPTY, NO_OWNER);
+              item.owner = NO_OWNER;       
             } else {
               result.white_points += item.score + (item.dead_count.B * this._deadStonesMultiplier);
+              this.color_grid_based_on_group(item, EMPTY, WHITE_OWNED);
             }
           }
         }
@@ -240,8 +258,23 @@ Score.prototype = {
 
     this.white_points = result.white_points;
     this.black_points = result.black_points;
-
+    result.scoring_grid = this.scoring_grid;
+    
     return result;
+  },
+  
+  color_grid_based_on_group: function(group, initial_value, colored_value)
+  {
+    
+    for(var index in group.coords)
+    {
+      var x = group.coords[index]["row"];
+      var y = group.coords[index]["col"];
+      if(this.scoring_grid[x][y] == initial_value)
+      {
+        this.scoring_grid[x][y] = colored_value;
+      }
+    }
   },
   
   coor_member: function(coor, array)
@@ -390,6 +423,7 @@ Score.prototype = {
           group.empty.splice(index, 1);  
           group.score = group.score - 1;
           this.grid[x][y] == owner;
+          this.scoring_grid[x][y] = NO_OWNER;
           continue;
         }
     }
