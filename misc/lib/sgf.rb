@@ -24,6 +24,7 @@ class SGF
     false
   end
 
+  REGEX = /((?<pg>\((?:\\[()]|[^()]|\g<pg>)*\)))/
   def nodify_move_list(moves, root_node)
 
     @focus = root_node
@@ -35,7 +36,7 @@ class SGF
     if  node_text.include?("(") #it has variations
       add_move(node_text.chop) unless is_root#removing the parenthesis
       temp_focus = @focus
-      moves.scan(/((?<pg>\((?:\\[()]|[^()]|\g<pg>)*\)))/).each do |match|
+      moves.scan(REGEX).each do |match|
         nodify_move_list(match.first[1..-2], temp_focus) if match.first
         
       end
