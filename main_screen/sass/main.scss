@@ -18,6 +18,10 @@ a:link:hover,
   cursor: pointer;
   text-decoration: underline;
 }
+.not-link {
+  cursor: default;
+  text-decoration: none;
+}
 
 @import "scrollbar";
 @import "basic-button";

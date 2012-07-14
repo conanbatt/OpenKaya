@@ -4,25 +4,29 @@
     <div id=user-list-content-shadow></div>
     <div class="scrollbar"><div class="track"><div class="thumb"><div class="end"></div></div></div></div>
     <div class="viewport"><div class="overview">
+      <h4>Friends</h4>
       <ol>
         <li data-user="gryn">
           <span class="name"><span>gryn</span><b>(1k)</b></span>
           <span class=type title="collaborator">&#x706b;</span>
           <span class="karma">gry nab cde f&nbsp;</span>
-          <!--#include virtual="user-panel.shtml"-->
+          <!--#include virtual="user-panel-friend.shtml"-->
         </li>
         <li data-user="conanbatt">
           <span class="name"><span>conanbatt</span><b>(6d)</b></span>
           <span class=type title="admin">&#x6728;</span>
           <span class="karma">con anb att Gqk PUG QCG gjk&nbsp;</span>
-          <!--#include virtual="user-panel.shtml"-->
+          <!--#include virtual="user-panel-friend.shtml"-->
         </li>
         <li class="sleeping" data-user="clossius">
           <span class="name"><span>clossius</span><b>(1d)</b></span>
           <span class=type title="supporter">&#x624b;</span>
           <span class="karma">clo&nbsp;</span>
-          <!--#include virtual="user-panel.shtml"-->
+          <!--#include virtual="user-panel-friend.shtml"-->
         </li>
+      </ol>
+      <h4>Others chatting</h4>
+      <ol>
         <li class="sleeping" data-user="GNUBot">
           <span class="name"><span>GNUBot</span><b>(6k)</b></span>
           <span class=type title="bot">&#x96fb;</span>
@@ -73,5 +77,17 @@
         </li>
       </ol>
     </div></div>
+  </div>
+  <div id=user-list-toolbar>
+    <a class="sort" title="Sort"><span>Sort</span><a/>
+    <a class="search" title="Search"><span>Search</span></a>
+    <div id=user-list-toolbar-search>
+      <input placeholder="Search user">
+    </div>
+    <div id=user-list-toolbar-sort>
+      <a class="sort-by name selected">Name</a>
+      <a class="sort-by rank">Rank</a>
+      <a class="sort-by karma">Karma</a>
+    </div>
   </div>
 </div>

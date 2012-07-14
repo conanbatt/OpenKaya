@@ -26,6 +26,15 @@
   }
 }
 
+.basic-button-off-white {
+  @extend .basic-button;
+  background: $basic-button-off-white-background;
+  &:hover, &:active, &.active, &.selected {
+    background: $basic-button-off-white-hover-background;
+    color: $text-white;
+  }
+}
+
 .button-note {
   display: inline-block;
   background: $icon-black;

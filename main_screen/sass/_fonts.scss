@@ -40,6 +40,15 @@
          url('/fonts/aierbazzi-webfont.svg#AierbazziRegular') format('svg');
 }
 
+@font-face {
+    font-family: 'EfonRegular';
+    src: url('/fonts/EFON-webfont.eot');
+    src: url('/fonts/EFON-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/fonts/EFON-webfont.woff') format('woff'),
+         url('/fonts/EFON-webfont.ttf') format('truetype'),
+         url('/fonts/EFON-webfont.svg#EfonRegular') format('svg');
+}
+
 .font-bold {
   font-family: $font-bold;
   font-weight: bold;
