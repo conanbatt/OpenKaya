@@ -4,3 +4,5 @@
 *.exe
 bot/.rvmrc
 bot/local_sample.yaml
+.sass-cache
+*.swp
