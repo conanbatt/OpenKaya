@@ -38,8 +38,9 @@
       display: none;
     }
     &:before {
-      font-size: 50px;
+      font-size: 60px;
       font-family: $font-entypo;
+      font-weight: normal;
       content: ']'; // plus
       //content: '\271A'; // gothic cross
       position: relative;

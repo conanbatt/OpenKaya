@@ -71,12 +71,12 @@ body {
   src: url("/fonts/EFON-webfont.eot?#iefix") format("embedded-opentype"), url("/fonts/EFON-webfont.woff") format("woff"), url("/fonts/EFON-webfont.ttf") format("truetype"), url("/fonts/EFON-webfont.svg#EfonRegular") format("svg"); }
 
 /* line 52, ../sass/_fonts.scss */
-.font-bold, #header a[id*="button"], #chat #chat-rooms, #chat #chat-content li p, #chat #chat-entry #chat-entry-input, #game-list #game-list-content li .players .black, #game-list #game-list-content li .players .white, #game-list #game-list-content li .status-bar {
+.font-bold, #header a[id*="button"], #chat #chat-rooms, #chat #chat-content li p, #chat #chat-entry #chat-entry-input, #game-list #game-list-content li .players .black, #game-list #game-list-content li .players .white, #game-list #game-list-content li .status-bar, #game-list #game-list-content li .details label, #game-list #game-list-content #game-list-create-game > .buttons #create-game {
   font-family: "ProximaNova-Bold", "Helvetica Neue", Helvetica, Arial, "Helmet", "Freesans", sans-serif;
   font-weight: bold; }
 
 /* line 56, ../sass/_fonts.scss */
-.ie8 .font-bold, .ie8 #header a[id*="button"], #header .ie8 a[id*="button"], .ie8 #chat #chat-rooms, #chat .ie8 #chat-rooms, .ie8 #chat #chat-content li p, #chat #chat-content li .ie8 p, .ie8 #chat #chat-entry #chat-entry-input, #chat #chat-entry .ie8 #chat-entry-input, .ie8 #game-list #game-list-content li .players .black, #game-list #game-list-content li .players .ie8 .black, .ie8 #game-list #game-list-content li .players .white, #game-list #game-list-content li .players .ie8 .white, .ie8 #game-list #game-list-content li .status-bar, #game-list #game-list-content li .ie8 .status-bar {
+.ie8 .font-bold, .ie8 #header a[id*="button"], #header .ie8 a[id*="button"], .ie8 #chat #chat-rooms, #chat .ie8 #chat-rooms, .ie8 #chat #chat-content li p, #chat #chat-content li .ie8 p, .ie8 #chat #chat-entry #chat-entry-input, #chat #chat-entry .ie8 #chat-entry-input, .ie8 #game-list #game-list-content li .players .black, #game-list #game-list-content li .players .ie8 .black, .ie8 #game-list #game-list-content li .players .white, #game-list #game-list-content li .players .ie8 .white, .ie8 #game-list #game-list-content li .status-bar, #game-list #game-list-content li .ie8 .status-bar, .ie8 #game-list #game-list-content li .details label, #game-list #game-list-content li .details .ie8 label, .ie8 #game-list #game-list-content #game-list-create-game > .buttons #create-game, #game-list #game-list-content #game-list-create-game > .buttons .ie8 #create-game {
   font-weight: normal; }
 
 /* line 5, ../sass/main.scss */
@@ -106,7 +106,8 @@ a:link:hover,
 #game-list #game-list-content li .players .black:hover > span,
 #game-list #game-list-content li .players .white:hover > span,
 #game-list #game-list-content li .player-icon.black:hover ~ .players .black,
-#game-list #game-list-content li .player-icon.white:hover ~ .players .white {
+#game-list #game-list-content li .player-icon.white:hover ~ .players .white,
+#game-list #game-list-content #game-list-create-game > .buttons #create-sandbox:hover {
   cursor: pointer;
   text-decoration: underline; }
 
@@ -788,13 +789,14 @@ a:link:hover,
       display: none; }
     /* line 40, ../sass/_chat-rooms.scss */
     #chat #chat-rooms #chat-rooms-add-button:before {
-      font-size: 50px;
+      font-size: 60px;
       font-family: "EntypoRegular", sans-serif;
+      font-weight: normal;
       content: ']';
       position: relative;
       top: -14px;
       left: -1px; }
-    /* line 50, ../sass/_chat-rooms.scss */
+    /* line 51, ../sass/_chat-rooms.scss */
     #chat #chat-rooms #chat-rooms-add-button:hover {
       text-decoration: none; }
 
@@ -915,7 +917,216 @@ a:link:hover,
   border-right: 1px solid white;
   box-shadow: -3px 0px 3px rgba(0, 0, 0, 0.2); }
 
-/* line 5, ../sass/_game-list.scss */
+/* line 3, ../sass/_game-list-entry.scss */
+#game-list #game-list-content li {
+  border-top: 1px solid #ededed;
+  overflow: hidden;
+  padding: 15px 0; }
+  /* line 8, ../sass/_game-list-entry.scss */
+  #game-list #game-list-content li .player-icon.anonymous:before, #game-list #game-list-content li .player-icon.anonymous-efon:before, #game-list #game-list-content li .player-icon.bot:before, #game-list #game-list-content li.broadcast .player-icon:before, #game-list #game-list-content li.open .player-icon.black:before {
+    content: '+';
+    display: inline-block;
+    font-family: "EntypoRegular", sans-serif;
+    font-size: 70px;
+    width: 80px;
+    height: 80px;
+    line-height: 65px;
+    text-align: center;
+    border: 1px solid #ededed; }
+  /* line 22, ../sass/_game-list-entry.scss */
+  #game-list #game-list-content li .player-icon.anonymous-efon:before, #game-list #game-list-content li .player-icon.bot:before {
+    font-family: "EfonRegular", sans-serif;
+    font-size: 50px; }
+  /* line 28, ../sass/_game-list-entry.scss */
+  #game-list #game-list-content li.broadcast .player-icon {
+    color: #666666; }
+  /* line 43, ../sass/_game-list-entry.scss */
+  #game-list #game-list-content li.broadcast .observe-game:after {
+    content: 'D'; }
+  /* line 50, ../sass/_game-list-entry.scss */
+  #game-list #game-list-content li .player-icon.bot:before {
+    color: #5a7b2a;
+    content: 'x'; }
+  /* line 57, ../sass/_game-list-entry.scss */
+  #game-list #game-list-content li.open .player-icon.black {
+    color: #941c1e; }
+    /* line 60, ../sass/_game-list-entry.scss */
+    #game-list #game-list-content li.open .player-icon.black:before {
+      content: '-'; }
+  /* line 64, ../sass/_game-list-entry.scss */
+  #game-list #game-list-content li.open .players .black {
+    color: #941c1e; }
+    /* line 66, ../sass/_game-list-entry.scss */
+    #game-list #game-list-content li.open .players .black:before {
+      content: 'Join Match'; }
+  /* line 71, ../sass/_game-list-entry.scss */
+  #game-list #game-list-content li.open .observe-game:after {
+    content: 'R';
+    background: transparent;
+    color: #2e4710;
+    box-shadow: none;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+    font-size: 60px; }
+  /* line 80, ../sass/_game-list-entry.scss */
+  #game-list #game-list-content li.open .observe-game:hover:after {
+    background: transparent;
+    color: #5a7b2a; }
+  /* line 87, ../sass/_game-list-entry.scss */
+  #game-list #game-list-content li .player-icon {
+    float: left;
+    height: 80px;
+    cursor: pointer; }
+    /* line 92, ../sass/_game-list-entry.scss */
+    #game-list #game-list-content li .player-icon.black {
+      margin-left: 15px; }
+    /* line 100, ../sass/_game-list-entry.scss */
+    #game-list #game-list-content li .player-icon.white {
+      margin-left: 140px; }
+    /* line 109, ../sass/_game-list-entry.scss */
+    #game-list #game-list-content li .player-icon img {
+      border: 1px solid #ededed;
+      width: 80px;
+      height: 80px; }
+  /* line 116, ../sass/_game-list-entry.scss */
+  #game-list #game-list-content li .players {
+    position: absolute;
+    left: 107px;
+    width: 120px;
+    color: #799058; }
+    /* line 122, ../sass/_game-list-entry.scss */
+    #game-list #game-list-content li .players > span, #game-list #game-list-content li .players > a {
+      display: block; }
+    /* line 129, ../sass/_game-list-entry.scss */
+    #game-list #game-list-content li .players .black > span, #game-list #game-list-content li .players .white > span {
+      max-width: 90px; }
+    /* line 133, ../sass/_game-list-entry.scss */
+    #game-list #game-list-content li .players .vs {
+      line-height: 40px;
+      color: #cccccc;
+      font-size: 24px;
+      text-align: center; }
+    /* line 139, ../sass/_game-list-entry.scss */
+    #game-list #game-list-content li .players .white {
+      text-align: right; }
+  /* line 144, ../sass/_game-list-entry.scss */
+  #game-list #game-list-content li .observe-game {
+    float: left;
+    margin: 0 0 0 20px;
+    cursor: pointer; }
+    /* line 149, ../sass/_game-list-entry.scss */
+    #game-list #game-list-content li .observe-game img {
+      width: 82px;
+      height: 82px;
+      vertical-align: middle; }
+    /* line 155, ../sass/_game-list-entry.scss */
+    #game-list #game-list-content li .observe-game:after {
+      content: 'ê';
+      display: inline-block;
+      font-family: "EntypoRegular", sans-serif;
+      font-size: 40px;
+      margin-left: 8px;
+      height: 30px;
+      width: 30px;
+      background: #2e4710;
+      color: white;
+      text-align: center;
+      vertical-align: middle;
+      border-radius: 100px;
+      box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2); }
+    /* line 170, ../sass/_game-list-entry.scss */
+    #game-list #game-list-content li .observe-game:hover:after {
+      background: #5a7b2a; }
+  /* line 175, ../sass/_game-list-entry.scss */
+  #game-list #game-list-content li .status-bar {
+    float: left;
+    margin: -4px 0;
+    width: 63px;
+    text-align: right;
+    line-height: 30px;
+    height: 80px; }
+    /* line 184, ../sass/_game-list-entry.scss */
+    #game-list #game-list-content li .status-bar:hover {
+      color: #111111;
+      cursor: pointer; }
+    /* line 190, ../sass/_game-list-entry.scss */
+    #game-list #game-list-content li .status-bar .observers:before {
+      content: ',';
+      display: inline-block;
+      font-family: "EntypoRegular", sans-serif;
+      font-size: 35px;
+      position: relative;
+      top: 4px;
+      margin-top: -8px;
+      margin-right: 2px; }
+  /* line 203, ../sass/_game-list-entry.scss */
+  #game-list #game-list-content li .details {
+    clear: both;
+    padding-top: 5px;
+    margin: 0 20px 0 20px;
+    overflow: hidden;
+    height: 0;
+    opacity: 0;
+    -moz-transition: opacity 0.3s, height 0.3s;
+    -webkit-transition: opacity 0.3s, height 0.3s;
+    transition: opacity 0.3s, height 0.3s; }
+    /* line 214, ../sass/_game-list-entry.scss */
+    #game-list #game-list-content li .details.open {
+      height: 65px;
+      opacity: 1; }
+    /* line 219, ../sass/_game-list-entry.scss */
+    #game-list #game-list-content li .details label {
+      display: inline-block;
+      width: 85px; }
+
+/* line 5, ../sass/_game-list-create-game.scss */
+#game-list #game-list-content #game-list-create-game {
+  border-top: 1px solid #ededed; }
+  /* line 7, ../sass/_game-list-create-game.scss */
+  #game-list #game-list-content #game-list-create-game > .buttons {
+    padding: 20px 0;
+    text-align: center; }
+    /* line 10, ../sass/_game-list-create-game.scss */
+    #game-list #game-list-content #game-list-create-game > .buttons #create-game {
+      display: inline-block;
+      margin-bottom: 5px;
+      padding: 10px 30px;
+      background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #5a7b2a), color-stop(100%, #2e4710));
+      background: -webkit-linear-gradient(#5a7b2a, #2e4710);
+      background: -moz-linear-gradient(#5a7b2a, #2e4710);
+      background: -o-linear-gradient(#5a7b2a, #2e4710);
+      background: -ms-linear-gradient(#5a7b2a, #2e4710);
+      background: linear-gradient(#5a7b2a, #2e4710);
+      border-radius: 5px;
+      box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+      color: white;
+      font-size: 16px;
+      cursor: pointer; }
+      /* line 22, ../sass/_game-list-create-game.scss */
+      #game-list #game-list-content #game-list-create-game > .buttons #create-game:hover {
+        background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #789b41), color-stop(100%, #5a7b2a));
+        background: -webkit-linear-gradient(#789b41, #5a7b2a);
+        background: -moz-linear-gradient(#789b41, #5a7b2a);
+        background: -o-linear-gradient(#789b41, #5a7b2a);
+        background: -ms-linear-gradient(#789b41, #5a7b2a);
+        background: linear-gradient(#789b41, #5a7b2a); }
+      /* line 26, ../sass/_game-list-create-game.scss */
+      #game-list #game-list-content #game-list-create-game > .buttons #create-game:after {
+        content: ']';
+        font-family: "EntypoRegular", sans-serif;
+        font-weight: normal;
+        font-size: 70px;
+        margin-left: 20px;
+        display: inline-block;
+        position: relative;
+        top: -6px; }
+    /* line 38, ../sass/_game-list-create-game.scss */
+    #game-list #game-list-content #game-list-create-game > .buttons #create-sandbox {
+      color: #799058; }
+  /* line 46, ../sass/_game-list-create-game.scss */
+  #game-list #game-list-content #game-list-create-game > form {
+    display: none; }
+
+/* line 8, ../sass/_game-list.scss */
 #game-list {
   position: absolute;
   right: 0;
@@ -926,17 +1137,17 @@ a:link:hover,
   background: white;
   border-left: 1px solid #e9e9e9;
   box-shadow: 3px 0px 3px rgba(0, 0, 0, 0.2); }
-  /* line 16, ../sass/_game-list.scss */
+  /* line 19, ../sass/_game-list.scss */
   #game-list #game-list-controls {
     padding: 40px 10px 10px 10px;
     line-height: 20px;
     min-height: 20px;
     white-space: nowrap; }
-    /* line 22, ../sass/_game-list.scss */
+    /* line 25, ../sass/_game-list.scss */
     #game-list #game-list-controls a {
       display: inline-block;
       margin-left: 0.3em; }
-  /* line 29, ../sass/_game-list.scss */
+  /* line 32, ../sass/_game-list.scss */
   #game-list #game-list-content {
     position: absolute;
     top: 102px;
@@ -944,138 +1155,3 @@ a:link:hover,
     left: 0px;
     right: 0px;
     line-height: 20px; }
-    /* line 40, ../sass/_game-list.scss */
-    #game-list #game-list-content li {
-      border-top: 1px solid #ededed;
-      overflow: hidden;
-      padding: 15px 0; }
-      /* line 45, ../sass/_game-list.scss */
-      #game-list #game-list-content li .player-icon.anonymous:before, #game-list #game-list-content li .player-icon.anonymous-efon:before, #game-list #game-list-content li .player-icon.bot:before, #game-list #game-list-content li.broadcast .player-icon:before, #game-list #game-list-content li.open .player-icon.black:before {
-        content: '+';
-        display: inline-block;
-        font-family: "EntypoRegular", sans-serif;
-        font-size: 70px;
-        width: 80px;
-        height: 80px;
-        line-height: 65px;
-        text-align: center;
-        border: 1px solid #ededed; }
-      /* line 59, ../sass/_game-list.scss */
-      #game-list #game-list-content li .player-icon.anonymous-efon:before, #game-list #game-list-content li .player-icon.bot:before {
-        font-family: "EfonRegular", sans-serif;
-        font-size: 50px; }
-      /* line 65, ../sass/_game-list.scss */
-      #game-list #game-list-content li.broadcast .player-icon {
-        color: #666666; }
-      /* line 80, ../sass/_game-list.scss */
-      #game-list #game-list-content li.broadcast .observe-game:after {
-        content: 'D'; }
-      /* line 87, ../sass/_game-list.scss */
-      #game-list #game-list-content li .player-icon.bot:before {
-        color: #5a7b2a;
-        content: 'x'; }
-      /* line 94, ../sass/_game-list.scss */
-      #game-list #game-list-content li.open .player-icon.black {
-        color: #941c1e; }
-        /* line 97, ../sass/_game-list.scss */
-        #game-list #game-list-content li.open .player-icon.black:before {
-          content: '-'; }
-      /* line 101, ../sass/_game-list.scss */
-      #game-list #game-list-content li.open .players .black {
-        color: #941c1e; }
-        /* line 103, ../sass/_game-list.scss */
-        #game-list #game-list-content li.open .players .black:before {
-          content: 'Join Match'; }
-      /* line 108, ../sass/_game-list.scss */
-      #game-list #game-list-content li.open .observe-game:after {
-        content: 'R';
-        background: transparent;
-        color: #2e4710;
-        box-shadow: none;
-        text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
-        font-size: 60px; }
-      /* line 117, ../sass/_game-list.scss */
-      #game-list #game-list-content li.open .observe-game:hover:after {
-        background: transparent;
-        color: #5a7b2a; }
-      /* line 124, ../sass/_game-list.scss */
-      #game-list #game-list-content li .player-icon {
-        float: left;
-        cursor: pointer; }
-        /* line 128, ../sass/_game-list.scss */
-        #game-list #game-list-content li .player-icon.black {
-          margin-left: 15px; }
-        /* line 136, ../sass/_game-list.scss */
-        #game-list #game-list-content li .player-icon.white {
-          margin-left: 140px; }
-        /* line 145, ../sass/_game-list.scss */
-        #game-list #game-list-content li .player-icon img {
-          border: 1px solid #ededed;
-          width: 80px;
-          height: 80px; }
-      /* line 152, ../sass/_game-list.scss */
-      #game-list #game-list-content li .players {
-        position: absolute;
-        left: 107px;
-        width: 120px;
-        color: #799058; }
-        /* line 158, ../sass/_game-list.scss */
-        #game-list #game-list-content li .players > span, #game-list #game-list-content li .players > a {
-          display: block; }
-        /* line 165, ../sass/_game-list.scss */
-        #game-list #game-list-content li .players .black > span, #game-list #game-list-content li .players .white > span {
-          max-width: 90px; }
-        /* line 169, ../sass/_game-list.scss */
-        #game-list #game-list-content li .players .vs {
-          line-height: 40px;
-          color: #cccccc;
-          font-size: 24px;
-          text-align: center; }
-        /* line 175, ../sass/_game-list.scss */
-        #game-list #game-list-content li .players .white {
-          text-align: right; }
-      /* line 180, ../sass/_game-list.scss */
-      #game-list #game-list-content li .observe-game {
-        float: left;
-        margin: 0 0 0 20px;
-        cursor: pointer; }
-        /* line 185, ../sass/_game-list.scss */
-        #game-list #game-list-content li .observe-game img {
-          width: 82px;
-          height: 82px;
-          vertical-align: middle; }
-        /* line 191, ../sass/_game-list.scss */
-        #game-list #game-list-content li .observe-game:after {
-          content: 'ê';
-          display: inline-block;
-          font-family: "EntypoRegular", sans-serif;
-          font-size: 40px;
-          margin-left: 8px;
-          height: 30px;
-          width: 30px;
-          background: #2e4710;
-          color: white;
-          text-align: center;
-          vertical-align: middle;
-          border-radius: 100px;
-          box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2); }
-        /* line 206, ../sass/_game-list.scss */
-        #game-list #game-list-content li .observe-game:hover:after {
-          background: #5a7b2a; }
-      /* line 211, ../sass/_game-list.scss */
-      #game-list #game-list-content li .status-bar {
-        float: left;
-        margin: -4px 0;
-        width: 63px;
-        text-align: right;
-        line-height: 30px; }
-        /* line 220, ../sass/_game-list.scss */
-        #game-list #game-list-content li .status-bar .observers:before {
-          content: ',';
-          display: inline-block;
-          font-family: "EntypoRegular", sans-serif;
-          font-size: 35px;
-          position: relative;
-          top: 4px;
-          margin-top: -8px;
-          margin-right: 2px; }
