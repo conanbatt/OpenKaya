@@ -1,7 +1,9 @@
 ﻿$(function() {
   setupChat();
-  fixIE();
+  setupUserList();
+  setupGameList();
 
+  fixIE();
 });
 
 $.transitionEnd = (function() {
@@ -34,30 +36,12 @@ function fixIE() {
 }
 
 function setupChat() {
-  // setup scroll bars and layout change event bindings
   var chatContent = $('#chat-content');
-  var userListContent = $('#user-list-content');
-  var gameListContent = $('#game-list-content');
   chatContent.tinyscrollbar();
   chatContent.tinyscrollbar_update('bottom');
-  userListContent.tinyscrollbar();
-  gameListContent.tinyscrollbar();
 
   $(window).resize(updateChatContent);
-  $(window).resize(updateUserListContent);
-  $(window).resize(updateGameListContent);
   updateChatRooms();
-
-  // addListener support in chrome and firefox is pretty buggy, so let's just use resize..
-  $(window).resize(updateLayoutWideScreen);
-  updateLayoutWideScreen();
-
-  // user list button
-  $('#user-list-toggle-button').click(userListToggleClick);
-
-  $('#user-list li .name, #chat-content h4, #game-list a.black, #game-list a.white').click(userNameClick);
-
-  $('#user-list-toolbar > a').click(userListToolbarClick);
 
   // for testing
   var addRoom = $('#chat-rooms-add-button');
@@ -79,6 +63,33 @@ function setupChat() {
     updateChatContent();
     return false;
   });
+}
+
+function setupUserList() {
+  var userListContent = $('#user-list-content');
+  userListContent.tinyscrollbar();
+  $(window).resize(updateUserListContent);
+
+  // addListener support in chrome and firefox is pretty buggy, so let's just use resize..
+  $(window).resize(updateLayoutWideScreen);
+  updateLayoutWideScreen();
+  
+// user list button
+  $('#user-list-toggle-button').click(userListToggleClick);
+
+  $('#user-list li .name, #chat-content h4, #game-list a.black, #game-list a.white').click(userNameClick);
+
+  $('#user-list-toolbar > a').click(userListToolbarClick);
+}
+
+function setupGameList() {
+  var gameListContent = $('#game-list-content');
+  gameListContent.tinyscrollbar();
+  $(window).resize(updateGameListContent);
+
+  $('#game-list .status-bar').click(gameListStatusbarClick);
+
+  $('#create-game').click(createGameClick);
 }
 
 // call when content in chat rooms changes
@@ -180,3 +191,21 @@ function userListToolbarClick(e) {
   a.siblings().removeClass('selected');
   a.toggleClass('selected');
 }
+
+function gameListStatusbarClick(e) {
+  var status = $(this);
+  var details = status.next('.details');
+  details.toggleClass('open');
+  details.one($.transitionEnd, updateGameListContent);
+}
+
+function createGameClick(e) {
+  var createGame = $('#game-list-create-game');
+  createGame.children('.buttons').hide();
+  createGame.children('form').show();
+  updateGameListContent();
+}
+
+
+
+
