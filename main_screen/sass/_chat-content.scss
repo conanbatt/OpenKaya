@@ -80,6 +80,19 @@
       }
     }
 
+    &.announcement {
+      background: $background-green;
+      color: $text-white;
+      h6 {
+        a {
+          color: $icon-light-gray;
+          &:hover {
+            color: $icon-white;
+          }
+        }
+      }
+    }
+
     &:nth-child(even) {
       background: $background-off-white;
     }
