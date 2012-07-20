@@ -870,9 +870,13 @@ a:link:hover,
     #chat #chat-content li p a {
       color: #24566f; }
     /* line 83, ../sass/_chat-content.scss */
+    #chat #chat-content li.announcement {
+      background: #5f8031;
+      color: white; }
+    /* line 88, ../sass/_chat-content.scss */
     #chat #chat-content li:nth-child(even) {
       background: #f5f5f5; }
-    /* line 87, ../sass/_chat-content.scss */
+    /* line 92, ../sass/_chat-content.scss */
     #chat #chat-content li.even {
       background: #f5f5f5; }
 

@@ -98,6 +98,10 @@
           <h5>16:11</h5>
           <p>/help</p>
         </li>
+        <li class="announcement" data-time="16:14">
+          <h6><a class=translate title=Translate><span>Translate</span></a></h6>
+          <p>The server will be going down for maintenance.</p>
+        </li>
         <li data-user="GoPrince" data-time="16:16">
           <h6><a class=translate title=Translate><span>Translate</span></a></h6>
           <h4><span>GoPrince</span><b>(4d)</b></h4>

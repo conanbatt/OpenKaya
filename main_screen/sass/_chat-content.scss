@@ -80,6 +80,11 @@
       }
     }
 
+    &.announcement {
+      background: $background-green;
+      color: $text-white;
+    }
+
     &:nth-child(even) {
       background: $background-off-white;
     }
