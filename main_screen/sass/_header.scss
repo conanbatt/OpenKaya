@@ -25,17 +25,20 @@
     }
   }
   > div {
-    position: relative;
+    // doesn't work with table-cell on FF position: relative;
     display: table-cell;
     vertical-align: top;
     height: 90px;
     width: 980px;
     background: url(/images/layout/header.png) no-repeat;
     &:after {
+      // FF won't let us use position absolute
       content: ' ';
-      position: absolute;
-      right: 21px;
-      bottom: -49px;
+      float: right;
+      margin-top: 90px;
+      margin-right: 21px;
+      margin-left: -131px;
+      margin-bottom: -49px;
       background: url(/images/layout/header-extra.png) no-repeat;
       width: 131px;
       height: 49px;

@@ -11,6 +11,7 @@
           display: inline-block;
           margin-bottom: 5px;
           padding: 10px 30px;
+          background: $icon-green;
           @include background(linear-gradient($icon-green, $icon-dark-green));
           border-radius: 5px;
           box-shadow: 1px 1px 1px $content-shadow;
@@ -20,6 +21,7 @@
           cursor: pointer;
 
           &:hover {
+            background: $icon-light-green;
             @include background(linear-gradient($icon-light-green, $icon-green));
           }
 
@@ -31,7 +33,8 @@
             margin-left: 20px;
             display: inline-block;
             position: relative;
-            top: -6px;
+            top: -10px;
+            vertical-align: bottom;
           }
         }
 

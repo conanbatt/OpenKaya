@@ -33,6 +33,11 @@
     background: $basic-button-off-white-hover-background;
     color: $text-white;
   }
+  .ie & {
+    &:hover, &:active, &.active, &.selected {
+      background: $icon-light-green;
+    }
+  }
 }
 
 .button-note {
