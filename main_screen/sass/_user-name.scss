@@ -8,6 +8,7 @@
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+    vertical-align: bottom; // fixes FF
   }
   // need to specify the span too for some reason...
   &:hover,
