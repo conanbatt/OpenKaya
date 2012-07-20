@@ -94,6 +94,9 @@
 
           &:hover ~ .players .black {
             @extend .link;
+            > span {
+              @extend .link;
+            }
           }
         }
 
@@ -102,6 +105,9 @@
 
           &:hover ~ .players .white {
             @extend .link;
+            > span {
+              @extend .link;
+            }
           }
         }
 

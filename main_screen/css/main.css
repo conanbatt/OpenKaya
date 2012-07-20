@@ -106,7 +106,9 @@ a:link:hover,
 #game-list #game-list-content li .players .black:hover > span,
 #game-list #game-list-content li .players .white:hover > span,
 #game-list #game-list-content li .player-icon.black:hover ~ .players .black,
+#game-list #game-list-content li .player-icon.black:hover ~ .players .black > span,
 #game-list #game-list-content li .player-icon.white:hover ~ .players .white,
+#game-list #game-list-content li .player-icon.white:hover ~ .players .white > span,
 #game-list #game-list-content #game-list-create-game > .buttons #create-sandbox:hover {
   cursor: pointer;
   text-decoration: underline; }
@@ -197,8 +199,11 @@ a:link:hover,
   .basic-button-off-white:hover, #game-list #game-list-controls a:hover, .basic-button-off-white:active, #game-list #game-list-controls a:active, .basic-button-off-white.active, #game-list #game-list-controls a.active, .basic-button-off-white.selected, #game-list #game-list-controls a.selected {
     background: rgba(91, 122, 47, 0.8);
     color: white; }
+  /* line 37, ../sass/_basic-button.scss */
+  .ie .basic-button-off-white:hover, .ie #game-list #game-list-controls a:hover, #game-list #game-list-controls .ie a:hover, .ie .basic-button-off-white:active, .ie #game-list #game-list-controls a:active, #game-list #game-list-controls .ie a:active, .ie .basic-button-off-white.active, .ie #game-list #game-list-controls a.active, #game-list #game-list-controls .ie a.active, .ie .basic-button-off-white.selected, .ie #game-list #game-list-controls a.selected, #game-list #game-list-controls .ie a.selected {
+    background: #789b41; }
 
-/* line 38, ../sass/_basic-button.scss */
+/* line 43, ../sass/_basic-button.scss */
 .button-note, #header a[id*="button"] > span {
   display: inline-block;
   background: black;
@@ -253,7 +258,6 @@ a:link:hover,
       background-image: url(/images/layout/header-left.png); }
   /* line 27, ../sass/_header.scss */
   #header > div {
-    position: relative;
     display: table-cell;
     vertical-align: top;
     height: 90px;
@@ -262,14 +266,16 @@ a:link:hover,
     /* line 34, ../sass/_header.scss */
     #header > div:after {
       content: ' ';
-      position: absolute;
-      right: 21px;
-      bottom: -49px;
+      float: right;
+      margin-top: 90px;
+      margin-right: 21px;
+      margin-left: -131px;
+      margin-bottom: -49px;
       background: url(/images/layout/header-extra.png) no-repeat;
       width: 131px;
       height: 49px;
       pointer-events: none; }
-  /* line 46, ../sass/_header.scss */
+  /* line 49, ../sass/_header.scss */
   #header h1 {
     float: left;
     min-width: 100px;
@@ -279,27 +285,27 @@ a:link:hover,
     -moz-transition: padding-left 1s 0.2s;
     -webkit-transition: padding-left 1s 0.2s;
     transition: padding-left 1s 0.2s; }
-    /* line 52, ../sass/_header.scss */
+    /* line 55, ../sass/_header.scss */
     #header h1 span {
       display: inline-block;
       margin-top: 5px;
       font-size: 25px; }
-  /* line 62, ../sass/_header.scss */
+  /* line 65, ../sass/_header.scss */
   #header a[id*="button"] {
     font-size: 16px;
     margin-top: 20px; }
-    /* line 68, ../sass/_header.scss */
+    /* line 71, ../sass/_header.scss */
     #header a[id*="button"] > span {
       font-size: 14px;
       background: #5a7b2a; }
-  /* line 74, ../sass/_header.scss */
+  /* line 77, ../sass/_header.scss */
   #header a[id*="button"] + a[id*="button"] {
     margin-left: 10px; }
   @media screen and (max-height: 480px) {
     /* line 5, ../sass/_header.scss */
     #header {
       position: relative; } }
-  /* line 82, ../sass/_header.scss */
+  /* line 85, ../sass/_header.scss */
   .user-list-slid-open #header > div h1 {
     padding-left: 140px; }
 
@@ -442,7 +448,8 @@ a:link:hover,
   display: inline-block;
   text-overflow: ellipsis;
   overflow: hidden;
-  white-space: nowrap; }
+  white-space: nowrap;
+  vertical-align: bottom; }
 
 /* line 1, ../sass/_user-list-open-close.scss */
 #user-list {
@@ -989,46 +996,46 @@ a:link:hover,
     /* line 92, ../sass/_game-list-entry.scss */
     #game-list #game-list-content li .player-icon.black {
       margin-left: 15px; }
-    /* line 100, ../sass/_game-list-entry.scss */
+    /* line 103, ../sass/_game-list-entry.scss */
     #game-list #game-list-content li .player-icon.white {
       margin-left: 140px; }
-    /* line 109, ../sass/_game-list-entry.scss */
+    /* line 115, ../sass/_game-list-entry.scss */
     #game-list #game-list-content li .player-icon img {
       border: 1px solid #ededed;
       width: 80px;
       height: 80px; }
-  /* line 116, ../sass/_game-list-entry.scss */
+  /* line 122, ../sass/_game-list-entry.scss */
   #game-list #game-list-content li .players {
     position: absolute;
     left: 107px;
     width: 120px;
     color: #799058; }
-    /* line 122, ../sass/_game-list-entry.scss */
+    /* line 128, ../sass/_game-list-entry.scss */
     #game-list #game-list-content li .players > span, #game-list #game-list-content li .players > a {
       display: block; }
-    /* line 129, ../sass/_game-list-entry.scss */
+    /* line 135, ../sass/_game-list-entry.scss */
     #game-list #game-list-content li .players .black > span, #game-list #game-list-content li .players .white > span {
       max-width: 90px; }
-    /* line 133, ../sass/_game-list-entry.scss */
+    /* line 139, ../sass/_game-list-entry.scss */
     #game-list #game-list-content li .players .vs {
       line-height: 40px;
       color: #cccccc;
       font-size: 24px;
       text-align: center; }
-    /* line 139, ../sass/_game-list-entry.scss */
+    /* line 145, ../sass/_game-list-entry.scss */
     #game-list #game-list-content li .players .white {
       text-align: right; }
-  /* line 144, ../sass/_game-list-entry.scss */
+  /* line 150, ../sass/_game-list-entry.scss */
   #game-list #game-list-content li .observe-game {
     float: left;
     margin: 0 0 0 20px;
     cursor: pointer; }
-    /* line 149, ../sass/_game-list-entry.scss */
+    /* line 155, ../sass/_game-list-entry.scss */
     #game-list #game-list-content li .observe-game img {
       width: 82px;
       height: 82px;
       vertical-align: middle; }
-    /* line 155, ../sass/_game-list-entry.scss */
+    /* line 161, ../sass/_game-list-entry.scss */
     #game-list #game-list-content li .observe-game:after {
       content: 'ê';
       display: inline-block;
@@ -1043,10 +1050,10 @@ a:link:hover,
       vertical-align: middle;
       border-radius: 100px;
       box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2); }
-    /* line 170, ../sass/_game-list-entry.scss */
+    /* line 176, ../sass/_game-list-entry.scss */
     #game-list #game-list-content li .observe-game:hover:after {
       background: #5a7b2a; }
-  /* line 175, ../sass/_game-list-entry.scss */
+  /* line 181, ../sass/_game-list-entry.scss */
   #game-list #game-list-content li .status-bar {
     float: left;
     margin: -4px 0;
@@ -1054,11 +1061,11 @@ a:link:hover,
     text-align: right;
     line-height: 30px;
     height: 80px; }
-    /* line 184, ../sass/_game-list-entry.scss */
+    /* line 190, ../sass/_game-list-entry.scss */
     #game-list #game-list-content li .status-bar:hover {
       color: #111111;
       cursor: pointer; }
-    /* line 190, ../sass/_game-list-entry.scss */
+    /* line 196, ../sass/_game-list-entry.scss */
     #game-list #game-list-content li .status-bar .observers:before {
       content: ',';
       display: inline-block;
@@ -1068,7 +1075,7 @@ a:link:hover,
       top: 4px;
       margin-top: -8px;
       margin-right: 2px; }
-  /* line 203, ../sass/_game-list-entry.scss */
+  /* line 209, ../sass/_game-list-entry.scss */
   #game-list #game-list-content li .details {
     clear: both;
     padding-top: 5px;
@@ -1079,11 +1086,11 @@ a:link:hover,
     -moz-transition: opacity 0.3s, height 0.3s;
     -webkit-transition: opacity 0.3s, height 0.3s;
     transition: opacity 0.3s, height 0.3s; }
-    /* line 214, ../sass/_game-list-entry.scss */
+    /* line 220, ../sass/_game-list-entry.scss */
     #game-list #game-list-content li .details.open {
       height: 65px;
       opacity: 1; }
-    /* line 219, ../sass/_game-list-entry.scss */
+    /* line 225, ../sass/_game-list-entry.scss */
     #game-list #game-list-content li .details label {
       display: inline-block;
       width: 85px; }
@@ -1100,6 +1107,7 @@ a:link:hover,
       display: inline-block;
       margin-bottom: 5px;
       padding: 10px 30px;
+      background: #5a7b2a;
       background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #5a7b2a), color-stop(100%, #2e4710));
       background: -webkit-linear-gradient(#5a7b2a, #2e4710);
       background: -moz-linear-gradient(#5a7b2a, #2e4710);
@@ -1111,15 +1119,16 @@ a:link:hover,
       color: white;
       font-size: 16px;
       cursor: pointer; }
-      /* line 22, ../sass/_game-list-create-game.scss */
+      /* line 23, ../sass/_game-list-create-game.scss */
       #game-list #game-list-content #game-list-create-game > .buttons #create-game:hover {
+        background: #789b41;
         background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #789b41), color-stop(100%, #5a7b2a));
         background: -webkit-linear-gradient(#789b41, #5a7b2a);
         background: -moz-linear-gradient(#789b41, #5a7b2a);
         background: -o-linear-gradient(#789b41, #5a7b2a);
         background: -ms-linear-gradient(#789b41, #5a7b2a);
         background: linear-gradient(#789b41, #5a7b2a); }
-      /* line 26, ../sass/_game-list-create-game.scss */
+      /* line 28, ../sass/_game-list-create-game.scss */
       #game-list #game-list-content #game-list-create-game > .buttons #create-game:after {
         content: ']';
         font-family: "EntypoRegular", sans-serif;
@@ -1128,11 +1137,12 @@ a:link:hover,
         margin-left: 20px;
         display: inline-block;
         position: relative;
-        top: -6px; }
-    /* line 38, ../sass/_game-list-create-game.scss */
+        top: -10px;
+        vertical-align: bottom; }
+    /* line 41, ../sass/_game-list-create-game.scss */
     #game-list #game-list-content #game-list-create-game > .buttons #create-sandbox {
       color: #799058; }
-  /* line 46, ../sass/_game-list-create-game.scss */
+  /* line 49, ../sass/_game-list-create-game.scss */
   #game-list #game-list-content #game-list-create-game > form {
     display: none; }
 
