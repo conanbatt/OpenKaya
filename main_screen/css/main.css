@@ -257,6 +257,15 @@ a:link:hover,
   right: 0;
   pointer-events: none; }
 
+/* line 25, ../sass/_inset-shadow.scss */
+.ie8 .inset-shadow-shiv, .ie8 #user-list #user-list-content #user-list-content-shadow, #user-list #user-list-content .ie8 #user-list-content-shadow, .ie8 #chat #chat-content #chat-content-shadow, #chat #chat-content .ie8 #chat-content-shadow,
+.ie9 .inset-shadow-shiv,
+.ie9 #user-list #user-list-content #user-list-content-shadow,
+#user-list #user-list-content .ie9 #user-list-content-shadow,
+.ie9 #chat #chat-content #chat-content-shadow,
+#chat #chat-content .ie9 #chat-content-shadow {
+  display: none; }
+
 /* line 5, ../sass/_header.scss */
 #header {
   position: absolute;
@@ -428,7 +437,7 @@ a:link:hover,
     -webkit-transform: skew(-3deg) rotate(-3deg);
     transform: skew(-3deg) rotate(-3deg); }
 
-/* line 6, ../sass/_content-shadow.scss */
+/* line 6, /var/www/OpenKaya/main_screen/sass/_content-shadow.scss */
 #content > div #content-shadow {
   display: block;
   position: absolute;
@@ -437,7 +446,7 @@ a:link:hover,
   bottom: 0;
   right: 0;
   box-shadow: 0 6px 6px rgba(0, 0, 0, 0.2); }
-  /* line 16, ../sass/_content-shadow.scss */
+  /* line 16, /var/www/OpenKaya/main_screen/sass/_content-shadow.scss */
   #content > div #content-shadow:before, #content > div #content-shadow:after {
     content: ' ';
     display: block;
@@ -455,7 +464,7 @@ a:link:hover,
     -o-transform: skew(3deg) rotate(3deg);
     -webkit-transform: skew(3deg) rotate(3deg);
     transform: skew(3deg) rotate(3deg); }
-  /* line 34, ../sass/_content-shadow.scss */
+  /* line 34, /var/www/OpenKaya/main_screen/sass/_content-shadow.scss */
   #content > div #content-shadow:before {
     right: 653.333px;
     margin-right: -3px;
@@ -465,7 +474,7 @@ a:link:hover,
     -webkit-transform: skew(-3deg) rotate(-3deg);
     transform: skew(-3deg) rotate(-3deg); }
 
-/* line 5, ../sass/_user-name.scss */
+/* line 5, /var/www/OpenKaya/main_screen/sass/_user-name.scss */
 .user-name > span, #user-list #user-list-content li .name > span, #chat #chat-content li h4 > span, #game-list #game-list-content li .players .black > span, #game-list #game-list-content li .players .white > span {
   display: inline-block;
   text-overflow: ellipsis;
@@ -473,24 +482,24 @@ a:link:hover,
   white-space: nowrap;
   vertical-align: bottom; }
 
-/* line 1, ../sass/_user-list-open-close.scss */
+/* line 1, /var/www/OpenKaya/main_screen/sass/_user-list-open-close.scss */
 #user-list {
   -moz-transition: opacity 0.3s, z-index 0s 0.3s;
   -webkit-transition: opacity 0.3s, z-index 0s 0.3s;
   transition: opacity 0.3s, z-index 0s 0.3s;
   opacity: 0;
   right: 572px; }
-  /* line 9, ../sass/_user-list-open-close.scss */
+  /* line 9, /var/www/OpenKaya/main_screen/sass/_user-list-open-close.scss */
   .user-list-slid-open #user-list, .user-list-popped-up #user-list {
     box-shadow: -1px 0 3px 2px rgba(0, 0, 0, 0.2); }
-  /* line 14, ../sass/_user-list-open-close.scss */
+  /* line 14, /var/www/OpenKaya/main_screen/sass/_user-list-open-close.scss */
   .user-list-slid-close #user-list {
     -moz-transition: opacity 0s 1.2s;
     -webkit-transition: opacity 0s 1.2s;
     transition: opacity 0s 1.2s;
     right: auto;
     bottom: 10px; }
-  /* line 22, ../sass/_user-list-open-close.scss */
+  /* line 22, /var/www/OpenKaya/main_screen/sass/_user-list-open-close.scss */
   .user-list-slid-open #user-list {
     left: 0;
     right: auto;
@@ -499,14 +508,14 @@ a:link:hover,
     -moz-transition: opacity 0s;
     -webkit-transition: opacity 0s;
     transition: opacity 0s; }
-  /* line 33, ../sass/_user-list-open-close.scss */
+  /* line 33, /var/www/OpenKaya/main_screen/sass/_user-list-open-close.scss */
   .user-list-popped-up #user-list {
     -moz-transition: opacity 0.3s;
     -webkit-transition: opacity 0.3s;
     transition: opacity 0.3s;
     opacity: 1;
     z-index: 10; }
-    /* line 39, ../sass/_user-list-open-close.scss */
+    /* line 39, /var/www/OpenKaya/main_screen/sass/_user-list-open-close.scss */
     .user-list-popped-up #user-list #user-list-shiv {
       position: absolute;
       bottom: -10px;
@@ -514,7 +523,7 @@ a:link:hover,
       height: 10px;
       width: 20px;
       overflow: hidden; }
-      /* line 47, ../sass/_user-list-open-close.scss */
+      /* line 47, /var/www/OpenKaya/main_screen/sass/_user-list-open-close.scss */
       .user-list-popped-up #user-list #user-list-shiv:before {
         content: ' ';
         display: block;
@@ -529,16 +538,16 @@ a:link:hover,
         -o-transform: rotate(45deg);
         -webkit-transform: rotate(45deg);
         transform: rotate(45deg); }
-  /* line 65, ../sass/_user-list-open-close.scss */
+  /* line 65, /var/www/OpenKaya/main_screen/sass/_user-list-open-close.scss */
   .ie8 #user-list #user-list-shiv {
     display: none; }
 
-/* line 72, ../sass/_user-list-open-close.scss */
+/* line 72, /var/www/OpenKaya/main_screen/sass/_user-list-open-close.scss */
 .user-list-slid-open #user-list-toggle-button,
 .user-list-popped-up #user-list-toggle-button {
   opacity: 0.3; }
 
-/* line 1, ../sass/_user-list-panel.scss */
+/* line 1, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
 #user-list li .panel {
   position: absolute;
   bottom: 10px;
@@ -550,7 +559,7 @@ a:link:hover,
   -webkit-transition: visibility 0s 0.5s, opacity 0.5s 0s;
   -moz-transition: visibility 0s 0.5s, opacity 0.5s 0s;
   transition: visibility 0s 0.5s, opacity 0.5s 0s; }
-  /* line 13, ../sass/_user-list-panel.scss */
+  /* line 13, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
   #user-list li .panel p {
     position: absolute;
     right: 0;
@@ -558,7 +567,7 @@ a:link:hover,
     top: 3px;
     height: 42px;
     overflow: hidden; }
-  /* line 22, ../sass/_user-list-panel.scss */
+  /* line 22, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
   #user-list li .panel a {
     display: block;
     float: left;
@@ -566,43 +575,88 @@ a:link:hover,
     cursor: pointer;
     margin-right: 6px;
     overflow: hidden; }
-    /* line 29, ../sass/_user-list-panel.scss */
+    /* line 29, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
     #user-list li .panel a span {
       display: none; }
-    /* line 32, ../sass/_user-list-panel.scss */
+    /* line 32, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
     #user-list li .panel a:hover {
       color: #5a7b2a; }
-    /* line 35, ../sass/_user-list-panel.scss */
+    /* line 35, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
     #user-list li .panel a:before {
       font-family: "EntypoRegular", sans-serif;
       font-size: 40px;
       display: inline-block;
       margin: -14px 0; }
-  /* line 42, ../sass/_user-list-panel.scss */
+  /* line 42, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
   #user-list li .panel a:first-child + a + a + a {
     clear: left; }
-  /* line 45, ../sass/_user-list-panel.scss */
+  /* line 45, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
   #user-list li .panel a.message:before {
     content: '&'; }
-  /* line 48, ../sass/_user-list-panel.scss */
+  /* line 48, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
   #user-list li .panel a.profile:before {
     content: '.'; }
-  /* line 51, ../sass/_user-list-panel.scss */
+  /* line 51, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
   #user-list li .panel a.challenge:before {
     content: ','; }
-  /* line 54, ../sass/_user-list-panel.scss */
+  /* line 54, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
   #user-list li .panel a.friend.selected {
     color: #941c1e; }
-  /* line 57, ../sass/_user-list-panel.scss */
+  /* line 57, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
   #user-list li .panel a.friend:before {
     content: '6'; }
-  /* line 60, ../sass/_user-list-panel.scss */
+  /* line 60, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
   #user-list li .panel a.karma:before {
     content: '8'; }
-  /* line 63, ../sass/_user-list-panel.scss */
+  /* line 63, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
   #user-list li .panel a.muzzle:before {
     content: '\00E0'; }
-  /* line 66, ../sass/_user-list-panel.scss */
+  /* line 66, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a {
+    width: 25px;
+    height: 20px;
+    position: relative;
+    background: url(/images/layout/panel-icons-ie8.png); }
+  /* line 72, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a:before {
+    display: none; }
+  /* line 75, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a.message {
+    background-position: 0px 0px; }
+  /* line 78, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a.profile {
+    background-position: -25px 0px; }
+  /* line 81, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a.friend {
+    background-position: -50px 0px; }
+  /* line 84, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a.karma {
+    background-position: 0px -20px; }
+  /* line 87, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a.challenge {
+    background-position: -25px -20px; }
+  /* line 90, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a.muzzle {
+    background-position: -50px -20px; }
+  /* line 93, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a:hover.message {
+    background-position: 0px -40px; }
+  /* line 96, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a:hover.profile {
+    background-position: -25px -40px; }
+  /* line 99, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a:hover.friend {
+    background-position: -50px -40px; }
+  /* line 102, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a:hover.karma {
+    background-position: 0px -60px; }
+  /* line 105, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a:hover.challenge {
+    background-position: -25px -60px; }
+  /* line 108, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a:hover.muzzle {
+    background-position: -50px -60px; }
+  /* line 111, /var/www/OpenKaya/main_screen/sass/_user-list-panel.scss */
   #user-list li .panel img.avatar {
     position: absolute;
     right: 0;
@@ -611,13 +665,13 @@ a:link:hover,
     height: 60px;
     border: 1px solid #ededed; }
 
-/* line 1, ../sass/_user-list-toolbar.scss */
+/* line 1, /var/www/OpenKaya/main_screen/sass/_user-list-toolbar.scss */
 #user-list-toolbar {
   position: absolute;
   bottom: 10px;
   left: 10px;
   right: 10px; }
-  /* line 6, ../sass/_user-list-toolbar.scss */
+  /* line 6, /var/www/OpenKaya/main_screen/sass/_user-list-toolbar.scss */
   #user-list-toolbar > a {
     display: block;
     float: right;
@@ -625,25 +679,25 @@ a:link:hover,
     cursor: pointer;
     margin-left: 6px;
     overflow: hidden; }
-    /* line 13, ../sass/_user-list-toolbar.scss */
+    /* line 13, /var/www/OpenKaya/main_screen/sass/_user-list-toolbar.scss */
     #user-list-toolbar > a span {
       display: none; }
-    /* line 16, ../sass/_user-list-toolbar.scss */
+    /* line 16, /var/www/OpenKaya/main_screen/sass/_user-list-toolbar.scss */
     #user-list-toolbar > a:hover, #user-list-toolbar > a.selected {
       color: #5a7b2a; }
-    /* line 19, ../sass/_user-list-toolbar.scss */
+    /* line 19, /var/www/OpenKaya/main_screen/sass/_user-list-toolbar.scss */
     #user-list-toolbar > a:before {
       font-family: "EntypoRegular", sans-serif;
       font-size: 40px;
       display: inline-block;
       margin: -14px 0; }
-  /* line 26, ../sass/_user-list-toolbar.scss */
+  /* line 26, /var/www/OpenKaya/main_screen/sass/_user-list-toolbar.scss */
   #user-list-toolbar a.search:before {
     content: 'ô'; }
-  /* line 29, ../sass/_user-list-toolbar.scss */
+  /* line 29, /var/www/OpenKaya/main_screen/sass/_user-list-toolbar.scss */
   #user-list-toolbar a.sort:before {
     content: 'l'; }
-  /* line 33, ../sass/_user-list-toolbar.scss */
+  /* line 33, /var/www/OpenKaya/main_screen/sass/_user-list-toolbar.scss */
   #user-list-toolbar .toolbar-panel, #user-list-toolbar #user-list-toolbar-search, #user-list-toolbar #user-list-toolbar-sort {
     display: none;
     position: absolute;
@@ -652,23 +706,23 @@ a:link:hover,
     line-height: 24px;
     background: #e9e9e9;
     text-align: right; }
-  /* line 43, ../sass/_user-list-toolbar.scss */
+  /* line 43, /var/www/OpenKaya/main_screen/sass/_user-list-toolbar.scss */
   #user-list-toolbar #user-list-toolbar-search {
     right: 48px; }
-  /* line 47, ../sass/_user-list-toolbar.scss */
+  /* line 47, /var/www/OpenKaya/main_screen/sass/_user-list-toolbar.scss */
   #user-list-toolbar a.search.selected ~ #user-list-toolbar-search {
     display: block; }
-  /* line 50, ../sass/_user-list-toolbar.scss */
+  /* line 50, /var/www/OpenKaya/main_screen/sass/_user-list-toolbar.scss */
   #user-list-toolbar #user-list-toolbar-sort {
     right: 24px; }
-    /* line 53, ../sass/_user-list-toolbar.scss */
+    /* line 53, /var/www/OpenKaya/main_screen/sass/_user-list-toolbar.scss */
     #user-list-toolbar #user-list-toolbar-sort a {
       margin-left: 0.3em;
       cursor: pointer; }
-      /* line 56, ../sass/_user-list-toolbar.scss */
+      /* line 56, /var/www/OpenKaya/main_screen/sass/_user-list-toolbar.scss */
       #user-list-toolbar #user-list-toolbar-sort a:hover, #user-list-toolbar #user-list-toolbar-sort a.selected {
         color: #5a7b2a; }
-  /* line 61, ../sass/_user-list-toolbar.scss */
+  /* line 61, /var/www/OpenKaya/main_screen/sass/_user-list-toolbar.scss */
   #user-list-toolbar a.sort.selected ~ #user-list-toolbar-sort {
     display: block; }
 
@@ -691,12 +745,15 @@ a:link:hover,
     right: 10px;
     z-index: 1;
     background: white; }
-    /* line 33, ../sass/_user-list.scss */
+    /* line 32, ../sass/_user-list.scss */
+    .ie8 #user-list #user-list-content, .ie9 #user-list #user-list-content {
+      border: 1px solid #ccc; }
+    /* line 37, ../sass/_user-list.scss */
     #user-list #user-list-content h4 {
       padding: 10px 15px 10px 15px;
       background: #eff5e5;
       color: #799058; }
-    /* line 39, ../sass/_user-list.scss */
+    /* line 43, ../sass/_user-list.scss */
     #user-list #user-list-content li {
       position: relative;
       z-index: 0;
@@ -705,19 +762,19 @@ a:link:hover,
       -webkit-transition: height 0.5s 0.2s;
       -moz-transition: height 0.5s 0.2s;
       transition: height 0.5s 0.2s; }
-      /* line 48, ../sass/_user-list.scss */
+      /* line 52, ../sass/_user-list.scss */
       #user-list #user-list-content li:not(.sleeping) .name {
         color: #799058; }
-      /* line 52, ../sass/_user-list.scss */
+      /* line 56, ../sass/_user-list.scss */
       #user-list #user-list-content li .name {
         display: inline-block;
         line-height: 1.5;
         z-index: 1;
         position: relative; }
-        /* line 59, ../sass/_user-list.scss */
+        /* line 63, ../sass/_user-list.scss */
         #user-list #user-list-content li .name > span {
           max-width: 175px; }
-      /* line 64, ../sass/_user-list.scss */
+      /* line 68, ../sass/_user-list.scss */
       #user-list #user-list-content li .type {
         float: right;
         z-index: 1;
@@ -729,10 +786,10 @@ a:link:hover,
         -webkit-transition: right 0.5s 0.2s;
         -moz-transition: right 0.5s 0.2s;
         transition: right 0.5s 0.2s; }
-      /* line 76, ../sass/_user-list.scss */
+      /* line 80, ../sass/_user-list.scss */
       #user-list #user-list-content li:not(.sleeping) .type {
         color: #799058; }
-      /* line 80, ../sass/_user-list.scss */
+      /* line 84, ../sass/_user-list.scss */
       #user-list #user-list-content li > .karma {
         display: none;
         font-family: "AierbazziRegular", sans-serif;
@@ -745,25 +802,25 @@ a:link:hover,
         line-height: 40px;
         font-size: 40px;
         color: rgba(90, 123, 42, 0.1); }
-        /* line 94, ../sass/_user-list.scss */
+        /* line 98, ../sass/_user-list.scss */
         .ie8 #user-list #user-list-content li > .karma {
           color: #eef1ea; }
-      /* line 99, ../sass/_user-list.scss */
+      /* line 103, ../sass/_user-list.scss */
       #user-list #user-list-content li:nth-child(even) {
         background: #f5f5f5; }
-      /* line 103, ../sass/_user-list.scss */
+      /* line 107, ../sass/_user-list.scss */
       #user-list #user-list-content li.even {
         background: #f5f5f5; }
-      /* line 110, ../sass/_user-list.scss */
+      /* line 114, ../sass/_user-list.scss */
       #user-list #user-list-content li.selected {
         height: 60px; }
-        /* line 113, ../sass/_user-list.scss */
+        /* line 117, ../sass/_user-list.scss */
         #user-list #user-list-content li.selected .name > span {
           max-width: 105px; }
-        /* line 116, ../sass/_user-list.scss */
+        /* line 120, ../sass/_user-list.scss */
         #user-list #user-list-content li.selected .type {
           right: 70px; }
-        /* line 119, ../sass/_user-list.scss */
+        /* line 123, ../sass/_user-list.scss */
         #user-list #user-list-content li.selected .panel {
           visibility: visible;
           opacity: 1;
@@ -899,21 +956,14 @@ a:link:hover,
     #chat #chat-content li p a {
       color: #24566f; }
     /* line 83, ../sass/_chat-content.scss */
-    #chat #chat-content li.announcement {
-      background: #5f8031;
-      color: white; }
-      /* line 87, ../sass/_chat-content.scss */
-      #chat #chat-content li.announcement h6 a {
-        color: #a2a2a2; }
-        /* line 89, ../sass/_chat-content.scss */
-        #chat #chat-content li.announcement h6 a:hover {
-          color: white; }
-    /* line 96, ../sass/_chat-content.scss */
     #chat #chat-content li:nth-child(even) {
       background: #f5f5f5; }
-    /* line 100, ../sass/_chat-content.scss */
+    /* line 87, ../sass/_chat-content.scss */
     #chat #chat-content li.even {
       background: #f5f5f5; }
+  /* line 95, ../sass/_chat-content.scss */
+  .ie8 #chat #chat-content, .ie9 #chat #chat-content {
+    border: 1px solid #ccc; }
 
 /* line 3, ../sass/_chat-entry.scss */
 #chat #chat-entry {

@@ -63,6 +63,51 @@
   a.muzzle:before {
     content: '\00E0'; // mute
   }
+  .ie8 & a {
+    width: 25px;
+    height: 20px;
+    position: relative;
+    background: url(/images/layout/panel-icons-ie8.png);
+  }
+  .ie8 & a:before {
+    display: none;
+  }
+  .ie8 & a.message {
+    background-position: -0px -0px;
+  }
+  .ie8 & a.profile {
+    background-position: -25px -0px;
+  }
+  .ie8 & a.friend {
+    background-position: -50px -0px;
+  }
+  .ie8 & a.karma {
+    background-position: -0px -20px;
+  }
+  .ie8 & a.challenge {
+    background-position: -25px -20px;
+  }
+  .ie8 & a.muzzle {
+    background-position: -50px -20px;
+  }
+  .ie8 & a:hover.message {
+    background-position: -0px -40px;
+  }
+  .ie8 & a:hover.profile {
+    background-position: -25px -40px;
+  }
+  .ie8 & a:hover.friend {
+    background-position: -50px -40px;
+  }
+  .ie8 & a:hover.karma {
+    background-position: -0px -60px;
+  }
+  .ie8 & a:hover.challenge {
+    background-position: -25px -60px;
+  }
+  .ie8 & a:hover.muzzle {
+    background-position: -50px -60px;
+  }
   img.avatar {
     position: absolute;
     right: 0;
