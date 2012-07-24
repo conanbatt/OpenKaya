@@ -53,7 +53,7 @@
 }
 
 // when browser styles are possible, use them instead of tinyscrollbar
-.cssscrollbar .scrollbar-container .viewport {
+.cssscrollbar:not(.ie) .scrollbar-container .viewport {
   overflow-y: auto;
   margin-right: 2px;
   &::-webkit-scrollbar {

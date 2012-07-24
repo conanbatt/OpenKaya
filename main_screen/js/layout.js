@@ -1,4 +1,4 @@
-﻿if(Modernizr.cssscrollbar) {
+﻿if(!$('html').is('.ie') && Modernizr.cssscrollbar) {
   // disable tinyscrollbar plugin
   $.fn.tinyscrollbar = function() {
     this.find('.viewport').scroll(function() {
