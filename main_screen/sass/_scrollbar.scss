@@ -52,4 +52,32 @@
   }
 }
 
+// when browser styles are possible, use them instead of tinyscrollbar
+.cssscrollbar .scrollbar-container .viewport {
+  overflow-y: auto;
+  margin-right: 2px;
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    margin: 6px;
+  }
+  &::-webkit-scrollbar-track-piece {
+  }
+  &::-webkit-scrollbar-thumb {
+    background: black;
+    border-radius: 10px;
+    margin: 5px;
+    min-height: 20px;
+    background: $scrollbar-gray;
+
+    &:active,
+    &:focus,
+    &:hover {
+      background: $scrollbar-gray-hover;
+    }
+  }
+}
+
 }

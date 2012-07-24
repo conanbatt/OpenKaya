@@ -168,6 +168,28 @@ a:link:hover,
       right: 0;
       position: absolute; }
 
+/* line 56, ../sass/_scrollbar.scss */
+.cssscrollbar .scrollbar-container .viewport, .cssscrollbar #user-list #user-list-content .viewport, #user-list .cssscrollbar #user-list-content .viewport, .cssscrollbar #chat #chat-content .viewport, #chat .cssscrollbar #chat-content .viewport, .cssscrollbar #game-list #game-list-content .viewport, #game-list .cssscrollbar #game-list-content .viewport {
+  overflow-y: auto;
+  margin-right: 2px; }
+  /* line 59, ../sass/_scrollbar.scss */
+  .cssscrollbar .scrollbar-container .viewport::-webkit-scrollbar, .cssscrollbar #user-list #user-list-content .viewport::-webkit-scrollbar, #user-list .cssscrollbar #user-list-content .viewport::-webkit-scrollbar, .cssscrollbar #chat #chat-content .viewport::-webkit-scrollbar, #chat .cssscrollbar #chat-content .viewport::-webkit-scrollbar, .cssscrollbar #game-list #game-list-content .viewport::-webkit-scrollbar, #game-list .cssscrollbar #game-list-content .viewport::-webkit-scrollbar {
+    width: 6px;
+    height: 6px; }
+  /* line 63, ../sass/_scrollbar.scss */
+  .cssscrollbar .scrollbar-container .viewport::-webkit-scrollbar-track, .cssscrollbar #user-list #user-list-content .viewport::-webkit-scrollbar-track, #user-list .cssscrollbar #user-list-content .viewport::-webkit-scrollbar-track, .cssscrollbar #chat #chat-content .viewport::-webkit-scrollbar-track, #chat .cssscrollbar #chat-content .viewport::-webkit-scrollbar-track, .cssscrollbar #game-list #game-list-content .viewport::-webkit-scrollbar-track, #game-list .cssscrollbar #game-list-content .viewport::-webkit-scrollbar-track {
+    margin: 6px; }
+  /* line 68, ../sass/_scrollbar.scss */
+  .cssscrollbar .scrollbar-container .viewport::-webkit-scrollbar-thumb, .cssscrollbar #user-list #user-list-content .viewport::-webkit-scrollbar-thumb, #user-list .cssscrollbar #user-list-content .viewport::-webkit-scrollbar-thumb, .cssscrollbar #chat #chat-content .viewport::-webkit-scrollbar-thumb, #chat .cssscrollbar #chat-content .viewport::-webkit-scrollbar-thumb, .cssscrollbar #game-list #game-list-content .viewport::-webkit-scrollbar-thumb, #game-list .cssscrollbar #game-list-content .viewport::-webkit-scrollbar-thumb {
+    background: black;
+    border-radius: 10px;
+    margin: 5px;
+    min-height: 20px;
+    background: #c8c8c8; }
+    /* line 77, ../sass/_scrollbar.scss */
+    .cssscrollbar .scrollbar-container .viewport::-webkit-scrollbar-thumb:active, .cssscrollbar #user-list #user-list-content .viewport::-webkit-scrollbar-thumb:active, #user-list .cssscrollbar #user-list-content .viewport::-webkit-scrollbar-thumb:active, .cssscrollbar #chat #chat-content .viewport::-webkit-scrollbar-thumb:active, #chat .cssscrollbar #chat-content .viewport::-webkit-scrollbar-thumb:active, .cssscrollbar #game-list #game-list-content .viewport::-webkit-scrollbar-thumb:active, #game-list .cssscrollbar #game-list-content .viewport::-webkit-scrollbar-thumb:active, .cssscrollbar .scrollbar-container .viewport::-webkit-scrollbar-thumb:focus, .cssscrollbar #user-list #user-list-content .viewport::-webkit-scrollbar-thumb:focus, #user-list .cssscrollbar #user-list-content .viewport::-webkit-scrollbar-thumb:focus, .cssscrollbar #chat #chat-content .viewport::-webkit-scrollbar-thumb:focus, #chat .cssscrollbar #chat-content .viewport::-webkit-scrollbar-thumb:focus, .cssscrollbar #game-list #game-list-content .viewport::-webkit-scrollbar-thumb:focus, #game-list .cssscrollbar #game-list-content .viewport::-webkit-scrollbar-thumb:focus, .cssscrollbar .scrollbar-container .viewport::-webkit-scrollbar-thumb:hover, .cssscrollbar #user-list #user-list-content .viewport::-webkit-scrollbar-thumb:hover, #user-list .cssscrollbar #user-list-content .viewport::-webkit-scrollbar-thumb:hover, .cssscrollbar #chat #chat-content .viewport::-webkit-scrollbar-thumb:hover, #chat .cssscrollbar #chat-content .viewport::-webkit-scrollbar-thumb:hover, .cssscrollbar #game-list #game-list-content .viewport::-webkit-scrollbar-thumb:hover, #game-list .cssscrollbar #game-list-content .viewport::-webkit-scrollbar-thumb:hover {
+      background: #aaaaaa; }
+
 /* line 3, ../sass/_basic-button.scss */
 .basic-button, .basic-button-off-white, #game-list #game-list-controls a, #header a[id*="button"], .basic-tab, #chat #chat-rooms #chat-rooms-content a {
   display: inline-block;
