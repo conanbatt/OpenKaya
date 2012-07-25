@@ -1,4 +1,4 @@
-@charset "US-ASCII";
+@charset "UTF-8";
 /* line 7, ../sass/_reset.scss */
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p,
 blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img,
@@ -780,7 +780,7 @@ a:link:hover,
         z-index: 1;
         position: relative;
         font-size: 28px;
-        font-family: "宋体", SimSun, "华文细黑", STXihei;
+        font-family: "宋体", SimSun;
         margin: -4px 0;
         color: #999999;
         -webkit-transition: right 0.5s 0.2s;
