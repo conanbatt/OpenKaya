@@ -1,4 +1,4 @@
-@charset "US-ASCII";
+@charset "UTF-8";
 /* line 7, ../sass/_reset.scss */
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p,
 blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img,
@@ -168,6 +168,28 @@ a:link:hover,
       right: 0;
       position: absolute; }
 
+/* line 56, ../sass/_scrollbar.scss */
+.cssscrollbar:not(.ie) .scrollbar-container .viewport, .cssscrollbar:not(.ie) #user-list #user-list-content .viewport, #user-list .cssscrollbar:not(.ie) #user-list-content .viewport, .cssscrollbar:not(.ie) #chat #chat-content .viewport, #chat .cssscrollbar:not(.ie) #chat-content .viewport, .cssscrollbar:not(.ie) #game-list #game-list-content .viewport, #game-list .cssscrollbar:not(.ie) #game-list-content .viewport {
+  overflow-y: auto;
+  margin-right: 2px; }
+  /* line 59, ../sass/_scrollbar.scss */
+  .cssscrollbar:not(.ie) .scrollbar-container .viewport::-webkit-scrollbar, .cssscrollbar:not(.ie) #user-list #user-list-content .viewport::-webkit-scrollbar, #user-list .cssscrollbar:not(.ie) #user-list-content .viewport::-webkit-scrollbar, .cssscrollbar:not(.ie) #chat #chat-content .viewport::-webkit-scrollbar, #chat .cssscrollbar:not(.ie) #chat-content .viewport::-webkit-scrollbar, .cssscrollbar:not(.ie) #game-list #game-list-content .viewport::-webkit-scrollbar, #game-list .cssscrollbar:not(.ie) #game-list-content .viewport::-webkit-scrollbar {
+    width: 6px;
+    height: 6px; }
+  /* line 63, ../sass/_scrollbar.scss */
+  .cssscrollbar:not(.ie) .scrollbar-container .viewport::-webkit-scrollbar-track, .cssscrollbar:not(.ie) #user-list #user-list-content .viewport::-webkit-scrollbar-track, #user-list .cssscrollbar:not(.ie) #user-list-content .viewport::-webkit-scrollbar-track, .cssscrollbar:not(.ie) #chat #chat-content .viewport::-webkit-scrollbar-track, #chat .cssscrollbar:not(.ie) #chat-content .viewport::-webkit-scrollbar-track, .cssscrollbar:not(.ie) #game-list #game-list-content .viewport::-webkit-scrollbar-track, #game-list .cssscrollbar:not(.ie) #game-list-content .viewport::-webkit-scrollbar-track {
+    margin: 6px; }
+  /* line 68, ../sass/_scrollbar.scss */
+  .cssscrollbar:not(.ie) .scrollbar-container .viewport::-webkit-scrollbar-thumb, .cssscrollbar:not(.ie) #user-list #user-list-content .viewport::-webkit-scrollbar-thumb, #user-list .cssscrollbar:not(.ie) #user-list-content .viewport::-webkit-scrollbar-thumb, .cssscrollbar:not(.ie) #chat #chat-content .viewport::-webkit-scrollbar-thumb, #chat .cssscrollbar:not(.ie) #chat-content .viewport::-webkit-scrollbar-thumb, .cssscrollbar:not(.ie) #game-list #game-list-content .viewport::-webkit-scrollbar-thumb, #game-list .cssscrollbar:not(.ie) #game-list-content .viewport::-webkit-scrollbar-thumb {
+    background: black;
+    border-radius: 10px;
+    margin: 5px;
+    min-height: 20px;
+    background: #c8c8c8; }
+    /* line 77, ../sass/_scrollbar.scss */
+    .cssscrollbar:not(.ie) .scrollbar-container .viewport::-webkit-scrollbar-thumb:active, .cssscrollbar:not(.ie) #user-list #user-list-content .viewport::-webkit-scrollbar-thumb:active, #user-list .cssscrollbar:not(.ie) #user-list-content .viewport::-webkit-scrollbar-thumb:active, .cssscrollbar:not(.ie) #chat #chat-content .viewport::-webkit-scrollbar-thumb:active, #chat .cssscrollbar:not(.ie) #chat-content .viewport::-webkit-scrollbar-thumb:active, .cssscrollbar:not(.ie) #game-list #game-list-content .viewport::-webkit-scrollbar-thumb:active, #game-list .cssscrollbar:not(.ie) #game-list-content .viewport::-webkit-scrollbar-thumb:active, .cssscrollbar:not(.ie) .scrollbar-container .viewport::-webkit-scrollbar-thumb:focus, .cssscrollbar:not(.ie) #user-list #user-list-content .viewport::-webkit-scrollbar-thumb:focus, #user-list .cssscrollbar:not(.ie) #user-list-content .viewport::-webkit-scrollbar-thumb:focus, .cssscrollbar:not(.ie) #chat #chat-content .viewport::-webkit-scrollbar-thumb:focus, #chat .cssscrollbar:not(.ie) #chat-content .viewport::-webkit-scrollbar-thumb:focus, .cssscrollbar:not(.ie) #game-list #game-list-content .viewport::-webkit-scrollbar-thumb:focus, #game-list .cssscrollbar:not(.ie) #game-list-content .viewport::-webkit-scrollbar-thumb:focus, .cssscrollbar:not(.ie) .scrollbar-container .viewport::-webkit-scrollbar-thumb:hover, .cssscrollbar:not(.ie) #user-list #user-list-content .viewport::-webkit-scrollbar-thumb:hover, #user-list .cssscrollbar:not(.ie) #user-list-content .viewport::-webkit-scrollbar-thumb:hover, .cssscrollbar:not(.ie) #chat #chat-content .viewport::-webkit-scrollbar-thumb:hover, #chat .cssscrollbar:not(.ie) #chat-content .viewport::-webkit-scrollbar-thumb:hover, .cssscrollbar:not(.ie) #game-list #game-list-content .viewport::-webkit-scrollbar-thumb:hover, #game-list .cssscrollbar:not(.ie) #game-list-content .viewport::-webkit-scrollbar-thumb:hover {
+      background: #aaaaaa; }
+
 /* line 3, ../sass/_basic-button.scss */
 .basic-button, .basic-button-off-white, #game-list #game-list-controls a, #header a[id*="button"], .basic-tab, #chat #chat-rooms #chat-rooms-content a {
   display: inline-block;
@@ -234,6 +256,15 @@ a:link:hover,
   left: 0;
   right: 0;
   pointer-events: none; }
+
+/* line 25, ../sass/_inset-shadow.scss */
+.ie8 .inset-shadow-shiv, .ie8 #user-list #user-list-content #user-list-content-shadow, #user-list #user-list-content .ie8 #user-list-content-shadow, .ie8 #chat #chat-content #chat-content-shadow, #chat #chat-content .ie8 #chat-content-shadow,
+.ie9 .inset-shadow-shiv,
+.ie9 #user-list #user-list-content #user-list-content-shadow,
+#user-list #user-list-content .ie9 #user-list-content-shadow,
+.ie9 #chat #chat-content #chat-content-shadow,
+#chat #chat-content .ie9 #chat-content-shadow {
+  display: none; }
 
 /* line 5, ../sass/_header.scss */
 #header {
@@ -581,6 +612,51 @@ a:link:hover,
   #user-list li .panel a.muzzle:before {
     content: '\00E0'; }
   /* line 66, ../sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a {
+    width: 25px;
+    height: 20px;
+    position: relative;
+    background: url(/images/layout/panel-icons-ie8.png); }
+  /* line 72, ../sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a:before {
+    display: none; }
+  /* line 75, ../sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a.message {
+    background-position: 0px 0px; }
+  /* line 78, ../sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a.profile {
+    background-position: -25px 0px; }
+  /* line 81, ../sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a.friend {
+    background-position: -50px 0px; }
+  /* line 84, ../sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a.karma {
+    background-position: 0px -20px; }
+  /* line 87, ../sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a.challenge {
+    background-position: -25px -20px; }
+  /* line 90, ../sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a.muzzle {
+    background-position: -50px -20px; }
+  /* line 93, ../sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a:hover.message {
+    background-position: 0px -40px; }
+  /* line 96, ../sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a:hover.profile {
+    background-position: -25px -40px; }
+  /* line 99, ../sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a:hover.friend {
+    background-position: -50px -40px; }
+  /* line 102, ../sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a:hover.karma {
+    background-position: 0px -60px; }
+  /* line 105, ../sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a:hover.challenge {
+    background-position: -25px -60px; }
+  /* line 108, ../sass/_user-list-panel.scss */
+  .ie8 #user-list li .panel a:hover.muzzle {
+    background-position: -50px -60px; }
+  /* line 111, ../sass/_user-list-panel.scss */
   #user-list li .panel img.avatar {
     position: absolute;
     right: 0;
@@ -669,12 +745,15 @@ a:link:hover,
     right: 10px;
     z-index: 1;
     background: white; }
-    /* line 33, ../sass/_user-list.scss */
+    /* line 32, ../sass/_user-list.scss */
+    .ie8 #user-list #user-list-content, .ie9 #user-list #user-list-content {
+      border: 1px solid #ccc; }
+    /* line 37, ../sass/_user-list.scss */
     #user-list #user-list-content h4 {
       padding: 10px 15px 10px 15px;
       background: #eff5e5;
       color: #799058; }
-    /* line 39, ../sass/_user-list.scss */
+    /* line 43, ../sass/_user-list.scss */
     #user-list #user-list-content li {
       position: relative;
       z-index: 0;
@@ -683,34 +762,34 @@ a:link:hover,
       -webkit-transition: height 0.5s 0.2s;
       -moz-transition: height 0.5s 0.2s;
       transition: height 0.5s 0.2s; }
-      /* line 48, ../sass/_user-list.scss */
+      /* line 52, ../sass/_user-list.scss */
       #user-list #user-list-content li:not(.sleeping) .name {
         color: #799058; }
-      /* line 52, ../sass/_user-list.scss */
+      /* line 56, ../sass/_user-list.scss */
       #user-list #user-list-content li .name {
         display: inline-block;
         line-height: 1.5;
         z-index: 1;
         position: relative; }
-        /* line 59, ../sass/_user-list.scss */
+        /* line 63, ../sass/_user-list.scss */
         #user-list #user-list-content li .name > span {
           max-width: 175px; }
-      /* line 64, ../sass/_user-list.scss */
+      /* line 68, ../sass/_user-list.scss */
       #user-list #user-list-content li .type {
         float: right;
         z-index: 1;
         position: relative;
         font-size: 28px;
-        font-family: "宋体";
+        font-family: "宋体", SimSun;
         margin: -4px 0;
         color: #999999;
         -webkit-transition: right 0.5s 0.2s;
         -moz-transition: right 0.5s 0.2s;
         transition: right 0.5s 0.2s; }
-      /* line 76, ../sass/_user-list.scss */
+      /* line 80, ../sass/_user-list.scss */
       #user-list #user-list-content li:not(.sleeping) .type {
         color: #799058; }
-      /* line 80, ../sass/_user-list.scss */
+      /* line 84, ../sass/_user-list.scss */
       #user-list #user-list-content li > .karma {
         display: none;
         font-family: "AierbazziRegular", sans-serif;
@@ -723,25 +802,25 @@ a:link:hover,
         line-height: 40px;
         font-size: 40px;
         color: rgba(90, 123, 42, 0.1); }
-        /* line 94, ../sass/_user-list.scss */
+        /* line 98, ../sass/_user-list.scss */
         .ie8 #user-list #user-list-content li > .karma {
           color: #eef1ea; }
-      /* line 99, ../sass/_user-list.scss */
+      /* line 103, ../sass/_user-list.scss */
       #user-list #user-list-content li:nth-child(even) {
         background: #f5f5f5; }
-      /* line 103, ../sass/_user-list.scss */
+      /* line 107, ../sass/_user-list.scss */
       #user-list #user-list-content li.even {
         background: #f5f5f5; }
-      /* line 110, ../sass/_user-list.scss */
+      /* line 114, ../sass/_user-list.scss */
       #user-list #user-list-content li.selected {
         height: 60px; }
-        /* line 113, ../sass/_user-list.scss */
+        /* line 117, ../sass/_user-list.scss */
         #user-list #user-list-content li.selected .name > span {
           max-width: 105px; }
-        /* line 116, ../sass/_user-list.scss */
+        /* line 120, ../sass/_user-list.scss */
         #user-list #user-list-content li.selected .type {
           right: 70px; }
-        /* line 119, ../sass/_user-list.scss */
+        /* line 123, ../sass/_user-list.scss */
         #user-list #user-list-content li.selected .panel {
           visibility: visible;
           opacity: 1;
@@ -877,21 +956,14 @@ a:link:hover,
     #chat #chat-content li p a {
       color: #24566f; }
     /* line 83, ../sass/_chat-content.scss */
-    #chat #chat-content li.announcement {
-      background: #5f8031;
-      color: white; }
-      /* line 87, ../sass/_chat-content.scss */
-      #chat #chat-content li.announcement h6 a {
-        color: #a2a2a2; }
-        /* line 89, ../sass/_chat-content.scss */
-        #chat #chat-content li.announcement h6 a:hover {
-          color: white; }
-    /* line 96, ../sass/_chat-content.scss */
     #chat #chat-content li:nth-child(even) {
       background: #f5f5f5; }
-    /* line 100, ../sass/_chat-content.scss */
+    /* line 87, ../sass/_chat-content.scss */
     #chat #chat-content li.even {
       background: #f5f5f5; }
+  /* line 95, ../sass/_chat-content.scss */
+  .ie8 #chat #chat-content, .ie9 #chat #chat-content {
+    border: 1px solid #ccc; }
 
 /* line 3, ../sass/_chat-entry.scss */
 #chat #chat-entry {
