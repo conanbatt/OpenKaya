@@ -29,6 +29,10 @@
     #user-list-content-shadow {
       @extend .inset-shadow-shiv;
     }
+    .ie8 &, .ie9 & {
+      border: 1px solid #ccc;
+    }
+    
 
     h4 {
       padding: 10px 15px 10px 15px;

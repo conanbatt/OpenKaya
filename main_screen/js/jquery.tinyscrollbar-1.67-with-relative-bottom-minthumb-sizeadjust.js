@@ -1,5 +1,5 @@
 ﻿/*!
- * Tiny Scrollbar 1.67-with-touchContent-relative-bottom-minthumb-sizeadjust-visible
+ * Tiny Scrollbar 1.67-with-relative-bottom-minthumb-sizeadjust-visible
  * http://www.baijs.nl/tinyscrollbar/
  *
  * Copyright 2012, Maarten Baijs
@@ -10,8 +10,6 @@
  * Date: 11 / 05 / 2012
  * Depends on library: jQuery
  *
- * Date: 17 / 05 / 2012
- *   -- Added touchContent to scroll content on touch - Adam Luter.
  * Data: 17 / 06 / 2012
  *   -- Added 'relative-bottom' for updates, 
  *      which chooses bottom if we are at the bottom already,
@@ -34,8 +32,7 @@
 			size: 'auto', //set the size of the scrollbar to auto or a fixed number.
       sizeadjust: -10, // the amount to adjust the auto size (otherwise the same size as the viewport)
 			sizethumb: 'auto', //set the size of the thumb to auto or a fixed number.
-      minthumb: 30, // the smallest the thumb can be
-      touchContent: true // listen for touch events on the content.
+      minthumb: 30 // the smallest the thumb can be
 		}
 	};
 
@@ -118,57 +115,22 @@
     }
 		function setEvents(){
 			oThumb.obj.bind('mousedown', start);
-			oThumb.obj[0].ontouchstart = function(oEvent){
-				oEvent.preventDefault();
-				oThumb.obj.unbind('mousedown');
-				start(oEvent.touches[0]);
-				return false;
-			};
 			oTrack.obj.bind('mouseup', drag);
 			if(options.scroll && this.addEventListener){
 				oWrapper[0].addEventListener('DOMMouseScroll', wheel, false);
 				oWrapper[0].addEventListener('mousewheel', wheel, false );
 			}
 			else if(options.scroll){oWrapper[0].onmousewheel = wheel;}
-      if(options.touchContent){
-        oContent.obj[0].ontouchstart = function(oEvent) {
-          oEvent.preventDefault();
-          startContentTouch(oEvent.touches[0]);
-          return false;
-        }
-      }
 		};
 		function start(oEvent){
 			iMouse.start = sAxis ? oEvent.pageX : oEvent.pageY;
 			var oThumbDir = parseInt(oThumb.obj.css(sDirection));
 			iPosition.start = oThumbDir == 'auto' ? 0 : oThumbDir;
       $(document).bind('mousemove', drag);
-      document.ontouchmove = function(oEvent){
-        $(document).unbind('mousemove');
-        drag(oEvent.touches[0]);
-      };
       $(document).bind('mouseup', end);
       oThumb.obj.bind('mouseup', end);
-      oThumb.obj[0].ontouchend = document.ontouchend = function(oEvent){
-        $(document).unbind('mouseup');
-        oThumb.obj.unbind('mouseup');
-        end(oEvent.touches[0]);
-      };
 			return false;
 		};
-    function startContentTouch(oEvent) {
-			iMouse.start = sAxis ? oEvent.pageX : oEvent.pageY;
-			var oThumbDir = parseInt(oThumb.obj.css(sDirection));
-			iPosition.start = oThumbDir == 'auto' ? 0 : oThumbDir;
-      document.ontouchmove = function(oEvent){
-        $(document).unbind('mousemove');
-        drag(oEvent.touches[0], true);
-      };
-      oContent.obj[0].ontouchend = document.ontouchend = function(oEvent){
-        end(oEvent.touches[0]);
-      };
-			return false;
-    }
 		function wheel(oEvent){
 			if(!(oContent.ratio >= 1 )){
 				var oEvent = oEvent || window.event;
@@ -190,13 +152,11 @@
 			$(document).unbind('mousemove', drag);
 			$(document).unbind('mouseup', end);
 			oThumb.obj.unbind('mouseup', end);
-			document.ontouchmove = oThumb.obj[0].ontouchend = document.ontouchend = null;
 			return false;
 		};
-		function drag(oEvent, isTouchContent){
+		function drag(oEvent){
 			if(!(oContent.ratio >= 1)){
         var distance = (sAxis ? oEvent.pageX : oEvent.pageY) - iMouse.start;
-        if(isTouchContent) distance *= -1;
 				iPosition.now = Math.min((oTrack[options.axis] - oThumb[options.axis]), Math.max(0, (iPosition.start + distance)));
 				iScroll = iPosition.now * oScrollbar.ratio;
 

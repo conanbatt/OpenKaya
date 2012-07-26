@@ -1,4 +1,49 @@
-﻿$(function() {
+﻿if(!$('html').is('.ie') && Modernizr.cssscrollbar) {
+  // disable tinyscrollbar plugin
+  $.fn.tinyscrollbar = function() {
+    this.find('.viewport').scroll(function() {
+      var viewport = $(this).get(0);
+      var bottom = viewport.scrollTop + viewport.offsetHeight == viewport.scrollHeight;
+      $(this).data('bottom', bottom);
+    });
+  }
+  $.fn.tinyscrollbar_update = function(position, target, height) {
+    this.each(function() {
+      var viewport = $(this).find('.viewport').get(0);
+      var bottom = $(viewport).data('bottom');
+      var scroll = viewport.scrollTop;
+      if(position == 'top') {
+        scroll = 0;
+      } else if( position == 'relative' ) {
+        return;
+      } else if( position == 'relative-bottom' ) {
+        if(!bottom) return;
+        scroll = viewport.scrollHeight - viewport.offsetHeight;
+      } else if( position == 'bottom' ) {
+        scroll = viewport.scrollHeight - viewport.offsetHeight;
+      } else if( position == 'relative-visible' ) {
+        var offset = target.get(0).offsetTop;
+        var force = 0;
+        if( typeof(height) === 'undefined') 
+          height = target.outerHeight();
+        if( offset + height > viewport.offsetHeight + viewport.scrollTop ) {
+          scroll = offset + height - viewport.offsetHeight;
+          force = height;
+        } else if( offset < viewport.scrollTop ) {
+          scroll = offset;
+        } else {
+          // visible 
+        }
+        scroll = Math.min((viewport.scrollHeight - viewport.offsetHeight + force), Math.max(0, scroll));
+      } else {
+        scroll = position;
+      }
+      $(viewport).animate({scrollTop: scroll});
+    });
+  }
+}
+
+$(function() {
   setupChat();
   setupUserList();
   setupGameList();

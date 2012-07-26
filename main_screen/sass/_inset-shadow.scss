@@ -21,5 +21,9 @@
   pointer-events: none;
 }
 
+.ie8 .inset-shadow-shiv,
+.ie9 .inset-shadow-shiv {
+  display: none;
+}
 
 }
