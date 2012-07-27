@@ -277,25 +277,27 @@ a:link:hover,
   min-width: 980px;
   /* visible height about 73px */
   height: 90px;
-  margin-bottom: -32px;
-  display: table; }
-  /* line 18, ../sass/_header.scss */
-  #header > b {
-    display: table-cell;
+  margin-bottom: -32px; }
+  /* line 17, ../sass/_header.scss */
+  #header .left {
+    height: 90px;
+    background-image: url(/images/layout/header-left.png); }
+  /* line 21, ../sass/_header.scss */
+  #header .right {
     height: 90px;
     background: url(/images/layout/header-right.png) repeat-x; }
-    /* line 23, ../sass/_header.scss */
-    #header > b:first-child {
-      background-image: url(/images/layout/header-left.png); }
-  /* line 27, ../sass/_header.scss */
-  #header > div {
-    display: table-cell;
+  /* line 25, ../sass/_header.scss */
+  #header .left s, #header .right s {
+    width: 0;
+    visibility: hidden; }
+  /* line 29, ../sass/_header.scss */
+  #header .content {
     vertical-align: top;
     height: 90px;
     width: 980px;
     background: url(/images/layout/header.png) no-repeat; }
-    /* line 34, ../sass/_header.scss */
-    #header > div:after {
+    /* line 35, ../sass/_header.scss */
+    #header .content:after {
       content: ' ';
       float: right;
       margin-top: 90px;
@@ -306,7 +308,7 @@ a:link:hover,
       width: 131px;
       height: 49px;
       pointer-events: none; }
-  /* line 49, ../sass/_header.scss */
+  /* line 50, ../sass/_header.scss */
   #header h1 {
     float: left;
     min-width: 100px;
@@ -316,27 +318,27 @@ a:link:hover,
     -moz-transition: padding-left 1s 0.2s;
     -webkit-transition: padding-left 1s 0.2s;
     transition: padding-left 1s 0.2s; }
-    /* line 55, ../sass/_header.scss */
+    /* line 56, ../sass/_header.scss */
     #header h1 span {
       display: inline-block;
       margin-top: 5px;
       font-size: 25px; }
-  /* line 65, ../sass/_header.scss */
+  /* line 66, ../sass/_header.scss */
   #header a[id*="button"] {
     font-size: 16px;
     margin-top: 20px; }
-    /* line 71, ../sass/_header.scss */
+    /* line 72, ../sass/_header.scss */
     #header a[id*="button"] > span {
       font-size: 14px;
       background: #5a7b2a; }
-  /* line 77, ../sass/_header.scss */
+  /* line 78, ../sass/_header.scss */
   #header a[id*="button"] + a[id*="button"] {
     margin-left: 10px; }
   @media screen and (max-height: 480px) {
     /* line 5, ../sass/_header.scss */
     #header {
       position: relative; } }
-  /* line 85, ../sass/_header.scss */
+  /* line 86, ../sass/_header.scss */
   .user-list-slid-open #header > div h1 {
     padding-left: 140px; }
 
@@ -773,7 +775,7 @@ a:link:hover,
         position: relative; }
         /* line 63, ../sass/_user-list.scss */
         #user-list #user-list-content li .name > span {
-          max-width: 175px; }
+          max-width: 170px; }
       /* line 68, ../sass/_user-list.scss */
       #user-list #user-list-content li .type {
         float: right;
