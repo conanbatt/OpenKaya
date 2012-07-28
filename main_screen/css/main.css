@@ -906,25 +906,26 @@ a:link:hover,
     line-height: 1.3; }
     /* line 23, ../sass/_chat-content.scss */
     #chat #chat-content li h4 {
+      display: inline-block;
       font-size: 13px;
       color: #799058; }
-      /* line 27, ../sass/_chat-content.scss */
+      /* line 28, ../sass/_chat-content.scss */
       #chat #chat-content li h4 > span {
         max-width: 285px; }
-    /* line 31, ../sass/_chat-content.scss */
+    /* line 32, ../sass/_chat-content.scss */
     #chat #chat-content li h5 {
       float: right;
       clear: right;
       font-size: 13px;
       color: #666666;
-      margin-top: 3px; }
-    /* line 38, ../sass/_chat-content.scss */
+      margin-left: 1em; }
+    /* line 41, ../sass/_chat-content.scss */
     #chat #chat-content li h6 {
       float: right;
       visibility: hidden;
       display: block;
       height: 16px; }
-      /* line 43, ../sass/_chat-content.scss */
+      /* line 46, ../sass/_chat-content.scss */
       #chat #chat-content li h6 a {
         display: inline-block;
         color: #999999;
@@ -932,38 +933,38 @@ a:link:hover,
         margin-top: -4px;
         height: 20px;
         overflow: hidden; }
-        /* line 50, ../sass/_chat-content.scss */
+        /* line 53, ../sass/_chat-content.scss */
         #chat #chat-content li h6 a span {
           display: none; }
-        /* line 53, ../sass/_chat-content.scss */
+        /* line 56, ../sass/_chat-content.scss */
         #chat #chat-content li h6 a:hover {
           color: #5a7b2a; }
-        /* line 56, ../sass/_chat-content.scss */
+        /* line 59, ../sass/_chat-content.scss */
         #chat #chat-content li h6 a:before {
           font-family: "EntypoRegular", sans-serif;
           font-size: 40px;
           display: inline-block;
           position: relative;
           top: -21px; }
-      /* line 64, ../sass/_chat-content.scss */
+      /* line 67, ../sass/_chat-content.scss */
       #chat #chat-content li h6 .translate:before {
         content: '9'; }
-    /* line 68, ../sass/_chat-content.scss */
+    /* line 71, ../sass/_chat-content.scss */
     #chat #chat-content li:hover h6 {
       visibility: visible; }
-    /* line 74, ../sass/_chat-content.scss */
+    /* line 77, ../sass/_chat-content.scss */
     #chat #chat-content li p b {
       color: #991100; }
-    /* line 78, ../sass/_chat-content.scss */
+    /* line 81, ../sass/_chat-content.scss */
     #chat #chat-content li p a {
       color: #24566f; }
-    /* line 83, ../sass/_chat-content.scss */
+    /* line 86, ../sass/_chat-content.scss */
     #chat #chat-content li:nth-child(even) {
       background: #f5f5f5; }
-    /* line 87, ../sass/_chat-content.scss */
+    /* line 90, ../sass/_chat-content.scss */
     #chat #chat-content li.even {
       background: #f5f5f5; }
-  /* line 95, ../sass/_chat-content.scss */
+  /* line 98, ../sass/_chat-content.scss */
   .ie8 #chat #chat-content, .ie9 #chat #chat-content {
     border: 1px solid #ccc; }
 

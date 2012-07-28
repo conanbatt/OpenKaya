@@ -21,6 +21,7 @@
     padding: 10px 25px 10px 15px;
     line-height: 1.3;
     h4 {
+      display: inline-block;
       font-size: 13px;
       color: $text-green;
       @extend .user-name;
@@ -33,7 +34,9 @@
       clear: right;
       font-size: 13px;
       color: $text-weak;
-      margin-top: 3px;
+      margin-left: 1em;
+      // while Ubuntu font is in place remove this:
+      // margin-top: 3px;
     }
     h6 {
       float: right;
