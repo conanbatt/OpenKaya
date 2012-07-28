@@ -138,6 +138,25 @@ function setupChat() {
     updateChatContent();
     return false;
   });
+
+  setInterval(trimChat, 10000);
+}
+
+function trimChat() {
+  var entries = $('#chat-content ol li');
+  var length = entries.length;
+  var max = 50;
+  if( length <= max ) return;
+
+  // in order to not have nthChild style change,
+  // only even remove an even number of items
+  if( (length - max) % 2 == 1 ) max += 1; 
+
+  if( length <= max ) return;
+
+  var deleted = entries.slice(0, length - max);
+  deleted.remove();
+  updateChatContent();
 }
 
 function setupUserList() {
