@@ -1,16 +1,41 @@
 ﻿if(!$('html').is('.ie') && Modernizr.cssscrollbar) {
   // disable tinyscrollbar plugin
   $.fn.tinyscrollbar = function() {
-    this.find('.viewport').scroll(function() {
+    this.find('.viewport').scroll(function(e) {
       var viewport = $(this).get(0);
       var bottom = viewport.scrollTop + viewport.offsetHeight == viewport.scrollHeight;
-      $(this).data('bottom', bottom);
+      // bottom can't be set if it's outside the range of expected values
+      // i.e. the user scrolled, not us.
+      // also stop animating to signal that the next update shouldn't
+      // automatically allow bottom.
+      if( $(viewport).is(':animated') ) {
+        var range = $(viewport).data('range') || [];
+        var inside = (viewport.scrollTop >= range[0] && viewport.scrollTop <= range[1]);
+        if(!inside) $(viewport).stop();
+        bottom = bottom && inside;
+      }
+
+      $(viewport).data('bottom', bottom);
     });
   }
   $.fn.tinyscrollbar_update = function(position, target, height) {
     this.each(function() {
       var viewport = $(this).find('.viewport').get(0);
+
       var bottom = $(viewport).data('bottom');
+
+      // scroll may ar may not have happened yet,
+      // and may or may not have been because of a resize event
+      // use the change in the last height to give another chance for bottom
+      var lastHeight = $(viewport).data('lastHeight') || 0;
+      $(viewport).data('lastHeight', viewport.offsetHeight);
+      var adjust = viewport.offsetHeight - lastHeight
+      var altBottom = viewport.scrollTop + viewport.offsetHeight + adjust == viewport.scrollHeight;
+      bottom = bottom || altBottom;
+
+      // assume bottom is set if we are animating
+      bottom = bottom || $(viewport).is(':animated');
+
       var scroll = viewport.scrollTop;
       if(position == 'top') {
         scroll = 0;
@@ -38,7 +63,12 @@
       } else {
         scroll = position;
       }
-      $(viewport).animate({scrollTop: scroll});
+
+      // anytime we do an animation, record where we are going,
+      // so that the scroll event can figure out if we are still
+      // on the bottom
+      $(viewport).data('range', [viewport.scrollTop, scroll]);
+      $(viewport).stop().animate({scrollTop: scroll});
     });
   }
 }
