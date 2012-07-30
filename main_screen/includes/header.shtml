@@ -1,8 +1,5 @@
-<!--
-  it's a faux pas to use a table when it's not a table,
-  but we need a few elements in the page to simulate a table layout.
--->
-<header id=header><b><s></s></b><div>
+<!-- opera insists on a real table to make this layout work, oh well -->
+<table id=header><tr><td class="left"><s>&nbsp;</s></td><td class="content">
   <h1>
     Welcome back,<br>
     <span>Gryn</span>
@@ -10,4 +7,4 @@
   <a id=profile-button>Profile</a>
   <a id=inbox-button>Inbox <span>2</span></a>
   <a id=signout-button>Sign Out</a>
-</div><b><s></s></b></header>
+</td><td class="right"><s>&nbsp;</s></td></tr></table>

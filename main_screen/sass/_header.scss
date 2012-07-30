@@ -13,20 +13,21 @@
   /* visible height about 73px */
   height: 90px;
   margin-bottom: -32px;
-  display: table;
 
-  > b {
-    display: table-cell;
+  .left {
+    height: 90px;
+    background-image: url(/images/layout/header-left.png);
+  }
+  .right {
     height: 90px;
     background: url(/images/layout/header-right.png) repeat-x;
-
-    &:first-child {
-      background-image: url(/images/layout/header-left.png);
-    }
   }
-  > div {
+  .left s, .right s {
+    width: 0;
+    visibility: hidden;
+  }
+  .content {
     // doesn't work with table-cell on FF position: relative;
-    display: table-cell;
     vertical-align: top;
     height: 90px;
     width: 980px;

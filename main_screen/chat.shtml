@@ -122,6 +122,6 @@
   </div>
   <div id=chat-entry>
     <input id=chat-entry-input placeholder="Enter a message">
-    <a id=user-list-toggle-button>User list</a>
+    <a id=user-list-toggle-button><span>User list</span> <span class="friends">1</span></a>
   </div>
 </div>

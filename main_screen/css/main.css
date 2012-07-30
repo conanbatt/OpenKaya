@@ -43,19 +43,6 @@ body {
   line-height: 1; }
 
 @font-face {
-  font-family: 'ProximaNova-Regular';
-  src: url("/fonts/13CE73_10.eot");
-  src: url("/fonts/13CE73_10.eot?#iefix") format("embedded-opentype"), url("/fonts/13CE73_10.woff") format("woff"), url("/fonts/13CE73_10.ttf") format("truetype"), url("/fonts/13CE73_10.svg#wf") format("svg");
-  -moz-font-feature-settings: "calt=0,liga=0"; }
-
-@font-face {
-  font-family: 'ProximaNova-Bold';
-  font-weight: bold;
-  src: url("/fonts/13CE73_14.eot");
-  src: url("/fonts/13CE73_14.eot?#iefix") format("embedded-opentype"), url("/fonts/13CE73_14.woff") format("woff"), url("/fonts/13CE73_14.ttf") format("truetype"), url("/fonts/13CE73_14.svg#wf") format("svg");
-  -moz-font-feature-settings: "calt=0,liga=0"; }
-
-@font-face {
   font-family: 'EntypoRegular';
   src: url("/fonts/entypo-webfont.eot");
   src: url("/fonts/entypo-webfont.eot?#iefix") format("embedded-opentype"), url("/fonts/entypo-webfont.woff") format("woff"), url("/fonts/entypo-webfont.ttf") format("truetype"), url("/fonts/entypo-webfont.svg#EntypoRegular") format("svg"); }
@@ -70,20 +57,20 @@ body {
   src: url("/fonts/EFON-webfont.eot");
   src: url("/fonts/EFON-webfont.eot?#iefix") format("embedded-opentype"), url("/fonts/EFON-webfont.woff") format("woff"), url("/fonts/EFON-webfont.ttf") format("truetype"), url("/fonts/EFON-webfont.svg#EfonRegular") format("svg"); }
 
-/* line 52, ../sass/_fonts.scss */
+/* line 32, ../sass/_fonts.scss */
 .font-bold, #header a[id*="button"], #chat #chat-rooms, #chat #chat-content li p, #chat #chat-entry #chat-entry-input, #game-list #game-list-content li .players .black, #game-list #game-list-content li .players .white, #game-list #game-list-content li .status-bar, #game-list #game-list-content li .details label, #game-list #game-list-content #game-list-create-game > .buttons #create-game {
-  font-family: "ProximaNova-Bold", "Helvetica Neue", Helvetica, Arial, "Helmet", "Freesans", sans-serif;
-  font-weight: bold; }
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, "Helmet", "Freesans", sans-serif;
+  font-weight: 600; }
 
-/* line 56, ../sass/_fonts.scss */
+/* line 36, ../sass/_fonts.scss */
 .ie8 .font-bold, .ie8 #header a[id*="button"], #header .ie8 a[id*="button"], .ie8 #chat #chat-rooms, #chat .ie8 #chat-rooms, .ie8 #chat #chat-content li p, #chat #chat-content li .ie8 p, .ie8 #chat #chat-entry #chat-entry-input, #chat #chat-entry .ie8 #chat-entry-input, .ie8 #game-list #game-list-content li .players .black, #game-list #game-list-content li .players .ie8 .black, .ie8 #game-list #game-list-content li .players .white, #game-list #game-list-content li .players .ie8 .white, .ie8 #game-list #game-list-content li .status-bar, #game-list #game-list-content li .ie8 .status-bar, .ie8 #game-list #game-list-content li .details label, #game-list #game-list-content li .details .ie8 label, .ie8 #game-list #game-list-content #game-list-create-game > .buttons #create-game, #game-list #game-list-content #game-list-create-game > .buttons .ie8 #create-game {
-  font-weight: normal; }
+  font-weight: bold; }
 
 /* line 5, ../sass/main.scss */
 body {
   background: #5f8031 url(/images/layout/background.jpg) fixed;
-  font-size: 14px;
-  font-family: "ProximaNova-Regular", "Helvetica Neue", Helvetica, Arial, "Helmet", "Freesans", sans-serif;
+  font-size: 13px;
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, "Helmet", "Freesans", sans-serif;
   color: #333333; }
 
 /* line 11, ../sass/main.scss */
@@ -226,7 +213,7 @@ a:link:hover,
     background: #789b41; }
 
 /* line 43, ../sass/_basic-button.scss */
-.button-note, #header a[id*="button"] > span {
+.button-note, #header a[id*="button"] > span, #chat #chat-entry #user-list-toggle-button .friends {
   display: inline-block;
   background: black;
   color: white;
@@ -277,25 +264,27 @@ a:link:hover,
   min-width: 980px;
   /* visible height about 73px */
   height: 90px;
-  margin-bottom: -32px;
-  display: table; }
-  /* line 18, ../sass/_header.scss */
-  #header > b {
-    display: table-cell;
+  margin-bottom: -32px; }
+  /* line 17, ../sass/_header.scss */
+  #header .left {
+    height: 90px;
+    background-image: url(/images/layout/header-left.png); }
+  /* line 21, ../sass/_header.scss */
+  #header .right {
     height: 90px;
     background: url(/images/layout/header-right.png) repeat-x; }
-    /* line 23, ../sass/_header.scss */
-    #header > b:first-child {
-      background-image: url(/images/layout/header-left.png); }
-  /* line 27, ../sass/_header.scss */
-  #header > div {
-    display: table-cell;
+  /* line 25, ../sass/_header.scss */
+  #header .left s, #header .right s {
+    width: 0;
+    visibility: hidden; }
+  /* line 29, ../sass/_header.scss */
+  #header .content {
     vertical-align: top;
     height: 90px;
     width: 980px;
     background: url(/images/layout/header.png) no-repeat; }
-    /* line 34, ../sass/_header.scss */
-    #header > div:after {
+    /* line 35, ../sass/_header.scss */
+    #header .content:after {
       content: ' ';
       float: right;
       margin-top: 90px;
@@ -306,7 +295,7 @@ a:link:hover,
       width: 131px;
       height: 49px;
       pointer-events: none; }
-  /* line 49, ../sass/_header.scss */
+  /* line 50, ../sass/_header.scss */
   #header h1 {
     float: left;
     min-width: 100px;
@@ -316,27 +305,27 @@ a:link:hover,
     -moz-transition: padding-left 1s 0.2s;
     -webkit-transition: padding-left 1s 0.2s;
     transition: padding-left 1s 0.2s; }
-    /* line 55, ../sass/_header.scss */
+    /* line 56, ../sass/_header.scss */
     #header h1 span {
       display: inline-block;
       margin-top: 5px;
       font-size: 25px; }
-  /* line 65, ../sass/_header.scss */
+  /* line 66, ../sass/_header.scss */
   #header a[id*="button"] {
     font-size: 16px;
     margin-top: 20px; }
-    /* line 71, ../sass/_header.scss */
+    /* line 72, ../sass/_header.scss */
     #header a[id*="button"] > span {
       font-size: 14px;
       background: #5a7b2a; }
-  /* line 77, ../sass/_header.scss */
+  /* line 78, ../sass/_header.scss */
   #header a[id*="button"] + a[id*="button"] {
     margin-left: 10px; }
   @media screen and (max-height: 480px) {
     /* line 5, ../sass/_header.scss */
     #header {
       position: relative; } }
-  /* line 85, ../sass/_header.scss */
+  /* line 86, ../sass/_header.scss */
   .user-list-slid-open #header > div h1 {
     padding-left: 140px; }
 
@@ -543,9 +532,13 @@ a:link:hover,
     display: none; }
 
 /* line 72, ../sass/_user-list-open-close.scss */
-.user-list-slid-open #user-list-toggle-button,
-.user-list-popped-up #user-list-toggle-button {
-  opacity: 0.3; }
+.user-list-slid-open #chat #chat-entry #user-list-toggle-button,
+.user-list-popped-up #chat #chat-entry #user-list-toggle-button {
+  color: #999999; }
+  /* line 74, ../sass/_user-list-open-close.scss */
+  .user-list-slid-open #chat #chat-entry #user-list-toggle-button .friends,
+  .user-list-popped-up #chat #chat-entry #user-list-toggle-button .friends {
+    background: #999999; }
 
 /* line 1, ../sass/_user-list-panel.scss */
 #user-list li .panel {
@@ -773,7 +766,7 @@ a:link:hover,
         position: relative; }
         /* line 63, ../sass/_user-list.scss */
         #user-list #user-list-content li .name > span {
-          max-width: 175px; }
+          max-width: 170px; }
       /* line 68, ../sass/_user-list.scss */
       #user-list #user-list-content li .type {
         float: right;
@@ -904,25 +897,26 @@ a:link:hover,
     line-height: 1.3; }
     /* line 23, ../sass/_chat-content.scss */
     #chat #chat-content li h4 {
+      display: inline-block;
       font-size: 13px;
       color: #799058; }
-      /* line 27, ../sass/_chat-content.scss */
+      /* line 28, ../sass/_chat-content.scss */
       #chat #chat-content li h4 > span {
         max-width: 285px; }
-    /* line 31, ../sass/_chat-content.scss */
+    /* line 32, ../sass/_chat-content.scss */
     #chat #chat-content li h5 {
       float: right;
       clear: right;
       font-size: 13px;
       color: #666666;
-      margin-top: 3px; }
-    /* line 38, ../sass/_chat-content.scss */
+      margin-left: 1em; }
+    /* line 41, ../sass/_chat-content.scss */
     #chat #chat-content li h6 {
       float: right;
       visibility: hidden;
       display: block;
       height: 16px; }
-      /* line 43, ../sass/_chat-content.scss */
+      /* line 46, ../sass/_chat-content.scss */
       #chat #chat-content li h6 a {
         display: inline-block;
         color: #999999;
@@ -930,38 +924,38 @@ a:link:hover,
         margin-top: -4px;
         height: 20px;
         overflow: hidden; }
-        /* line 50, ../sass/_chat-content.scss */
+        /* line 53, ../sass/_chat-content.scss */
         #chat #chat-content li h6 a span {
           display: none; }
-        /* line 53, ../sass/_chat-content.scss */
+        /* line 56, ../sass/_chat-content.scss */
         #chat #chat-content li h6 a:hover {
           color: #5a7b2a; }
-        /* line 56, ../sass/_chat-content.scss */
+        /* line 59, ../sass/_chat-content.scss */
         #chat #chat-content li h6 a:before {
           font-family: "EntypoRegular", sans-serif;
           font-size: 40px;
           display: inline-block;
           position: relative;
           top: -21px; }
-      /* line 64, ../sass/_chat-content.scss */
+      /* line 67, ../sass/_chat-content.scss */
       #chat #chat-content li h6 .translate:before {
         content: '9'; }
-    /* line 68, ../sass/_chat-content.scss */
+    /* line 71, ../sass/_chat-content.scss */
     #chat #chat-content li:hover h6 {
       visibility: visible; }
-    /* line 74, ../sass/_chat-content.scss */
+    /* line 77, ../sass/_chat-content.scss */
     #chat #chat-content li p b {
       color: #991100; }
-    /* line 78, ../sass/_chat-content.scss */
+    /* line 81, ../sass/_chat-content.scss */
     #chat #chat-content li p a {
       color: #24566f; }
-    /* line 83, ../sass/_chat-content.scss */
+    /* line 86, ../sass/_chat-content.scss */
     #chat #chat-content li:nth-child(even) {
       background: #f5f5f5; }
-    /* line 87, ../sass/_chat-content.scss */
+    /* line 90, ../sass/_chat-content.scss */
     #chat #chat-content li.even {
       background: #f5f5f5; }
-  /* line 95, ../sass/_chat-content.scss */
+  /* line 98, ../sass/_chat-content.scss */
   .ie8 #chat #chat-content, .ie9 #chat #chat-content {
     border: 1px solid #ccc; }
 
@@ -976,23 +970,41 @@ a:link:hover,
   #chat #chat-entry #chat-entry-input {
     position: absolute;
     left: 0;
-    width: 330px;
+    width: 320px;
     top: 15px;
     padding: 7px 10px; }
   /* line 22, ../sass/_chat-entry.scss */
   #chat #chat-entry #user-list-toggle-button {
     position: absolute;
-    top: 19px;
+    top: 17px;
     right: 0;
-    width: 31px;
-    height: 19px;
-    text-indent: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    background: url(/images/layout/user-list.svg) no-repeat; }
-    /* line 32, ../sass/_chat-entry.scss */
-    .ie8 #chat #chat-entry #user-list-toggle-button {
-      background: url(/images/layout/user-list.png) no-repeat; }
+    width: 40px;
+    height: 23px;
+    color: #333333;
+    border: 1px solid #f5f5f5;
+    box-shadow: 1px 1px 1px #aaaaaa;
+    border-radius: 4px;
+    padding-top: 4px;
+    cursor: pointer; }
+    /* line 34, ../sass/_chat-entry.scss */
+    #chat #chat-entry #user-list-toggle-button span {
+      display: none; }
+    /* line 37, ../sass/_chat-entry.scss */
+    #chat #chat-entry #user-list-toggle-button:hover {
+      color: #5a7b2a; }
+    /* line 43, ../sass/_chat-entry.scss */
+    #chat #chat-entry #user-list-toggle-button:before {
+      font-family: "EntypoRegular", sans-serif;
+      font-size: 40px;
+      display: inline-block;
+      margin: -14px 0;
+      content: '+'; }
+    /* line 50, ../sass/_chat-entry.scss */
+    #chat #chat-entry #user-list-toggle-button .friends {
+      font-size: 12px;
+      position: absolute;
+      right: 2px;
+      background: #999999; }
 
 /* line 6, ../sass/_chat.scss */
 #chat {

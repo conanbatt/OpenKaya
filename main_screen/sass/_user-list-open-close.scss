@@ -69,7 +69,10 @@
 }
 .user-list-slid-open,
 .user-list-popped-up {
-  #user-list-toggle-button {
-    opacity: 0.3;
+  #chat #chat-entry #user-list-toggle-button {
+    color: $icon-gray;
+    .friends {
+      background: $icon-gray;
+    }
   }
 }
