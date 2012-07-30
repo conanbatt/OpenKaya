@@ -145,7 +145,7 @@ function setupChat() {
 function trimChat() {
   var entries = $('#chat-content ol li');
   var length = entries.length;
-  var max = 50;
+  var max = 200;
   if( length <= max ) return;
 
   // in order to not have nthChild style change,
