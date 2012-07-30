@@ -43,19 +43,6 @@ body {
   line-height: 1; }
 
 @font-face {
-  font-family: 'ProximaNova-Regular';
-  src: url("/fonts/13CE73_10.eot");
-  src: url("/fonts/13CE73_10.eot?#iefix") format("embedded-opentype"), url("/fonts/13CE73_10.svg#wf") format("svg"), url("/fonts/13CE73_10.woff") format("woff"), url("/fonts/13CE73_10.ttf") format("truetype");
-  -moz-font-feature-settings: "calt=0,liga=0"; }
-
-@font-face {
-  font-family: 'ProximaNova-Bold';
-  font-weight: bold;
-  src: url("/fonts/13CE73_14.eot");
-  src: url("/fonts/13CE73_14.eot?#iefix") format("embedded-opentype"), url("/fonts/13CE73_14.svg#wf") format("svg"), url("/fonts/13CE73_14.woff") format("woff"), url("/fonts/13CE73_14.ttf") format("truetype");
-  -moz-font-feature-settings: "calt=0,liga=0"; }
-
-@font-face {
   font-family: 'EntypoRegular';
   src: url("/fonts/entypo-webfont.eot");
   src: url("/fonts/entypo-webfont.eot?#iefix") format("embedded-opentype"), url("/fonts/entypo-webfont.woff") format("woff"), url("/fonts/entypo-webfont.ttf") format("truetype"), url("/fonts/entypo-webfont.svg#EntypoRegular") format("svg"); }
@@ -70,20 +57,20 @@ body {
   src: url("/fonts/EFON-webfont.eot");
   src: url("/fonts/EFON-webfont.eot?#iefix") format("embedded-opentype"), url("/fonts/EFON-webfont.woff") format("woff"), url("/fonts/EFON-webfont.ttf") format("truetype"), url("/fonts/EFON-webfont.svg#EfonRegular") format("svg"); }
 
-/* line 52, ../sass/_fonts.scss */
+/* line 32, ../sass/_fonts.scss */
 .font-bold, #header a[id*="button"], #chat #chat-rooms, #chat #chat-content li p, #chat #chat-entry #chat-entry-input, #game-list #game-list-content li .players .black, #game-list #game-list-content li .players .white, #game-list #game-list-content li .status-bar, #game-list #game-list-content li .details label, #game-list #game-list-content #game-list-create-game > .buttons #create-game {
-  font-family: "ProximaNova-Bold", "Helvetica Neue", Helvetica, Arial, "Helmet", "Freesans", sans-serif;
-  font-weight: bold; }
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, "Helmet", "Freesans", sans-serif;
+  font-weight: 600; }
 
-/* line 56, ../sass/_fonts.scss */
+/* line 36, ../sass/_fonts.scss */
 .ie8 .font-bold, .ie8 #header a[id*="button"], #header .ie8 a[id*="button"], .ie8 #chat #chat-rooms, #chat .ie8 #chat-rooms, .ie8 #chat #chat-content li p, #chat #chat-content li .ie8 p, .ie8 #chat #chat-entry #chat-entry-input, #chat #chat-entry .ie8 #chat-entry-input, .ie8 #game-list #game-list-content li .players .black, #game-list #game-list-content li .players .ie8 .black, .ie8 #game-list #game-list-content li .players .white, #game-list #game-list-content li .players .ie8 .white, .ie8 #game-list #game-list-content li .status-bar, #game-list #game-list-content li .ie8 .status-bar, .ie8 #game-list #game-list-content li .details label, #game-list #game-list-content li .details .ie8 label, .ie8 #game-list #game-list-content #game-list-create-game > .buttons #create-game, #game-list #game-list-content #game-list-create-game > .buttons .ie8 #create-game {
-  font-weight: normal; }
+  font-weight: bold; }
 
 /* line 5, ../sass/main.scss */
 body {
   background: #5f8031 url(/images/layout/background.jpg) fixed;
-  font-size: 14px;
-  font-family: "ProximaNova-Regular", "Helvetica Neue", Helvetica, Arial, "Helmet", "Freesans", sans-serif;
+  font-size: 13px;
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, "Helmet", "Freesans", sans-serif;
   color: #333333; }
 
 /* line 11, ../sass/main.scss */

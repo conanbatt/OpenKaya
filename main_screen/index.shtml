@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>Kaya.gs</title>
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600&subset=latin,vietnamese,greek,cyrillic,latin-ext,cyrillic-ext,greek-ext' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="/css/main.css">
   <!--[if IE]>
     <script>document.documentElement.className += " ie ie" + parseInt(navigator.appVersion.split("MSIE")[1]);</script>
