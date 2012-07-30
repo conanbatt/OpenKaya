@@ -3,26 +3,6 @@
 @if import-once("fonts") {
 
 @font-face {
-	font-family: 'ProximaNova-Regular';
-		src: url('/fonts/13CE73_10.eot');
-		src: url('/fonts/13CE73_10.eot?#iefix') format('embedded-opentype'),
-					url('/fonts/13CE73_10.woff') format('woff'),
-					url('/fonts/13CE73_10.ttf') format('truetype'),
-					url('/fonts/13CE73_10.svg#wf') format('svg');
-					-moz-font-feature-settings: "calt=0,liga=0";
-}
-@font-face {
-	font-family: 'ProximaNova-Bold';
-	font-weight: bold;
-	src: url('/fonts/13CE73_14.eot');
-	src: url('/fonts/13CE73_14.eot?#iefix') format('embedded-opentype'),
-			url('/fonts/13CE73_14.woff') format('woff'),
-			url('/fonts/13CE73_14.ttf') format('truetype'),
-			url('/fonts/13CE73_14.svg#wf') format('svg');
-			-moz-font-feature-settings: "calt=0,liga=0";
-}
-
-@font-face {
     font-family: 'EntypoRegular';
     src: url('/fonts/entypo-webfont.eot');
     src: url('/fonts/entypo-webfont.eot?#iefix') format('embedded-opentype'),
@@ -51,10 +31,10 @@
 
 .font-bold {
   font-family: $font-bold;
-  font-weight: bold;
+  font-weight: 600;
 }
 .ie8 .font-bold {
-  font-weight: normal;
+  font-weight: bold;
 }
 
 }

@@ -4,7 +4,7 @@
     <div id=user-list-content-shadow></div>
     <div class="scrollbar"><div class="track"><div class="thumb"><div class="end"></div></div></div></div>
     <div class="viewport"><div class="overview">
-      <h4>Friends</h4>
+      <h4>Friends <b>(3)</b></h4>
       <ol>
         <li data-user="gryn">
           <span class="name"><span>gryn</span><b>(1k)</b></span>
@@ -19,13 +19,13 @@
           <!--#include virtual="user-panel-friend.shtml"-->
         </li>
         <li class="sleeping" data-user="clossius">
-          <span class="name"><span>clossius</span><b>(1d)</b></span>
+          <span class="name"><span>clossius has a reeally looong user name</span><b>(1d)</b></span>
           <span class=type title="supporter">&#x624b;</span>
           <span class="karma">clo&nbsp;</span>
           <!--#include virtual="user-panel-friend.shtml"-->
         </li>
       </ol>
-      <h4>Others chatting</h4>
+      <h4>Others chatting <b>(8)</b></h4>
       <ol>
         <li class="sleeping" data-user="GNUBot">
           <span class="name"><span>GNUBot</span><b>(6k)</b></span>
