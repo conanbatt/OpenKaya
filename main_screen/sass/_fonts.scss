@@ -6,9 +6,9 @@
 	font-family: 'ProximaNova-Regular';
 		src: url('/fonts/13CE73_10.eot');
 		src: url('/fonts/13CE73_10.eot?#iefix') format('embedded-opentype'),
+					url('/fonts/13CE73_10.svg#wf') format('svg'),
 					url('/fonts/13CE73_10.woff') format('woff'),
-					url('/fonts/13CE73_10.ttf') format('truetype'),
-					url('/fonts/13CE73_10.svg#wf') format('svg');
+					url('/fonts/13CE73_10.ttf') format('truetype');
 					-moz-font-feature-settings: "calt=0,liga=0";
 }
 @font-face {
@@ -16,9 +16,9 @@
 	font-weight: bold;
 	src: url('/fonts/13CE73_14.eot');
 	src: url('/fonts/13CE73_14.eot?#iefix') format('embedded-opentype'),
+			url('/fonts/13CE73_14.svg#wf') format('svg'),
 			url('/fonts/13CE73_14.woff') format('woff'),
-			url('/fonts/13CE73_14.ttf') format('truetype'),
-			url('/fonts/13CE73_14.svg#wf') format('svg');
+			url('/fonts/13CE73_14.ttf') format('truetype');
 			-moz-font-feature-settings: "calt=0,liga=0";
 }
 
