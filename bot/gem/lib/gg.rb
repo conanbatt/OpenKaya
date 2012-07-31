@@ -135,9 +135,11 @@ def convert_move(move, size=19)
   elsif move == "resign"
     return 'resign'
   else
-    h = move[0].ord
-    v = (size.to_i - move[1,2].to_i + 65)
-    sgf_move = [h, v].map {|x| if x > 73 then (x - 1).chr else x.chr end}
-    return sgf_move.downcase
+
+    alphabet = "ABCDEFGHIJKLMNOPQRS"[0..size.to_i - 1]
+	  	
+    sgf_alphabet = "ABCDEFGHJKLMNOPQRST"[0..size.to_i - 1]
+	  	
+    return alphabet["ABCDEFGHJKLMNOPQRST".index(move[0])].downcase + alphabet.reverse[(move[1].to_s + move[2].to_s).to_i - 1].downcase
   end
 end
