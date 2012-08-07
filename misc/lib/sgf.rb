@@ -23,20 +23,23 @@ class SGF
     end
     false
   end
-
-  REGEX = /((?<pg>\((?:\\[()]|[^()]|\g<pg>)*\)))/
   def nodify_move_list(moves, root_node)
 
     @focus = root_node
 
-    coma_index = moves.index(";",1) || 0 #not counting the first one
-
+    coma_index = 0
+    if moves[0] == "("
+      coma_index = moves.index(";",1) || coma_index
+    else
+      coma_index = moves.index(/(\]|\();/,1) || coma_index#not counting the first one
+      coma_index += 1 unless coma_index == 0
+    end
     node_text = moves[0..coma_index -1]
     is_root = (node_text == "(")
     if  node_text.include?("(") #it has variations
       add_move(node_text.chop) unless is_root#removing the parenthesis
       temp_focus = @focus
-      moves.scan(REGEX).each do |match|
+      moves.scan(/((?<pg>\((?:\\[()]|[^()]|\g<pg>)*\)))/).each do |match|
         nodify_move_list(match.first[1..-2], temp_focus) if match.first
         
       end
