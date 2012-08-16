@@ -7,6 +7,22 @@ setup do
 
 end
 
+test "should be able to load with comments with special characters" do
+
+  sgf = SGF.new
+  sgf.load_file("mocks/MoyoMagic-Leather.sgf")
+
+  p sgf.move_list
+
+end
+
+test "should parse comments for node text" do
+
+  #sgf = SGF.new
+  #sgf.load_from_string("(;FF[4];B[ab]C[This guy sucks :/ \n];W[ad]C[maybe \n])")
+
+end
+
 
 test "should be able to re-create the sgf with the raw move list" do
 
@@ -14,6 +30,7 @@ test "should be able to re-create the sgf with the raw move list" do
 # (;.{5}(\(;.*\))?)
 
   branched_move_list = ";B[hh];W[ii](;B[ee];W[ab];B[al])(;B[aa])"
+
   sgf = SGF.new(branched_move_list)
 
   assert_equal sgf.move_list, ";B[hh];W[ii](;B[ee];W[ab];B[al])(;B[aa])" 
@@ -42,6 +59,7 @@ test "should be able to nodify a certain move list" do
   bug_move_list = "(;B[pd](;W[pj](;B[jd];W[jj])(;B[lg];W[ih]))(;W[oh];B[kj];W[km]))(;B[ka])"
   sgf = SGF.new(bug_move_list)
 end
+
 
 test "should get the move number" do
 
