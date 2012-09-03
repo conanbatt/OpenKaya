@@ -1,14 +1,25 @@
+
+  SGF_PROPERTIES= {:black_play => "B", :white_play => "W",:black_rank => "BR", :white_rank => "WR",:white_player => "PW", 
+                   :black_player => "PB", :komi => "KM", :date => "DT", :result => "RE",
+                   :file_format => "FF", :black_country => "BC", :add_black => "AB", :add_white => "AW",
+                   :white_country => "WC", :event => "EV", :source => "SO", :black_left => "BL", :white_left => "WL",
+                   :encoding => "CA", :size => "SZ", :rules => "RU", :time_set => "OT",:handicap => "HA"}
+
+
 class Node
+
 
   attr_reader :node_text, :children, :parent
 
-  def initialize(parent,node_text= "")
+  def initialize(parent,node_text="",properties ={})
     validate_node_format(node_text)
     @comments = []
     @node_text = strip_comments!(node_text)
     @children = []
     @parent = parent
     @parent.add_child(self) if parent
+
+    @properties = properties
   end
 
   def strip_comments!(node_text)
@@ -96,27 +107,12 @@ class Node
   end
 
   def property(symbol)
-    return node_text if symbol == :all
-    dup = node_text.dup
-    dup.slice!(/.*#{METALABELS2[symbol]}\[/)
-    return nil if dup.length == node_text.length #means it wasnt found
-    dup.slice!(/\].*/m)
-    return dup
+    @properties[symbol]
   end
 
-  def write_property(symbol, value)
-    return unless value
-    raise "Invalid property #{symbol}" unless METALABELS2[symbol]
-    node = "#{METALABELS2[symbol]}[#{value}]"
-    @node_text.gsub!(/#{METALABELS2[symbol]}\[\w*\]/, "") #in case it already had it
-    @node_text = node + @node_text
-    size = property(:size)
-    #a little hackish to insert the AB node only
-    @node_text += SGF.handi_node(property(:size),value)[5..-1] if(size &&
-                                                           symbol == :handicap)
+  def write_property(symbol, val)
+    @properties[symbol,val]
   end
-
-
 
 end
 
@@ -124,9 +120,9 @@ class ConfigNode
 
   attr_accessor :node_text, :children
 
-  def initialize(property="")
-    @node_text = property.dup
-    write_property(:file_format,4)
+  def initialize(properties={})
+    @node_text = "" #property.dup
+    @properties = {:file_format => 4}.merge(properties)
     handicap = property(:handicap)
     @comments = []
     @children = []
@@ -153,7 +149,7 @@ class ConfigNode
 
   def to_s
     children_text = @children.first.to_s
-    ";"+node_text + comments + children_text
+    ";"+ properties_to_s + comments + children_text
   end
 
   def to_move_list
@@ -166,32 +162,21 @@ class ConfigNode
     result
   end
 
-  METALABELS= {:black_rank => "BR", :white_rank => "WR",:white_player => "PW", :black_player => "PB",
-               :komi => "KM", :date => "DT", :result => "RE",
-               :file_format => "FF", :black_country => "BC",
-               :white_country => "WC", :event => "EV", :source => "SO",
-               :encoding => "CA", :size => "SZ", :rules => "RU", :time_set => "OT",:handicap => "HA"}
+  def properties_to_s
+    res = ""
+    @properties.each do |prop, val|
+      res << "#{SGF_PROPERTIES[prop]}[#{val}]"
+    end
+    res 
+  end
 
   def property(symbol)
-    return node_text if symbol == :all
-    dup = node_text.dup
-    dup.slice!(/.*#{METALABELS[symbol]}\[/)
-    return nil if dup.length == node_text.length #means it wasnt found
-    dup.slice!(/\].*/m)
-    return dup
+    @properties[symbol]
   end
 
-  def write_property(symbol, value)
-    return unless value
-    raise "Invalid property #{symbol}" unless METALABELS[symbol]
-    node = "#{METALABELS[symbol]}[#{value}]"
-    @node_text.gsub!(/#{METALABELS[symbol]}\[\w*\]/, "") #in case it already had it
-    @node_text = node + @node_text 
-    size = property(:size)
-    #a little hackish to insert the AB node only
-    @node_text += SGF.handi_node(property(:size),value)[5..-1] if(size && 
-                                                           symbol == :handicap)
+  def write_property(symbol, val)
+    raise "#{symbol} is not a valid SGF property" unless SGF_PROPERTIES[symbol]
+    @properties[symbol] = val
   end
-
 end
 

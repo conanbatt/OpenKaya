@@ -8,13 +8,11 @@ class SGF
 
   def initialize(moves="", properties={})
     moves ||= ""
-    @config = ConfigNode.new
+    @config = ConfigNode.new(properties)
     @focus = @config
     nodify_move_list(moves, @config) unless moves.empty?
     @comment_buffer = ""
     @size = properties[:size]
-    properties.keys.each {|k| @config.write_property(k,properties[k]) }
-    @config.write_property(:handicap, properties[:handicap])     
   end
 
   def last_two_moves_are_pass?
@@ -24,7 +22,6 @@ class SGF
     false
   end
   def nodify_move_list(moves, root_node)
-
     @focus = root_node
 
     coma_index = 0
@@ -232,69 +229,69 @@ class SGF
     @focus.children.delete(to_del) 
   end
 
-  def self.handi_node(size,handicap)
+  def self.handi_props(size,handicap)
     case size.to_i
 
     when 19
       case handicap
       when 2
-        return "HA[2]AB[dd][pp]"
+        return {:add_black => "dd][pp"}
       when 3
-        return "HA[3]AB[dd][dp][pd]"
+        return {:add_black => "dd][dp][pd"}
       when 4
-        return "HA[4]AB[dd][pd][dp][pp]"
+        return {:add_black =>"dd][pd][dp][pp"}
       when 5
-        return "HA[5]AB[dd][pd][dp][pp][jj]"
+        return {:add_black =>"dd][pd][dp][pp][jj"}
       when 6
-        return "HA[6]AB[dd][pd][dp][pp][dj][pj]"
+        return {:add_black =>"dd][pd][dp][pp][dj][pj"}
       when 7
-        return "HA[7]AB[dd][pd][dp][pp][dj][pj][jj]"
+        return {:add_black =>"dd][pd][dp][pp][dj][pj][jj"}
       when 8
-        return "HA[8]AB[dd][jd][pd][dj][pj][dp][jp][pp]"
+        return {:add_black =>"dd][jd][pd][dj][pj][dp][jp][pp"}
       when 9
-        return "HA[9]AB[dd][jd][pd][dj][jj][pj][dp][jp][pp]"
+        return {:add_black =>"dd][jd][pd][dj][jj][pj][dp][jp][pp"}
       else
         raise "Invalid handicap setting #{handicap}"
       end
     when 13
       case handicap
       when 2
-        return "HA[2]AB[dd][jj]"
+        return {:add_black =>"dd][jj"}
       when 3
-        return "HA[3]AB[dd][dj][jd]"
+        return {:add_black =>"dd][dj][jd"}
       when 4
-        return "HA[4]AB[dd][jd][dj][jj]"
+        return {:add_black =>"dd][jd][dj][jj"}
       when 5
-        return "HA[5]AB[dd][jd][dj][gg][jj]"
+        return {:add_black =>"dd][jd][dj][gg][jj"}
       when 6
-        return "HA[6]AB[dd][jd][dj][jj][dg][jg]"
+        return {:add_black =>"dd][jd][dj][jj][dg][jg"}
       when 7
-        return "HA[7]AB[dd][jd][dj][jj][dg][jg][gg]"
+        return {:add_black =>"dd][jd][dj][jj][dg][jg][gg"}
       when 8
-        return "HA[8]AB[dd][jd][dj][gj][jj][jg][gd][dg]"
+        return {:add_black =>"dd][jd][dj][gj][jj][jg][gd][dg"}
       when 9
-        return "HA[9]AB[dd][jd][dj][gj][jj][jg][gg][gd][dg]"
+        return {:add_black =>"dd][jd][dj][gj][jj][jg][gg][gd][dg"}
       else
         raise "Invalid handicap setting #{handicap}"
       end
     when 9
       case handicap
       when 2
-        return "HA[2]AB[cc][gg]"
+        return {:add_black =>"cc][gg"}
       when 3
-        return "HA[3]AB[cc][cg][gg]"
+        return {:add_black =>"cc][cg][gg"}
       when 4
-        return "HA[4]AB[cc][gg][cg][gc]"
+        return {:add_black =>"cc][gg][cg][gc"}
       when 5
-        return "HA[5]AB[cc][gg][cg][gc][ee]"
+        return {:add_black =>"cc][gg][cg][gc][ee"}
       when 6
-        return "HA[6]AB[cc][gg][cg][gc][ee][ge]"
+        return {:add_black =>"cc][gg][cg][gc][ee][ge"}
       when 7
-        return "HA[7]AB[cc][gg][cg][gc][ee][ge][ee]"
+        return {:add_black =>"cc][gg][cg][gc][ee][ge][ee"}
       when 8
-        return "HA[8]AB[cc][gc][cg][gg][ce][ge][ec][eg]"
+        return {:add_black =>"cc][gc][cg][gg][ce][ge][ec][eg"}
       when 9
-        return "HA[9]AB[cc][gc][cg][gg][ce][ge][ec][ee][eg]"
+        return {:add_black =>"cc][gc][cg][gg][ce][ge][ec][ee][eg"}
       else
         raise "Invalid handicap setting #{handicap}"
       end
