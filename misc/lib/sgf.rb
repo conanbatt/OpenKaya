@@ -8,9 +8,10 @@ class SGF
 
   def initialize(moves="", properties={})
     moves ||= ""
-    @config = ConfigNode.new(properties)
-    @focus = @config
-    nodify_move_list(moves, @config) unless moves.empty?
+    @root = Node.new("", :properties => properties)
+    @root.write_property(:file_format, 4)
+    @focus = @root
+    nodify_move_list(moves, @root) unless moves.empty?
     @comment_buffer = ""
     @size = properties[:size]
   end
@@ -46,26 +47,42 @@ class SGF
     end
   end
 
-  def add_move(node, rewrite=true) #TODO objetify node
-
+  def add_move(raw_node, rewrite=true) #TODO objetify node
     if rewrite
-      @focus = Node.new(@focus,node) 
+      @focus = Node.new(raw_node, :parent => @focus) 
     else
       found_repeated_node = false
       @focus.children.each do |child|
-        if child.node_text == node
+        if child.node_text == raw_node
           found_repeated_node = true
           @focus = child
         end
       end
       unless found_repeated_node
-        @focus = Node.new(@focus,node) #only create a new node if there is no children with the same coordinate
+        @focus = Node.new(raw_node, :parent => @focus) #only create a new node if there is no children with the same coordinate
       end
     end
   end
 
+  def node_string_to_properties(raw_node)
+    
+    res = {}
+    play_node = raw_node.match(/([BW])\[(|[a-z][a-z])\]/)
+    if play_node && play_node[1] && play_node[2]
+      sym = (play_node[1] == "W") ? :white_play : :black_play
+      res.merge!({sym => play_node[2].to_s}) 
+    end
+
+    time_node = raw_node.match(/([BW])L\[(\d{0,6}.\d{3})\]/)
+    if time_node && time_node[1] && time_node[2]
+      sym = (play_node[1] == "W") ? :white_left: :black_left
+      res.merge!({sym => time_node[2].to_s}) 
+    end
+    res
+  end
+
   def code_to_focus(focus_code)
-    @focus = @config
+    @focus = @root
     return if focus_code == "root"
     focus_code.split("-").each do |branch|
       node = @focus.children[branch.to_i]
@@ -76,7 +93,7 @@ class SGF
   end
 
   def focus_to_code
-    return "root" if @focus == @config
+    return "root" if @focus == @root
     temp_focus = @focus
     code = ""
     while(temp_focus)
@@ -92,14 +109,14 @@ class SGF
 
 
   def last_play_color
-    @focus != @config && @focus.color
+    @focus != @root && @focus.color
   end
 
   def add_comment(comment)
     if @focus
       @focus.add_comment(comment)
     else
-      @config.add_comment(comment)
+      @root.add_comment(comment)
     end
     move_list
   end
@@ -107,7 +124,7 @@ class SGF
   def parse_comments!(comments)
     comments.each do |key, value|
       if (key.to_i == 0)
-        value.each {|v| @config.add_comment(hash_to_comment(v))}
+        value.each {|v| @root.add_comment(hash_to_comment(v))}
         next
       end
       value.each{ |v| move_by_number(key.to_i-1) && move_by_number(key.to_i-1).add_comment(hash_to_comment(v))}
@@ -116,7 +133,7 @@ class SGF
 
   def hashify_comments
     move_number = 0
-    pointer = @config
+    pointer = @root
     comments = {}
     while(pointer)
       comments[move_number.to_s] = pointer.comments unless pointer.comments.empty?
@@ -132,17 +149,17 @@ class SGF
   end
     
   def move_list
-   @config.to_move_list 
+    @root.to_move_list 
   end
 
   def move_list_with_comments
-    @config.children.first.to_s
+    @root.children.first.to_s
   end
 
   def move_by_number(index)
     index = index.to_i
     return if (index < 0)
-    node = @config.children.first
+    node = @root.children.first
     while(index >0)
       node = node.children.first if node.children.first #undos can mess up the move number
       index -= 1
@@ -178,28 +195,28 @@ class SGF
   end
   def load_from_string(input)
     properties= input.split(";")[1]
-    @focus = @config = ConfigNode.new(properties) #will process this later
-    nodify_move_list(input.gsub(properties, "").chomp[2..-2], @config)
+    @focus = @root = Node.new("",:properties => properties) #will process this later
+    nodify_move_list(input.gsub(properties, "").chomp[2..-2], @root)
   end
 
   def properties
-    @config.to_s
+    @root.to_s
   end
 
   def properties=(arg)
-    @config.node_text = arg 
+    @root.node_text = arg 
   end
 
   def property(symbol)
-    @config.property(symbol)
+    @root.property(symbol)
   end
 
   def write_property(symbol, value)
-    @config.write_property(symbol, value)
+    @root.write_property(symbol, value)
   end
 
   def to_s
-    "(#{@config.to_s})"
+    "(#{@root.to_s})"
   end
 
   def time_left(player)
@@ -214,7 +231,7 @@ class SGF
   end
 
   def last_node_by_player(player)
-    return if @focus == @config
+    return if @focus == @root
     if @focus.color == player
       return @focus
     elsif @focus.parent
@@ -223,7 +240,7 @@ class SGF
   end
 
   def undo
-    return if @focus == @config
+    return if @focus == @root
     to_del = @focus
     @focus = @focus.parent
     @focus.children.delete(to_del) 
