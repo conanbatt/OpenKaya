@@ -8,3 +8,5 @@ bot/local_sample.yaml
 *.swp
 
 estimator/.DS_Store
+
+.DS_Store
