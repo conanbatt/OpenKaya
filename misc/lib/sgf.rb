@@ -11,7 +11,6 @@ class SGF
     @root = Node.new(:properties => properties)
     @root.write_property(:file_format, 4)
     @focus = @root
-    @comment_buffer = ""
     @size = properties[:size]
   end
 
