@@ -11,23 +11,23 @@ setup do
 end
 test "Trying an alternate parser" do
 
-  sgf = SGF.new
   sgf = Parser.new.parse("mocks/MoyoMagic-Leather.sgf")
-
 end
 
 test "should be able to load with comments with special characters" do
 
-  sgf = SGF.new
   sgf = Parser.new.parse("mocks/MoyoMagic-Leather.sgf")
+end
+
+test "should be able to load kogo" do
+#TODO 
+#  sgf = Parser.new.parse("mocks/Kogo's Joseki Dictionary.sgf")
 
 end
 
 test "should parse comments for node text" do
 
-  sgf = SGF.new
   sgf = Parser.new.parse("(;FF[4];B[ab]C[This guy sucks :/ \n];W[ad]C[maybe \n])")
-
 end
 
 
