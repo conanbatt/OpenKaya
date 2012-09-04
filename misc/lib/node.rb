@@ -4,7 +4,7 @@ SYM_TO_PROP= {:black_play => "B", :white_play => "W",:black_rank => "BR", :white
                        :white_country => "WC", :event => "EV", :source => "SO", :black_left => "BL", :white_left => "WL",
                        :encoding => "CA", :size => "SZ", :rules => "RU", :time_set => "OT",:handicap => "HA"}
 
-SGF_PROPERTIES = %w(AW AB AE AR CR DD LB LN MA SL SQ TR VW TB TW B W BR PW PB KM DT RE FF BC WC EV SO BL WL CA SZ RU OT HA WR C TM GM)
+SGF_PROPERTIES = %w(PC GC CP GN ST AP AW AB AE AR CR DD LB LN MA SL SQ TR VW TB TW B W BR PW PB KM DT RE FF BC WC EV SO BL WL CA SZ RU OT HA WR C TM GM)
 
 module KayaInterface
 
