@@ -1,22 +1,26 @@
-  SGF_PROPERTIES= {:black_play => "B", :white_play => "W",:black_rank => "BR", :white_rank => "WR",:white_player => "PW", 
-                   :black_player => "PB", :komi => "KM", :date => "DT", :result => "RE",
-                   :file_format => "FF", :black_country => "BC", :add_black => "AB", :add_white => "AW",
-                   :white_country => "WC", :event => "EV", :source => "SO", :black_left => "BL", :white_left => "WL",
-                   :encoding => "CA", :size => "SZ", :rules => "RU", :time_set => "OT",:handicap => "HA"}
+SYM_TO_PROP= {:black_play => "B", :white_play => "W",:black_rank => "BR", :white_rank => "WR",:white_player => "PW", 
+                       :black_player => "PB", :komi => "KM", :date => "DT", :result => "RE",
+                       :file_format => "FF", :black_country => "BC", :add_black => "AB", :add_white => "AW",
+                       :white_country => "WC", :event => "EV", :source => "SO", :black_left => "BL", :white_left => "WL",
+                       :encoding => "CA", :size => "SZ", :rules => "RU", :time_set => "OT",:handicap => "HA"}
 
-
+SGF_PROPERTIES = %w(AW AB AE AR CR DD LB LN MA SL SQ TR VW TB TW B W BR PW PB KM DT RE FF BC WC EV SO BL WL CA SZ RU OT HA WR C TM GM)
 
 module KayaInterface
 
   def color
-    @node_text[1]
+    if @properties["B"]
+      return "B"
+    elsif @properties["W"]
+      return "W"
+    end
   end
 
   def x
-    @node_text[3] unless pass_node?
+    @properties[color] && @properties[color][0] 
   end
   def y
-    @node_text[4] unless pass_node?
+    @properties[color] && @properties[color][1] 
   end
 
   def coordinate
@@ -24,7 +28,7 @@ module KayaInterface
   end
 
   def pass_node?
-    @node_text.match(/[BW]\[\]/)
+    @properties[color].empty?
   end
 
   def validate_node_format(node)
@@ -36,10 +40,11 @@ module KayaInterface
   end
 
   def time_left
-    @node_text.match(/[#{color}]L\[\d{0,6}.\d{3}\]/).to_s[3..-2].to_f
+    @properties["#{color}L"]
   end
   def time_left=(time_left)
-    @node_text.gsub!(/[#{color}]L\[\d{0,6}.\d{3}\]/, "#{color}L[%.3f]" % [time_left])
+    raise "Invalid time node" unless time_left.match(/\d{0,6}.\d{3}/)
+    write_property("#{color}L", time_left)
   end
 
 end
@@ -50,22 +55,26 @@ class Node
 
   attr_accessor :node_text, :children, :properties
 
-  def initialize(node_text, options={})
-    @comments = []
-    @node_text = strip_comments!(node_text)
-    validate_node_format(node_text) if options[:parent]
+  def initialize(options={})
     @properties = options[:properties] || {}
+
+    @node_text = play_node
+    validate_node_format(@node_text) if options[:parent]
     @children = []
     @parent = options[:parent] 
     @parent.add_child(self) if parent
   end
 
-  def strip_comments!(node_text)
-    comments = node_text.scan(/C\[(.*)/m).first
-    if comments
-      comments.first.split("\n")[0..-2].each {|c| add_comment(c) }
+  def play_node
+    node_text = ""
+    if(@properties["B"])
+      node_text = ";B[#{@properties["B"]}]"
+      node_text << "BL[#{@properties["BL"]}]" if @properties["BL"]
+    elsif(@properties["W"])
+      node_text = ";W[#{@properties["W"]}]"
+      node_text << "WL[#{@properties["WL"]}]" if @properties["WL"]
     end
-    node_text.gsub(/C\[(.*)/m,"")  
+    node_text
   end
 
   def parent
@@ -76,16 +85,22 @@ class Node
     @children.push(node)
   end
 
-  def add_comment(comment)
-    @comments << (comment + "\n")
-  end
   def comments
-    @comments.empty? ? "" : "C[#{@comments.join.gsub("]","\\]").gsub(")","\\)")}]"
+    if property("C")
+      "C[#{property("C").gsub("]","\\]")}]"
+    else
+      ""
+    end
+  end
+
+  def add_comment(comment)
+    @properties["C"] ||= ""
+    @properties["C"] = "#{@properties["C"] += comment}\n"
   end
 
   def to_s(with_comments=true)
     children_text = @children.first.to_s
-    "#{";" if node_text.empty?}" + node_text + properties_to_s + "#{ comments if with_comments}" + children_text
+    ";" + properties_to_s + children_text
     
   end
 
@@ -106,18 +121,24 @@ class Node
   def properties_to_s
     res = ""
     @properties.each do |prop, val|
-      res << "#{SGF_PROPERTIES[prop]}[#{val}]"
+      if prop == "C"
+        val = val.gsub("]","\\]")
+      end
+      res << "#{SYM_TO_PROP[prop] || prop}[#{val}]"
     end
     res 
   end
 
-  def property(symbol)
-    @properties[symbol]
+  def property(prop)
+    key = SYM_TO_PROP[prop] || prop
+    @properties[key]
   end
 
-  def write_property(symbol, val)
-    raise "#{symbol} is not a valid SGF property" unless SGF_PROPERTIES[symbol]
-    @properties[symbol] = val
+  def write_property(prop, val)
+    key = SYM_TO_PROP[prop] || prop
+
+    raise "#{prop} is not a valid SGF property" unless SGF_PROPERTIES.include? key
+    @properties[key] = val
   end
 end
 

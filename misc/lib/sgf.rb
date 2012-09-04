@@ -4,14 +4,13 @@ class SGF
 
   BLACK = "B"
   WHITE = "W"
-  attr_accessor :move_list, :comment_buffer,:property, :focus
+  attr_accessor :move_list, :comment_buffer,:property, :focus, :root
 
   def initialize(moves="", properties={})
     moves ||= ""
-    @root = Node.new("", :properties => properties)
+    @root = Node.new(:properties => properties)
     @root.write_property(:file_format, 4)
     @focus = @root
-    nodify_move_list(moves, @root) unless moves.empty?
     @comment_buffer = ""
     @size = properties[:size]
   end
@@ -22,34 +21,11 @@ class SGF
     end
     false
   end
-  def nodify_move_list(moves, root_node)
-    @focus = root_node
-
-    coma_index = 0
-    if moves[0] == "("
-      coma_index = moves.index(";",1) || coma_index
-    else
-      coma_index = moves.index(/(\]|\();/,1) || coma_index#not counting the first one
-      coma_index += 1 unless coma_index == 0
-    end
-    node_text = moves[0..coma_index -1]
-    is_root = (node_text == "(")
-    if  node_text.include?("(") #it has variations
-      add_move(node_text.chop) unless is_root#removing the parenthesis
-      temp_focus = @focus
-      moves.scan(/((?<pg>\((?:\\[()]|[^()]|\g<pg>)*\)))/).each do |match|
-        nodify_move_list(match.first[1..-2], temp_focus) if match.first
-        
-      end
-    elsif !node_text.empty?
-      add_move(node_text)
-      nodify_move_list(moves[coma_index..-1], @focus) if coma_index != 0 
-    end
-  end
 
   def add_move(raw_node, rewrite=true) #TODO objetify node
+
     if rewrite
-      @focus = Node.new(raw_node, :parent => @focus) 
+      @focus = Node.new(:properties=> parse_kaya_raw_node(raw_node), :parent => @focus) 
     else
       found_repeated_node = false
       @focus.children.each do |child|
@@ -59,24 +35,23 @@ class SGF
         end
       end
       unless found_repeated_node
-        @focus = Node.new(raw_node, :parent => @focus) #only create a new node if there is no children with the same coordinate
+        @focus = Node.new(:properties => parse_kaya_raw_node(raw_node), :parent => @focus) #only create a new node if there is no children with the same coordinate
       end
     end
   end
 
-  def node_string_to_properties(raw_node)
-    
-    res = {}
-    play_node = raw_node.match(/([BW])\[(|[a-z][a-z])\]/)
-    if play_node && play_node[1] && play_node[2]
-      sym = (play_node[1] == "W") ? :white_play : :black_play
-      res.merge!({sym => play_node[2].to_s}) 
-    end
 
-    time_node = raw_node.match(/([BW])L\[(\d{0,6}.\d{3})\]/)
-    if time_node && time_node[1] && time_node[2]
-      sym = (play_node[1] == "W") ? :white_left: :black_left
-      res.merge!({sym => time_node[2].to_s}) 
+  def parse_kaya_raw_node(node)
+    res = {}
+    play_color = node.match(/;([BW])\[(|[a-z][a-z])\]/)
+    raise "#{node} is invalid node format" unless play_color
+
+    res[play_color[1]] = play_color[2]
+
+    if node.include?("BL") || node.include?("WL")
+      time_color = node.match(/([BW]L)\[(\d{0,6}.\d{3})\]/)
+      raise "#{node} is invalid node format" unless time_color
+      res[time_color[1]] = time_color[2]
     end
     res
   end
@@ -195,7 +170,7 @@ class SGF
   end
   def load_from_string(input)
     properties= input.split(";")[1]
-    @focus = @root = Node.new("",:properties => properties) #will process this later
+    @focus = @root = Node.new(:properties => properties) #will process this later
     nodify_move_list(input.gsub(properties, "").chomp[2..-2], @root)
   end
 

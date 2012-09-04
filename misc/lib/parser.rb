@@ -33,9 +33,13 @@ require 'stringio'
         case next_character
           when "(" then open_branch
           when ";" then
-            create_new_node
+
             parse_node_data
-            add_properties_to_current_node
+            if @node_properties["FF"] #for the root node
+              @node_properties.each {|k,v| @root.write_property(k, v)}
+            else
+              create_new_node(@node_properties)
+            end
           when ")" then close_branch
           else next
         end
@@ -77,23 +81,17 @@ require 'stringio'
       @current_node = @branches.shift
     end
 
-    def create_new_node
-      @sgf.add_move("")
-      #Node.new(@current_node)
-      @current_node = @sgf.focus
+    def create_new_node(props)
+      @current_node = Node.new(:parent => @current_node, :properties => props)
     end
 
     def parse_node_data
       @node_properties = {}
       while still_inside_node?
-        parse_identity
-        parse_property
-        @node_properties[@identity] = @property
+        identity =parse_identity
+        parse_property(identity)
+        @node_properties[identity] = @property
       end
-    end
-
-    def add_properties_to_current_node
-      @current_node.add_properties @node_properties
     end
 
     def still_inside_node?
@@ -108,15 +106,16 @@ require 'stringio'
     end
 
     def parse_identity
-      @identity = ""
+      identity = ""
       while char = next_character and char != "["
-        @identity << char unless char == "\n"
+        identity << char unless char == "\n"
       end
+      identity
     end
 
-    def parse_property
+    def parse_property(identity)
       @property = ""
-      case @identity.upcase
+      case identity.upcase
         when "C" then parse_comment
         when *LIST_IDENTITIES then parse_multi_property
         else parse_generic_property
