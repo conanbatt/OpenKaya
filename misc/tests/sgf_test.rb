@@ -37,7 +37,7 @@ test "should be able to re-create the sgf with the raw move list" do
   sgf = Parser.new.parse(branched_move_list)
 
   assert_equal sgf.move_list, ";B[hh];W[ii](;B[ee];W[ab];B[al])(;B[aa])" 
-  assert_equal sgf.focus_to_code, "root"
+  assert_equal sgf.focus_to_code, "0-0-1"
 
 end
 
@@ -399,7 +399,7 @@ test "should be able to make an sgf with the initial config node properties as p
 
   sgf = Parser.new.parse("(;B[];W[])")
 
-  params.each {|k,v| sgf.focus.write_property(k,v)}
+  params.each {|k,v| sgf.root.write_property(k,v)}
 
   assert_equal sgf.to_s, "(;FF[4]SZ[9]PW[blanco]PB[negro];B[];W[])"
 end

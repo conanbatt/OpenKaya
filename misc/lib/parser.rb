@@ -83,6 +83,7 @@ require 'stringio'
 
     def create_new_node(props)
       @current_node = Node.new(:parent => @current_node, :properties => props)
+      @sgf.focus = @current_node
     end
 
     def parse_node_data
