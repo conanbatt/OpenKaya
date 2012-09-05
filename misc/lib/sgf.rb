@@ -186,14 +186,6 @@ class SGF
     nodify_move_list(input.gsub(properties, "").chomp[2..-2], @root)
   end
 
-  def properties
-    @root.to_s
-  end
-
-  def properties=(arg)
-    @root.node_text = arg 
-  end
-
   def property(symbol)
     @root.property(symbol)
   end

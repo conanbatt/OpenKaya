@@ -11,34 +11,34 @@ setup do
 end
 test "Parsing shold be bi-directional" do
 
-  sgf = Parser.new.parse("mocks/full_parse.sgf")
+  sgf = SGF::Parser.parse("mocks/full_parse.sgf")
   string = sgf.to_s
 
-  sgf2 = Parser.new.parse(string)
+  sgf2 = SGF::Parser.parse(string)
 
 end
 
 test "should be able to load with comments with special characters" do
 
-  sgf = Parser.new.parse("mocks/MoyoMagic-Leather.sgf")
+  sgf = SGF::Parser.parse("mocks/MoyoMagic-Leather.sgf")
 end
 
 test "should be able to load kogo" do
 #TODO 
-#  sgf = Parser.new.parse("mocks/Kogo's Joseki Dictionary.sgf")
+#  sgf = SGF::Parser.parse("mocks/Kogo's Joseki Dictionary.sgf")
 
 end
 
 test "should parse comments for node text" do
 
-  sgf = Parser.new.parse("(;FF[4];B[ab]C[This guy sucks :/ \n];W[ad]C[maybe \n])")
+  sgf = SGF::Parser.parse("(;FF[4];B[ab]C[This guy sucks :/ \n];W[ad]C[maybe \n])")
 end
 
 
 test "should be able to re-create the sgf with the raw move list" do
 
   branched_move_list = "(;B[hh];W[ii](;B[ee];W[ab];B[al])(;B[aa]))"
-  sgf = Parser.new.parse(branched_move_list)
+  sgf = SGF::Parser.parse(branched_move_list)
 
   assert_equal sgf.move_list, ";B[hh];W[ii](;B[ee];W[ab];B[al])(;B[aa])" 
   assert_equal sgf.focus_to_code, "0-0-1"
@@ -56,13 +56,13 @@ test "should be able to nodify a certain move list" do
 
 
   mock_move_list  = "(;B[pd];W[jd](;B[pj])(;B[pp];B[dd]))"
-  sgf = Parser.new.parse(mock_move_list)
+  sgf = SGF::Parser.parse(mock_move_list)
 
   assert_equal sgf.move_list, mock_move_list[1..-2]
 
   #bug case
   bug_move_list = "(;B[pd](;W[pj](;B[jd];W[jj])(;B[lg];W[ih]))(;W[oh];B[kj];W[km]))(;B[ka])"
-  sgf = Parser.new.parse(bug_move_list)
+  sgf = SGF::Parser.parse(bug_move_list)
 
   assert_equal sgf.move_list, bug_move_list
 end
@@ -237,7 +237,7 @@ end
 test "Should load an sgf file" do
   filename = "mocks/mock.sgf"
 
-  sgf = Parser.new.parse(filename)
+  sgf = SGF::Parser.parse(filename)
   assert_equal sgf.move_list, ";B[qd];W[pp]"
 end
 
@@ -257,7 +257,7 @@ end
 test "Should load a full sgf file with comments" do
 
   filename = "mocks/full_parse.sgf"
-  sgf = Parser.new.parse(filename)
+  sgf = SGF::Parser.parse(filename)
 
   comment_hash = {"0"=>"C[Genych[3k\\]: onegaishimasu ^ ^\nGenych[3k\\]: can i stop your clock till you will be ready?\n]","1"=>"C[conanbatt[5d\\]: sorry\nconanbatt[5d\\]: sound was off\nGenych[3k\\]: no problem\n]", "13"=>"C[Genych[3k\\]: i don't know what to do with 7 additional stones  :\\)\n]", "14"=>"C[conanbatt[5d\\]: neither do i\n]", "93"=>"C[Genych[3k\\]: oops :\\)\nconanbatt[5d\\]: :\\)\n]", "218"=>"C[Genych[3k\\]: we must fill neitrals, right?\n]", "219"=>"C[conanbatt[5d\\]: no\n]", "220"=>"C[conanbatt[5d\\]: mm\nconanbatt[5d\\]: something wrong with scoring!\nGenych[3k\\]: maybe we both tryin' in the same time?\nGenych[3k\\]: hm. no\nconanbatt[5d\\]: this is a definite bug\nconanbatt[5d\\]: we made some big changes last friday\nconanbatt[5d\\]: gimme a sec\nGenych[3k\\]: sure\nGenych[3k\\]: i'm glad to help find bugs :\\)\nconanbatt[5d\\]: :\\)\nconanbatt[5d\\]: i win by 2.5\nconanbatt[5d\\]: amazing\nGenych[3k\\]: cool!\nconanbatt[5d\\]: you lost  when i broke through on top\nGenych[3k\\]: your yose was incredible\nconanbatt[5d\\]: gimme a sec to debug this\nGenych[3k\\]: ok\nconanbatt[5d\\]: ook\nconanbatt[5d\\]: lets leave the game like this :\\)\nGenych[3k\\]: ok\nconanbatt[5d\\]: pato is going to fix it\nGenych[3k\\]: thanks for the game, btw!\nconanbatt[5d\\]: i would comment some vars for you\nconanbatt[5d\\]: Genych click done\n]"}
   assert_equal sgf.hashify_comments , comment_hash
@@ -278,7 +278,7 @@ test "should be able to add a time property to a node" do
 end
 
 test "should explode if try to access invalid property" do
-  sgf = Parser.new.parse("(;FF[4]PB[CARLOS]PW[PEPE];B[aa])")
+  sgf = SGF::Parser.parse("(;FF[4]PB[CARLOS]PW[PEPE];B[aa])")
 
   assert sgf.property(:komi).nil?
 end
@@ -287,7 +287,7 @@ end
 
 test "Should load a sgf property" do
   filename = "mocks/mock.sgf"
-  sgf = Parser.new.parse(filename)
+  sgf = SGF::Parser.parse(filename)
 
   assert_equal sgf.property(:white_player), "Kang Dongyun"
   assert_equal sgf.property(:black_player), "Ryu Chaehyeong"
@@ -310,14 +310,14 @@ end
 test "should be able to write a full sgf" do
 
   filename = "mocks/mock.sgf"
-  sgf = Parser.new.parse(filename)
+  sgf = SGF::Parser.parse(filename)
   assert_equal sgf.to_s, "(;FF[4]RU[Japanese]TM[1500]OT[5x30 byo-yomi]GM[1]SZ[19]CA[UTF-8]SO[gokifu.com]BC[kr]WC[kr]EV[7th Korean Wonik Cup Siptan]PB[Ryu Chaehyeong]BR[9p]PW[Kang Dongyun]WR[9p]KM[6.5]DT[2011-09-30]RE[W+R]C[Genych[3k\\]: onegaishimasu ^ ^\nGenych[3k\\]: can i stop your clock till you will be ready?\n];B[qd];W[pp])"
 
 end
 
 test "should give a full sgf string" do
 
-  sgf = Parser.new.parse("(;B[ac];W[ed])")
+  sgf = SGF::Parser.parse("(;B[ac];W[ed])")
 
   sgf.write_property(:white_player, "Conan")
   assert_equal sgf.property(:white_player), "Conan"
@@ -371,7 +371,7 @@ end
 
 test 'should create the sgf node list with initialization' do
 
-  sgf = Parser.new.parse("(;B[ac];W[ed])")
+  sgf = SGF::Parser.parse("(;B[ac];W[ed])")
   assert_equal sgf.move_list, ";B[ac];W[ed]"
 end
 
@@ -383,7 +383,7 @@ end
 
 test 'should recognize if last two moves are pass' do
  
-  sgf = Parser.new.parse("(;B[];W[])")
+  sgf = SGF::Parser.parse("(;B[];W[])")
   assert_equal sgf.move_list, ";B[];W[]"
 
 
@@ -391,7 +391,7 @@ test 'should recognize if last two moves are pass' do
 #  debugger
 #  assert sgf.last_two_moves_are_pass?
 
-  sgf = Parser.new.parse("(;B[]BL[500.000];W[]WL[500.000])")
+  sgf = SGF::Parser.parse("(;B[]BL[500.000];W[]WL[500.000])")
   assert_equal sgf.move_list, ";B[]BL[500.000];W[]WL[500.000]"
 #  assert sgf.last_two_moves_are_pass?
 
@@ -401,7 +401,7 @@ test "should be able to make an sgf with the initial config node properties as p
 
   params = {:size => 9, :white_player => "blanco", :black_player => "negro"}
 
-  sgf = Parser.new.parse("(;B[];W[])")
+  sgf = SGF::Parser.parse("(;B[];W[])")
 
   params.each {|k,v| sgf.root.write_property(k,v)}
 
@@ -410,7 +410,7 @@ end
 
 test "should be able to parse comments into it" do
 
-  sgf = Parser.new.parse("(;B[aa];W[bb])")
+  sgf = SGF::Parser.parse("(;B[aa];W[bb])")
 
   comments = {"0"=>[{"timestamp"=>"[1327727980000]",
                      "user"=>"dp",
@@ -438,7 +438,7 @@ end
 
 test "should be able to undo" do
 
-  sgf = Parser.new.parse("(;B[aa];W[bb];B[cc])")
+  sgf = SGF::Parser.parse("(;B[aa];W[bb];B[cc])")
   sgf.undo
   assert_equal sgf.move_list, ";B[aa];W[bb]"
 
@@ -446,7 +446,7 @@ end
 
 test "should be able to undo even if there are comments still" do
 
-  sgf = Parser.new.parse("(;B[aa];W[bb];B[cc])")
+  sgf = SGF::Parser.parse("(;B[aa];W[bb];B[cc])")
 
   sgf.add_comment("wow")
   sgf.undo
@@ -464,7 +464,7 @@ end
 test "should write the hadnicap info" do
 
   params = {:size => 19, :white_player => "fuerte", :black_player => "debil", :handicap => 9}.merge(SGF.handi_props(19,9))
-  sgf = Parser.new.parse("(;B[aa];W[bb];B[cc])")
+  sgf = SGF::Parser.parse("(;B[aa];W[bb];B[cc])")
 
   params.each {|k,v| sgf.root.write_property(k,v)}
 

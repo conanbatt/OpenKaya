@@ -9,7 +9,9 @@ require 'stringio'
   #The parser returns a SGF::Collection representation of the SGF file
   #parser = SGF::Parser.new
   #collection = parser.parse sgf_in_string_form
-  class Parser
+class SGF
+
+  module Parser
 
     NEW_NODE = ";"
     BRANCHING = %w{( )}
@@ -22,7 +24,7 @@ require 'stringio'
     # or a file handler (File).
     # The second argument is optional, in case you don't want this to raise errors.
     # You probably shouldn't use it, but who's gonna stop you?
-    def parse sgf, strict_parsing = true
+    def self.parse sgf, strict_parsing = true
       @strict_parsing = strict_parsing
       @stream = streamably_stringify sgf
       @sgf = SGF.new
@@ -49,7 +51,7 @@ require 'stringio'
 
     private
 
-    def streamably_stringify sgf
+    def self.streamably_stringify sgf
       sgf = sgf.read if sgf.instance_of?(File)
       sgf = File.read(sgf) if File.exist?(sgf)
 
@@ -57,7 +59,7 @@ require 'stringio'
       StringIO.new clean(sgf), 'r'
     end
 
-    def check_for_errors_before_parsing string
+    def self.check_for_errors_before_parsing string
       unless string[/\A\s*\(\s*;/]
         msg = "The first two non-whitespace characters of the string should be (;"
         msg << " but they were #{string[0..1]} instead."
@@ -65,7 +67,7 @@ require 'stringio'
       end
     end
 
-    def clean sgf
+    def self.clean sgf
       sgf.gsub! "\\\\n\\\\r", ''
       sgf.gsub! "\\\\r\\\\n", ''
       sgf.gsub! "\\\\r", ''
@@ -73,20 +75,20 @@ require 'stringio'
       sgf
     end
 
-    def open_branch
+    def self.open_branch
       @branches.unshift @current_node
     end
 
-    def close_branch
+    def self.close_branch
       @current_node = @branches.shift
     end
 
-    def create_new_node(props)
+    def self.create_new_node(props)
       @current_node = Node.new(:parent => @current_node, :properties => props)
       @sgf.focus = @current_node
     end
 
-    def parse_node_data
+    def self.parse_node_data
       @node_properties = {}
       while still_inside_node?
         identity =parse_identity
@@ -95,7 +97,7 @@ require 'stringio'
       end
     end
 
-    def still_inside_node?
+    def self.still_inside_node?
       inside_a_node = false
       while char = next_character
         next if char[/\s/]
@@ -106,7 +108,7 @@ require 'stringio'
       inside_a_node
     end
 
-    def parse_identity
+    def self.parse_identity
       identity = ""
       while char = next_character and char != "["
         identity << char unless char == "\n"
@@ -114,7 +116,7 @@ require 'stringio'
       identity
     end
 
-    def parse_property(identity)
+    def self.parse_property(identity)
       @property = ""
       case identity.upcase
         when "C" then parse_comment
@@ -123,31 +125,31 @@ require 'stringio'
       end
     end
 
-    def parse_comment
+    def self.parse_comment
       while char = next_character and still_inside_comment? char
         @property << char
       end
       @property.gsub! "\\]", "]"
     end
 
-    def parse_multi_property
+    def self.parse_multi_property
       while char = next_character and still_inside_multi_property? char
         @property << char
       end
       @property = @property.gsub("][", ",").split(",")
     end
 
-    def parse_generic_property
+    def self.parse_generic_property
       while char = next_character and char != "]"
         @property << char
       end
     end
 
-    def still_inside_comment? char
+    def self.still_inside_comment? char
       char != "]" || (char == "]" && @property[-1..-1] == "\\")
     end
 
-    def still_inside_multi_property? char
+    def self.still_inside_multi_property? char
       return true if char != "]"
       inside_multi_property = false
       while char = next_character
@@ -159,10 +161,10 @@ require 'stringio'
       inside_multi_property
     end
 
-    def next_character
+    def self.next_character
       !@stream.eof? && @stream.sysread(1)
     end
 
   end
 
-
+end
