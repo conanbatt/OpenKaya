@@ -9,9 +9,13 @@ require 'ruby-debug'
 setup do
 
 end
-test "Trying an alternate parser" do
+test "Parsing shold be bi-directional" do
 
-  sgf = Parser.new.parse("mocks/MoyoMagic-Leather.sgf")
+  sgf = Parser.new.parse("mocks/full_parse.sgf")
+  string = sgf.to_s
+
+  sgf2 = Parser.new.parse(string)
+
 end
 
 test "should be able to load with comments with special characters" do

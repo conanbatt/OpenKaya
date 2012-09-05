@@ -116,6 +116,11 @@ class Node
       if prop == "C"
         val = val.gsub("]","\\]")
       end
+      if val.kind_of?(Array)
+        multi_prop = ""
+        val.each{|el| multi_prop += "[#{el}]"}
+        val = multi_prop[1..-2]
+      end
       res << "#{SYM_TO_PROP[prop] || prop}[#{val}]"
     end
     res 
