@@ -1,4 +1,5 @@
 require File.expand_path("node", File.dirname(__FILE__))
+require File.expand_path("parser", File.dirname(__FILE__))
 
 class SGF
 
@@ -12,6 +13,18 @@ class SGF
     @root.write_property(:file_format, 4)
     @focus = @root
     @size = properties[:size]
+  end
+
+  def self.kaya_sgf(moves, properties)
+    sgf = nil
+    
+    if moves
+      sgf = Parser.new.parse("(#{moves})")
+      properties.each{|k,v| sgf.root.write_property(k,v)}
+    else
+      sgf= SGF.new("",properties)
+    end
+    sgf
   end
 
   def last_two_moves_are_pass?
@@ -197,11 +210,6 @@ class SGF
     raise "Invalid input #{player}. W or B expected" unless player == "B" || player == "W"
     ln = last_node_by_player(player)
     ln && ln.time_left
-  end
-
-  def add_time(player,time)
-    ln = last_node_by_player(player)
-    ln.time_left= (ln.time_left + time)
   end
 
   def last_node_by_player(player)

@@ -432,27 +432,11 @@ test "should be able to parse comments into it" do
   sgf.parse_comments!(comments)
 end
 
-test "should be able to read time by players" do
-
-  sgf = Parser.new.parse("(;B[aa]BL[200.000];W[bb]WL[300.000])")
-# TODO FOCUS ISSUE
-#  assert_equal sgf.time_left("B"), 200.000
-#  assert_equal sgf.time_left("W"), 300.000
-
-#  sgf.add_time("B",500)
-
-#  assert_equal sgf.time_left("B"), 700.000
-#  assert_equal sgf.time_left("W"), 300.000
-end
-
-=begin
 test "should be able to undo" do
 
   sgf = Parser.new.parse("(;B[aa];W[bb];B[cc])")
-#TODO focus
-  #debugger
   sgf.undo
-  #assert_equal sgf.move_list, ";B[aa];W[bb]"
+  assert_equal sgf.move_list, ";B[aa];W[bb]"
 
 end
 
@@ -472,7 +456,6 @@ test "should be able to undo even if there are comments still" do
   assert_equal sgf.focus_to_code, "root"
 
 end
-=end
 
 test "should write the hadnicap info" do
 

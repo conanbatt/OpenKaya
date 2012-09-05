@@ -39,14 +39,6 @@ module KayaInterface
     raise "#{node} is invalid node format" unless valid
   end
 
-  def time_left
-    @properties["#{color}L"]
-  end
-  def time_left=(time_left)
-    raise "Invalid time node" unless time_left.match(/\d{0,6}.\d{3}/)
-    write_property("#{color}L", time_left)
-  end
-
 end
 
 class Node
