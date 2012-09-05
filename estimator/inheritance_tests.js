@@ -42,7 +42,7 @@ parentClass.prototype.doSomething  = function() {
 
 //childClass may be defined in another file than parentClass, but parentClass must be loaded first
 function childClass(size, name) {
-	this._base_classChild.call(this, size);//call parent constructor
+	this._base_childClass.call(this, size);//call parent constructor
 	//new child member variables
 	this.name = name;
 	//redefine some parent variables
@@ -53,7 +53,7 @@ function childClass(size, name) {
 extendClass(childClass, parentClass);//define inheritance
 
 childClass.prototype.doSomething  = function() {
-	var parentResult = this._base_classChild.prototype.doSomething.call(this);//call parent function
+	var parentResult = this._base_childClass.prototype.doSomething.call(this);//call parent function
 	return parentResult + parentClass.StaticConstant + this.constant1 + this.constant2;
 };
 
