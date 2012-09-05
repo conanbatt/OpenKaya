@@ -1,10 +1,3 @@
-SYM_TO_PROP= {:black_play => "B", :white_play => "W",:black_rank => "BR", :white_rank => "WR",:white_player => "PW", 
-                       :black_player => "PB", :komi => "KM", :date => "DT", :result => "RE",
-                       :file_format => "FF", :black_country => "BC", :add_black => "AB", :add_white => "AW",
-                       :white_country => "WC", :event => "EV", :source => "SO", :black_left => "BL", :white_left => "WL",
-                       :encoding => "CA", :size => "SZ", :rules => "RU", :time_set => "OT",:handicap => "HA"}
-
-SGF_PROPERTIES = %w(PC GC CP GN ST AP AW AB AE AR CR DD LB LN MA SL SQ TR VW TB TW B W BR PW PB KM DT RE FF BC WC EV SO BL WL CA SZ RU OT HA WR C TM GM)
 
 module KayaInterface
 
@@ -42,6 +35,13 @@ module KayaInterface
 end
 
 class Node
+  SYM_TO_PROP= {:black_play => "B", :white_play => "W",:black_rank => "BR", :white_rank => "WR",:white_player => "PW", 
+                       :black_player => "PB", :komi => "KM", :date => "DT", :result => "RE",
+                       :file_format => "FF", :black_country => "BC", :add_black => "AB", :add_white => "AW",
+                       :white_country => "WC", :event => "EV", :source => "SO", :black_left => "BL", :white_left => "WL",
+                       :encoding => "CA", :size => "SZ", :rules => "RU", :time_set => "OT",:handicap => "HA"}
+
+  SGF_PROPERTIES = %w(PC GC CP GN ST AP AW AB AE AR CR DD LB LN MA SL SQ TR VW TB TW B W BR PW PB KM DT RE FF BC WC EV SO BL WL CA SZ RU OT HA WR C TM GM)
 
   include KayaInterface
 
