@@ -6,9 +6,6 @@ require File.expand_path("node", File.dirname(__FILE__))
 
 require 'stringio'
 
-  #The parser returns a SGF::Collection representation of the SGF file
-  #parser = SGF::Parser.new
-  #collection = parser.parse sgf_in_string_form
 class SGF
 
   module Parser
@@ -19,11 +16,6 @@ class SGF
     NODE_DELIMITERS = [NEW_NODE].concat BRANCHING
     LIST_IDENTITIES = %w(AW AB AE AR CR DD LB LN MA SL SQ TR VW TB TW)
 
-    # This takes as argument an SGF and returns an SGF::Collection object
-    # It accepts a local path (String), a stringified SGF (String),
-    # or a file handler (File).
-    # The second argument is optional, in case you don't want this to raise errors.
-    # You probably shouldn't use it, but who's gonna stop you?
     def self.parse sgf, strict_parsing = true
       @strict_parsing = strict_parsing
       @stream = streamably_stringify sgf

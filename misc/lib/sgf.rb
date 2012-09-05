@@ -19,7 +19,7 @@ class SGF
     sgf = nil
     
     if moves
-      sgf = Parser.new.parse("(#{moves})")
+      sgf = SGF::Parser.parse("(#{moves})")
       properties.each{|k,v| sgf.root.write_property(k,v)}
     else
       sgf= SGF.new("",properties)
