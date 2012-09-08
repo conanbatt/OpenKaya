@@ -1,0 +1,97 @@
+/*!
+ * jGoBoard v1.5
+ * http://www.jgoboard.com/
+ *
+ * This software is licensed under a Creative Commons Attribution-NonCommercial 3.0 Unported License:
+ * http://creativecommons.org/licenses/by-nc/3.0/
+ * If you want to negotiate on a commercial license, please contact the author.
+ *
+ * Date: 2011-03-05
+ */
+
+/* Board object - sizes of margins and required shadow clipping is defined in the .js file */
+.jgo_board.small {
+	width: 438px;
+	height: 457px;
+	font-family: Verdana,Arial,Helvetica,sans-serif;
+	font-size: 10px;
+	background: url(small/board.jpg) no-repeat top left;
+	position: relative;
+	margin: 0;
+	padding: 0;
+}
+
+/* Container for stones - should be the size of these PNG files */
+.jgo_b_s, .jgo_w_s , .jgo_c_s, .jgo_f_s {
+	position: absolute;
+	width: 20px;
+	height: 20px;
+	z-index: 10;
+}
+
+ 
+.jgo_b_s { background: url(small/black.png) no-repeat top left; }
+.jgo_w_s { background: url(small/white.png) no-repeat top left; }
+.jgo_f_s { background: url(small/fill.png) no-repeat top left; }
+
+/* Container for markers - should be the the same size as stones */
+.jgo_m_s {
+	position: absolute;
+	width: 20px;
+	height: 20px;
+	z-index: 20;
+}
+
+/* Special markers for black and white stone hover effect - set on empty intersections */
+.jgo_m_s.hover_b:hover { opacity: 0.6; background: url(small/black.png) no-repeat top left; }
+.jgo_m_s.hover_w:hover { opacity: 0.6; background: url(small/white.png) no-repeat top left; }
+
+.jgo_m_s.square_b { background: url(small/square_b.png) no-repeat top left; }
+.jgo_m_s.square_w { background: url(small/square_w.png) no-repeat top left; }
+.jgo_m_s.triangle_b { background: url(small/triangle_b.png) no-repeat top left; }
+.jgo_m_s.triangle_w { background: url(small/triangle_w.png) no-repeat top left; }
+.jgo_m_s.circle_b { background: url(small/circle_b.png) no-repeat top left; }
+.jgo_m_s.circle_w { background: url(small/circle_w.png) no-repeat top left; }
+.jgo_m_s.cross_b { background: url(small/cross_b.png) no-repeat top left; }
+.jgo_m_s.cross_w { background: url(small/cross_w.png) no-repeat top left; }
+.jgo_m_s.territory_b { background: url(small/territory_b.png) no-repeat top left; }
+.jgo_m_s.territory_w { background: url(small/territory_w.png) no-repeat top left; }
+
+.jgo_m_s.white {
+	color: white;
+}
+
+.jgo_m_s.white, .jgo_m_s.black {
+	font-weight: bold;
+	line-height: 19px;
+	font-size: 10px;
+	text-align: center;
+}
+
+/* Shadow is larger than the squares, and code handles clipping on board edges separately */
+.jgo_sh_s {
+	display: none;
+	position: absolute;
+	width: 38px;
+	height: 33px;
+	z-index: 5;
+	background: url(small/shadow.png) no-repeat top left;
+}
+
+/* Coordinate labels */
+.jgo_coord_s {
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	font-weight: bold;
+	font-size: 10px;
+	line-height: 16px;
+	color: #ccc;
+	text-align: center;
+}
+
+/* jgo_auto styles */
+.jgo_auto.small {
+	width: 440px;
+	text-align: center;
+}

@@ -6,3 +6,7 @@ bot/.rvmrc
 bot/local_sample.yaml
 .sass-cache
 *.swp
+
+estimator/.DS_Store
+
+.DS_Store
