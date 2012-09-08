@@ -8,14 +8,26 @@
 /** Note
 (i, j) coords are relative to a double array board[i][j] so (i, 1) corresponds to the black group in the following example:
 	var clear_territory_board = [
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"]
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ]
             ];
 */
+
+var e = ScoreBoard.EMPTY;
+var B = ScoreBoard.BLACK;
+var W = ScoreBoard.WHITE;
+var D = ScoreBoard.TERRITORY_DAME;
+var BD = ScoreBoard.BLACK_DEAD;
+var WD = ScoreBoard.WHITE_DEAD;
+var BA = ScoreBoard.BLACK_ALIVE;
+var WA = ScoreBoard.WHITE_ALIVE;
+var TB = ScoreBoard.TERRITORY_BLACK;
+var TW = ScoreBoard.TERRITORY_WHITE;
+var TU = ScoreBoard.TERRITORY_UNKNOWN;
 
 function are_equal_boards(board1, board2){
   
@@ -47,25 +59,25 @@ test("ScoreBoard should define the constants used to mark groups dead or alive",
 test("Should be able to mark a black string of stones as dead or alive if you select one of them", function(){
 
 	var test_board = [
-                ["*","B","*","W","*","B"],
-                ["*","B","*","W","*","*"],
-                ["B","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","B","*"]
+                [ e  , B  , e  , W  , e  , B  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ B  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , B  , e  ]
             ];
 
-	var scoreboard = new ScoreBoard(test_board);
+	var scoreboard = new ScoreBoard(test_board, 0.5, 0, 0);
 
 	//mark black group as dead
 	var toggledBoard = scoreboard.toggleAt(0, 1);
 	var expected_result1 = [
-                ["*","N","*","W","*","B"],
-                ["*","N","*","W","*","*"],
-                ["N","N","*","W","*","*"],
-                ["*","N","*","W","*","*"],
-                ["*","N","*","W","*","*"],
-                ["*","N","*","W","B","*"]
+                [ e  , BD , e  , W  , e  , B  ],
+                [ e  , BD , e  , W  , e  , e  ],
+                [ BD , BD , e  , W  , e  , e  ],
+                [ e  , BD , e  , W  , e  , e  ],
+                [ e  , BD , e  , W  , e  , e  ],
+                [ e  , BD , e  , W  , B  , e  ]
             ];
 
 	ok(are_equal_boards(toggledBoard, expected_result1));
@@ -74,12 +86,12 @@ test("Should be able to mark a black string of stones as dead or alive if you se
 	//now make black group back to life
 	toggledBoard = scoreboard.toggleAt(4,1);
 	var expected_result2 = [
-                ["*","A","*","W","*","B"],
-                ["*","A","*","W","*","*"],
-                ["A","A","*","W","*","*"],
-                ["*","A","*","W","*","*"],
-                ["*","A","*","W","*","*"],
-                ["*","A","*","W","B","*"]
+                [ e  , BA , e  , W  , e  , B  ],
+                [ e  , BA , e  , W  , e  , e  ],
+                [ BA , BA , e  , W  , e  , e  ],
+                [ e  , BA , e  , W  , e  , e  ],
+                [ e  , BA , e  , W  , e  , e  ],
+                [ e  , BA , e  , W  , B  , e  ]
             ];
 
 	ok(are_equal_boards(toggledBoard, expected_result2));
@@ -88,12 +100,12 @@ test("Should be able to mark a black string of stones as dead or alive if you se
 	//now make black group dead again
 	toggledBoard = scoreboard.toggleAt(5,1);
 	var expected_result3 = [
-                ["*","N","*","W","*","B"],
-                ["*","N","*","W","*","*"],
-                ["N","N","*","W","*","*"],
-                ["*","N","*","W","*","*"],
-                ["*","N","*","W","*","*"],
-                ["*","N","*","W","B","*"]
+                [ e  , BD , e  , W  , e  , B  ],
+                [ e  , BD , e  , W  , e  , e  ],
+                [ BD , BD , e  , W  , e  , e  ],
+                [ e  , BD , e  , W  , e  , e  ],
+                [ e  , BD , e  , W  , e  , e  ],
+                [ e  , BD , e  , W  , B  , e  ]
             ];
 
 	ok(are_equal_boards(toggledBoard, expected_result3));
@@ -109,25 +121,25 @@ test("Should be able to mark a black string of stones as dead or alive if you se
 test("Should be able to mark a white string of stones as dead or alive if you select one of them", function(){
 
 	var test_board = [
-                ["*","B","*","W","*","W"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","W","W"],
-                ["*","B","*","W","B","W"],
-                ["*","B","*","W","*","W"]
+                [ e  , B  , e  , W  , e  , W  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , W  , W  ],
+                [ e  , B  , e  , W  , B  , W  ],
+                [ e  , B  , e  , W  , e  , W  ]
             ];
 
-	var scoreboard = new ScoreBoard(test_board);
+	var scoreboard = new ScoreBoard(test_board, 0.5, 0, 0);
 
 	//mark white group as dead
 	var toggledBoard = scoreboard.toggleAt(2, 3);
 	var expected_result1 = [
-                ["*","B","*","E","*","W"],
-                ["*","B","*","E","*","*"],
-                ["*","B","*","E","*","*"],
-                ["*","B","*","E","E","E"],
-                ["*","B","*","E","B","E"],
-                ["*","B","*","E","*","E"]
+                [ e  , B  , e  , WD , e  , W  ],
+                [ e  , B  , e  , WD , e  , e  ],
+                [ e  , B  , e  , WD , e  , e  ],
+                [ e  , B  , e  , WD , WD , WD ],
+                [ e  , B  , e  , WD , B  , WD ],
+                [ e  , B  , e  , WD , e  , WD ]
             ];
 
 	ok(are_equal_boards(toggledBoard, expected_result1));
@@ -136,12 +148,12 @@ test("Should be able to mark a white string of stones as dead or alive if you se
 	//now make white group back to life
 	toggledBoard = scoreboard.toggleAt(5, 3);
 	var expected_result2 = [
-                ["*","B","*","Z","*","W"],
-                ["*","B","*","Z","*","*"],
-                ["*","B","*","Z","*","*"],
-                ["*","B","*","Z","Z","Z"],
-                ["*","B","*","Z","B","Z"],
-                ["*","B","*","Z","*","Z"]
+                [ e  , B  , e  , WA , e  , W  ],
+                [ e  , B  , e  , WA , e  , e  ],
+                [ e  , B  , e  , WA , e  , e  ],
+                [ e  , B  , e  , WA , WA , WA ],
+                [ e  , B  , e  , WA , B  , WA ],
+                [ e  , B  , e  , WA , e  , WA ]
             ];
 
 	ok(are_equal_boards(toggledBoard, expected_result2));
@@ -150,12 +162,12 @@ test("Should be able to mark a white string of stones as dead or alive if you se
 	//now make white group dead again
 	toggledBoard = scoreboard.toggleAt(1, 3);
 	var expected_result3 = [
-                ["*","B","*","E","*","W"],
-                ["*","B","*","E","*","*"],
-                ["*","B","*","E","*","*"],
-                ["*","B","*","E","E","E"],
-                ["*","B","*","E","B","E"],
-                ["*","B","*","E","*","E"]
+                [ e  , B  , e  , WD , e  , W  ],
+                [ e  , B  , e  , WD , e  , e  ],
+                [ e  , B  , e  , WD , e  , e  ],
+                [ e  , B  , e  , WD , WD , WD ],
+                [ e  , B  , e  , WD , B  , WD ],
+                [ e  , B  , e  , WD , e  , WD ]
             ];
 
 	ok(are_equal_boards(toggledBoard, expected_result3));
@@ -172,15 +184,15 @@ test("Should be able to mark a white string of stones as dead or alive if you se
 test("Should implement getSize()", function(){
 
 	var test_board = [
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"]
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ]
             ];
 
-	var scoreboard = new ScoreBoard(test_board);
+	var scoreboard = new ScoreBoard(test_board, 0.5, 0, 0);
 
 	var size = scoreboard.getSize();
 	
@@ -190,44 +202,44 @@ test("Should implement getSize()", function(){
 test("Should store a board independantly of its source and the result of getBoard should be independant from its creator", function(){
 
 	var test_board = [
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"]
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ]
             ];
 
-	var scoreboard = new ScoreBoard(test_board);
+	var scoreboard = new ScoreBoard(test_board, 0.5, 0, 0);
 	
-	test_board[0][1] = "W";
-	test_board[1][0] = "W";
-	test_board[1][1] = "W";
+	test_board[0][1] =  W  ;
+	test_board[1][0] =  W  ;
+	test_board[1][1] =  W  ;
 
 	var saved_board = scoreboard.getBoardArray();
 	var expected_result = [
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"]
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ]
             ];
 
 	ok(are_equal_boards(saved_board, expected_result));
 	
-	saved_board[3][3] = "B";
-	saved_board[4][4] = "B";
-	saved_board[5][5] = "B";
+	saved_board[3][3] =  B  ;
+	saved_board[4][4] =  B  ;
+	saved_board[5][5] =  B  ;
 
 	var saved_board2 = scoreboard.getBoardArray();
 	var expected_result2 = [
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"]
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ]
             ];
 
 	ok(are_equal_boards(saved_board2, expected_result2));
@@ -239,15 +251,15 @@ test("Should store a board independantly of its source and the result of getBoar
 test("Should be able to clone a board", function(){
 
 	var test_board = [
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"]
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ]
             ];
 
-	var scoreboard = new ScoreBoard(test_board);
+	var scoreboard = new ScoreBoard(test_board, 0.5, 0, 0);
 
 	var cloned_board = scoreboard.clone();
 	
@@ -256,14 +268,80 @@ test("Should be able to clone a board", function(){
 
 	var saved_board = cloned_board.getBoardArray();	
 	var expected_result = [
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"],
-                ["*","B","*","W","*","*"]
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ]
             ];
 
 	ok(are_equal_boards(saved_board, expected_result));
+});
+
+test("Should be able to count komi", function(){
+
+	var test_board = [
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ],
+                [ e  , B  , e  , W  , e  , e  ]
+            ];
+
+	{
+		var scoreboard = new ScoreBoard(test_board, 0.5, 0, 0);
+		scoreboard.countJapaneseResult();
+
+		ok(scoreboard.getBlackScore() == 0);
+		ok(scoreboard.getWhiteScore() == 0.5);
+		ok(scoreboard.getGameResult() == "W+0.5");
+	}
+	{
+		var scoreboard = new ScoreBoard(test_board, -4.5, 0, 0);
+		scoreboard.countJapaneseResult();
+
+		ok((scoreboard.getBlackScore() - scoreboard.getWhiteScore()) == 4.5);
+		ok(scoreboard.getGameResult() == "B+4.5");
+	}
+});
+
+test("Should be able to count marked territories", function(){
+
+	var test_board = [
+                [ TB , B  , e  , W  , TW , TW ],
+                [ TB , B  , e  , W  , TW , TW ],
+                [ TB , B  , e  , W  , TW , TW ],
+                [ TB , B  , e  , W  , TW , TW ],
+                [ TB , B  , e  , W  , TW , TW ],
+                [ TB , B  , e  , W  , TW , TW ]
+            ];
+
+	var scoreboard = new ScoreBoard(test_board, 0.5, 0, 0);
+	scoreboard.countJapaneseResult();
+
+	ok(scoreboard.getBlackScore() == 6);
+	ok(scoreboard.getWhiteScore() == 12.5);
+	ok(scoreboard.getGameResult() == "W+6.5");
+});
+
+test("Should be able to count marked dead groups", function(){
+
+	var test_board = [
+                [ e  , BD , e  , e  , e  , e  ],
+                [ e  , e  , e  , e  , e  , e  ],
+                [ e  , e  , e  , e  , e  , e  ],
+                [ e  , e  , e  , WD , e  , e  ],
+                [ e  , e  , e  , e  , e  , e  ],
+                [ e  , BD , e  , e  , e  , e  ]
+            ];
+
+	var scoreboard = new ScoreBoard(test_board, 0.5, 0, 0);
+	scoreboard.countJapaneseResult();
+
+	ok(scoreboard.getBlackScore() == 2);
+	ok(scoreboard.getWhiteScore() == 4.5);
+	ok(scoreboard.getGameResult() == "W+2.5");
 });
 
