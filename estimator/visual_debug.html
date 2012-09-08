@@ -85,7 +85,7 @@ Variation: <strong><span id="variation">1/1</span></strong></p>
 </div> <!-- center_wrap -->
 <input type="button" style="margin-left:15px;margin-bottom:10px;" onclick="useSE = !useSE;doLoad(); updateGameInfo(player.info);" value="change estimator"></input>
 <br/>
-<input type="button" style="margin-left:15px;margin-bottom:10px;" onclick="debugSE = !debugSE;useSE=true;doLoad(); updateGameInfo(player.info);" value="switch debug/normal mode"></input> (more info displayed in debug mode)
+<input type="button" style="margin-left:15px;margin-bottom:10px;" onclick="debugSE = !debugSE;useSE=true;doLoad(); updateGameInfo(player.info);" value="switch debug/normal mode"></input>
 <br/>
 <input type="button" style="margin-left:15px;margin-bottom:10px;" onclick="exactAnalysisOnly = !exactAnalysisOnly;useSE=true;doLoad(); updateGameInfo(player.info);" value="switch exact/approximated analysis"></input>
 
@@ -374,6 +374,18 @@ function updateGameInfo(info) {
 
 
 	html.push("<strong>Smart algorithm: </strong><br/>");
+	if(debugSE) {
+		html.push("Debug mode ON");
+	} else {
+		html.push("Debug mode OFF");
+	}
+	html.push("<br />");
+	if(exactAnalysisOnly) {
+		html.push("Perform exact analysis only");
+	} else {
+		html.push("Perform exact and approximated analysis");
+	}
+	html.push("<br />");
 	html.push("Estimated result: <strong>");
 	html.push(se.getGameResult());
 	html.push("</strong><br />");
