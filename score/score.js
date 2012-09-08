@@ -312,22 +312,22 @@ Score.prototype = {
                         [x, y + 1]
                     ]);
                     //possible clean (ONLY) kosumis
-                    if (this.indirectly_connected_stones([x, y], [x + 1, y + 1], true)) {
+                    if (this.indirectly_connected_stones([x, y], [x + 1, y + 1], true, owned_libs)) {
                         stack_coord = stack_coord.concat([
                             [x + 1, y + 1]
                         ]);
                     }
-                    if (this.indirectly_connected_stones([x, y], [x - 1, y - 1], true)) {
+                    if (this.indirectly_connected_stones([x, y], [x - 1, y - 1], true, owned_libs)) {
                         stack_coord = stack_coord.concat([
                             [x - 1, y - 1]
                         ]);
                     }
-                    if (this.indirectly_connected_stones([x, y], [x + 1, y - 1], true)) {
+                    if (this.indirectly_connected_stones([x, y], [x + 1, y - 1], true, owned_libs)) {
                         stack_coord = stack_coord.concat([
                             [x + 1, y - 1]
                         ]);
                     }
-                    if (this.indirectly_connected_stones([x, y], [x - 1, y + 1], true)) {
+                    if (this.indirectly_connected_stones([x, y], [x - 1, y + 1], true, owned_libs)) {
                         stack_coord = stack_coord.concat([
                             [x - 1, y + 1]
                         ]);
@@ -717,7 +717,7 @@ Score.prototype = {
         return false;
     },
 
-    indirectly_connected_stones: function (coor_a, coor_b, only_clean_kosumi) {
+    indirectly_connected_stones: function (coor_a, coor_b, only_clean_kosumi, real_libs) {
 
         if (only_clean_kosumi == undefined) {
             only_clean_kosumi = false;
@@ -755,11 +755,11 @@ Score.prototype = {
         - (1) is [ empty or is a dead stone of A opposite color ]
         - (2) is [ empty or is a dead stone of A opposite color ]
 
-        The "EITHER" becomes a "AND" if only_clean_kosumi == true
+        The "EITHER" becomes a "AND" if only_clean_kosumi == true. The list of real empty spaces must also be supplied.
         */
         if (only_clean_kosumi) {
             if ((delta_x == 1 && delta_y == 1) || (delta_x == 1 && delta_y == -1) || (delta_x == -1 && delta_y == 1) || (delta_x == -1 && delta_y == -1)) {
-                if ((board[xa + delta_x][ya] == EMPTY || board[xa + delta_x][ya] == opposite_dead_color) && (board[xa][ya + delta_y] == EMPTY || board[xa][ya + delta_y] == opposite_dead_color)) {
+                if (this.coor_member([xa+delta_x, ya], real_libs) && this.coor_member([xa, ya+delta_y], real_libs)) {
                     return true;
                 }
             }
