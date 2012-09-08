@@ -1,0 +1,93 @@
+<div id=user-list>
+  <div id=user-list-shiv></div>
+  <div id=user-list-content>
+    <div id=user-list-content-shadow></div>
+    <div class="scrollbar"><div class="track"><div class="thumb"><div class="end"></div></div></div></div>
+    <div class="viewport"><div class="overview">
+      <h4>Friends <b>(3)</b></h4>
+      <ol>
+        <li data-user="gryn">
+          <span class="name"><span>gryn</span><b>(1k)</b></span>
+          <span class=type title="collaborator">&#x706b;</span>
+          <span class="karma">gry nab cde f&nbsp;</span>
+          <!--#include virtual="user-panel-friend.shtml"-->
+        </li>
+        <li data-user="conanbatt">
+          <span class="name"><span>conanbatt</span><b>(6d)</b></span>
+          <span class=type title="admin">&#x6728;</span>
+          <span class="karma">con anb att Gqk PUG QCG gjk&nbsp;</span>
+          <!--#include virtual="user-panel-friend.shtml"-->
+        </li>
+        <li class="sleeping" data-user="clossius">
+          <span class="name"><span>clossius has a reeally looong user name</span><b>(1d)</b></span>
+          <span class=type title="supporter">&#x624b;</span>
+          <span class="karma">clo&nbsp;</span>
+          <!--#include virtual="user-panel-friend.shtml"-->
+        </li>
+      </ol>
+      <h4>Others chatting <b>(8)</b></h4>
+      <ol>
+        <li class="sleeping" data-user="GNUBot">
+          <span class="name"><span>GNUBot</span><b>(6k)</b></span>
+          <span class=type title="bot">&#x96fb;</span>
+          <span class="karma">&nbsp;</span>
+          <!--#include virtual="user-panel.shtml"-->
+        </li>
+        <li data-user="GoPrince">
+          <span class="name"><span>GoPrince</span><b>(4d)</b></span>
+          <span class=type title="supporter">&#x624b;</span>
+          <span class="karma">GoP r&nbsp;</span>
+          <!--#include virtual="user-panel.shtml"-->
+        </li>
+        <li class="sleeping" data-user="GuoJuan">
+          <span class="name"><span>GuoJuan</span><b>(9d)</b></span>
+          <span class=type title="professional">&#x9ad8;</span>
+          <span class="karma">Guo Jua ngk PUu Gjq ggU Rqo&nbsp;</span>
+          <!--#include virtual="user-panel.shtml"-->
+        </li>
+        <li data-user="JeansebL">
+          <span class="name"><span>JeansebL</span><b>(4d)</b></span>
+          <span class=type title="founder">&#x77f3;</span>
+          <span class="karma">Jea nsb Lgu qrg UHk&nbsp;</span>
+          <!--#include virtual="user-panel.shtml"-->
+        </li>
+        <li class="sleeping" data-user="mohsart">
+          <span class="name"><span>mohsart</span><b>(2d)</b></span>
+          <span class=type title="supporter">&#x624b;</span>
+          <span class="karma">m&nbsp;</span>
+          <!--#include virtual="user-panel.shtml"-->
+        </li>
+        <li class="sleeping" data-user="Naizuri">
+          <span class="name"><span>Naizuri</span><b>(4d)</b></span>
+          <span class=type title="supporter">&#x624b;</span>
+          <span class="karma">Nai zur ie&nbsp;</span>
+          <!--#include virtual="user-panel.shtml"-->
+        </li>
+        <li class="sleeping" data-user="Smar">
+          <span class="name"><span>Smar</span><b>(1d)</b></span>
+          <span class=type title="regular">&#x4eba;</span>
+          <span class="karma">Sma rab opg thu&nbsp;</span>
+          <!--#include virtual="user-panel.shtml"-->
+        </li>
+        <li data-user="petete">
+          <span class="name"><span>petete</span><b>(3d)</b></span>
+          <span class=type title="regular">&#x4eba;</span>
+          <span class="karma">pet ete&nbsp;</span>
+          <!--#include virtual="user-panel.shtml"-->
+        </li>
+      </ol>
+    </div></div>
+  </div>
+  <div id=user-list-toolbar>
+    <a class="sort" title="Sort"><span>Sort</span><a/>
+    <a class="search" title="Search"><span>Search</span></a>
+    <div id=user-list-toolbar-search>
+      <input placeholder="Search user">
+    </div>
+    <div id=user-list-toolbar-sort>
+      <a class="sort-by name selected">Name</a>
+      <a class="sort-by rank">Rank</a>
+      <a class="sort-by karma">Karma</a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,59 @@
+@import "inset-shadow";
+
+#chat #chat-entry {
+  position: absolute;
+  bottom: 0px;
+  left: 20px;
+  right: 20px;
+  height: 70px;
+
+  #chat-entry-input {
+    @extend .inset-shadow;
+    @extend .font-bold;
+    position: absolute;
+    left: 0;
+    // IE won't stretch an input
+    //right: 50px;
+    width: 320px;
+    top: 15px;
+    padding: 7px 10px;
+  }
+
+  #user-list-toggle-button {
+    position: absolute;
+    top: 17px;
+    right: 0;
+    width: 40px;
+    height: 23px;
+    color: $icon-light-black;
+    border: 1px solid $toggle-button-border;
+    box-shadow: 1px 1px 1px $toggle-button-shadow;
+    border-radius: 4px;
+    padding-top: 4px;
+    cursor: pointer;
+    span {
+      display: none;
+    }
+    &:hover {
+      color: $icon-green;
+      .friends {
+//        background: $icon-green;
+      }
+    }
+    &:before {
+      font-family: $font-entypo;
+      font-size: 40px;
+      display: inline-block;
+      margin: -14px 0;
+      content: '+'; // person
+    }
+    .friends {
+      font-size: 12px;
+      position: absolute;
+      right: 2px;
+      background: $icon-gray;
+      @extend .button-note;
+    }
+  }
+}
+

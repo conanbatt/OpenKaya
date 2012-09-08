@@ -1,0 +1,55 @@
+@import "basic-tab";
+
+#chat #chat-rooms {
+  /* when height changes,
+     javascript will adjust where #chat-content starts */
+  padding: 45px 20px 0 20px;
+  line-height: 31px;
+  min-height: 31px;
+  font-size: 13px;
+  @extend .font-bold;
+
+  > span {
+    display: inline-block;
+    margin-right: 0.5em;
+  }
+
+  #chat-rooms-content {
+    display: inline;
+    a {
+      display: inline-block;
+      white-space: nowrap;
+
+      @extend .basic-tab;
+
+      &.selected {
+        color: $text-green;
+      }
+    }
+  }
+
+  #chat-rooms-add-button {
+    float: right;
+    margin: 8px 10px 0 10px;
+    color: $icon-light-gray;
+    height: 22px;
+
+    span {
+      display: none;
+    }
+    &:before {
+      font-size: 60px;
+      font-family: $font-entypo;
+      font-weight: normal;
+      content: ']'; // plus
+      //content: '\271A'; // gothic cross
+      position: relative;
+      top: -14px;
+      left: -1px;
+    }
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+}

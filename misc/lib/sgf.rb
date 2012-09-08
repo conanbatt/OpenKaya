@@ -1,20 +1,31 @@
 require File.expand_path("node", File.dirname(__FILE__))
+require File.expand_path("parser", File.dirname(__FILE__))
 
 class SGF
 
   BLACK = "B"
   WHITE = "W"
-  attr_accessor :move_list, :comment_buffer,:property, :focus
+  attr_accessor :move_list, :comment_buffer,:property, :focus, :root
 
   def initialize(moves="", properties={})
     moves ||= ""
-    @config = ConfigNode.new
-    @focus = @config
-    nodify_move_list(moves, @config) unless moves.empty?
-    @comment_buffer = ""
+    @root = Node.new(:properties => properties)
+    @root.write_property(:file_format, 4)
+    @focus = @root
     @size = properties[:size]
-    properties.keys.each {|k| @config.write_property(k,properties[k]) }
-    @config.write_property(:handicap, properties[:handicap])     
+  end
+
+  def self.kaya_sgf(moves, properties)
+    sgf = nil
+    
+    if moves
+      moves = "(#{moves})" unless moves[0] == "("
+      sgf = SGF::Parser.parse(moves)
+      properties.each{|k,v| sgf.root.write_property(k,v)}
+    else
+      sgf= SGF.new("",properties)
+    end
+    sgf
   end
 
   def last_two_moves_are_pass?
@@ -24,48 +35,42 @@ class SGF
     false
   end
 
-  def nodify_move_list(moves, root_node)
-
-    @focus = root_node
-
-    coma_index = moves.index(";",1) || 0 #not counting the first one
-
-    node_text = moves[0..coma_index -1]
-    is_root = (node_text == "(")
-    if  node_text.include?("(") #it has variations
-      add_move(node_text.chop) unless is_root#removing the parenthesis
-      temp_focus = @focus
-      moves.scan(/((?<pg>\((?:\\[()]|[^()]|\g<pg>)*\)))/).each do |match|
-        nodify_move_list(match.first[1..-2], temp_focus) if match.first
-        
-      end
-    elsif !node_text.empty?
-      add_move(node_text)
-      nodify_move_list(moves[coma_index..-1], @focus) if coma_index != 0 
-    end
-  end
-
-  def add_move(node, rewrite=true) #TODO objetify node
+  def add_move(raw_node, rewrite=true) #TODO objetify node
 
     if rewrite
-      @focus = Node.new(@focus,node) 
+      @focus = Node.new(:properties=> parse_kaya_raw_node(raw_node), :parent => @focus) 
     else
       found_repeated_node = false
       @focus.children.each do |child|
-        if child.node_text == node
+        if child.node_text == raw_node
           found_repeated_node = true
           @focus = child
         end
       end
       unless found_repeated_node
-        @focus = Node.new(@focus,node) #only create a new node if there is no children with the same coordinate
+        @focus = Node.new(:properties => parse_kaya_raw_node(raw_node), :parent => @focus) #only create a new node if there is no children with the same coordinate
       end
     end
-    move_list
+  end
+
+
+  def parse_kaya_raw_node(node)
+    res = {}
+    play_color = node.match(/;([BW])\[(|[a-z][a-z])\]/)
+    raise "#{node} is invalid node format" unless play_color
+
+    res[play_color[1]] = play_color[2]
+
+    if node.include?("BL") || node.include?("WL")
+      time_color = node.match(/([BW]L)\[(\d{0,6}.\d{3})\]/)
+      raise "#{node} is invalid node format" unless time_color
+      res[time_color[1]] = time_color[2]
+    end
+    res
   end
 
   def code_to_focus(focus_code)
-    @focus = @config
+    @focus = @root
     return if focus_code == "root"
     focus_code.split("-").each do |branch|
       node = @focus.children[branch.to_i]
@@ -76,7 +81,7 @@ class SGF
   end
 
   def focus_to_code
-    return "root" if @focus == @config
+    return "root" if @focus == @root
     temp_focus = @focus
     code = ""
     while(temp_focus)
@@ -92,14 +97,14 @@ class SGF
 
 
   def last_play_color
-    @focus != @config && @focus.color
+    @focus != @root && @focus.color
   end
 
   def add_comment(comment)
     if @focus
       @focus.add_comment(comment)
     else
-      @config.add_comment(comment)
+      @root.add_comment(comment)
     end
     move_list
   end
@@ -107,7 +112,7 @@ class SGF
   def parse_comments!(comments)
     comments.each do |key, value|
       if (key.to_i == 0)
-        value.each {|v| @config.add_comment(hash_to_comment(v))}
+        value.each {|v| @root.add_comment(hash_to_comment(v))}
         next
       end
       value.each{ |v| move_by_number(key.to_i-1) && move_by_number(key.to_i-1).add_comment(hash_to_comment(v))}
@@ -116,7 +121,7 @@ class SGF
 
   def hashify_comments
     move_number = 0
-    pointer = @config
+    pointer = @root
     comments = {}
     while(pointer)
       comments[move_number.to_s] = pointer.comments unless pointer.comments.empty?
@@ -132,17 +137,17 @@ class SGF
   end
     
   def move_list
-   @config.to_move_list 
+    @root.to_move_list 
   end
 
   def move_list_with_comments
-    @config.children.first.to_s
+    @root.children.first.to_s
   end
 
   def move_by_number(index)
     index = index.to_i
     return if (index < 0)
-    node = @config.children.first
+    node = @root.children.first
     while(index >0)
       node = node.children.first if node.children.first #undos can mess up the move number
       index -= 1
@@ -178,28 +183,20 @@ class SGF
   end
   def load_from_string(input)
     properties= input.split(";")[1]
-    @focus = @config = ConfigNode.new(properties) #will process this later
-    nodify_move_list(input.gsub(properties, "").chomp[2..-2], @config)
-  end
-
-  def properties
-    @config.to_s
-  end
-
-  def properties=(arg)
-    @config.node_text = arg 
+    @focus = @root = Node.new(:properties => properties) #will process this later
+    nodify_move_list(input.gsub(properties, "").chomp[2..-2], @root)
   end
 
   def property(symbol)
-    @config.property(symbol)
+    @root.property(symbol)
   end
 
   def write_property(symbol, value)
-    @config.write_property(symbol, value)
+    @root.write_property(symbol, value)
   end
 
   def to_s
-    "(#{@config.to_s})"
+    "(#{@root.to_s})"
   end
 
   def time_left(player)
@@ -208,13 +205,8 @@ class SGF
     ln && ln.time_left
   end
 
-  def add_time(player,time)
-    ln = last_node_by_player(player)
-    ln.time_left= (ln.time_left + time)
-  end
-
   def last_node_by_player(player)
-    return if @focus == @config
+    return if @focus == @root
     if @focus.color == player
       return @focus
     elsif @focus.parent
@@ -223,75 +215,75 @@ class SGF
   end
 
   def undo
-    return if @focus == @config
+    return if @focus == @root
     to_del = @focus
     @focus = @focus.parent
     @focus.children.delete(to_del) 
   end
 
-  def self.handi_node(size,handicap)
+  def self.handi_props(size,handicap)
     case size.to_i
 
     when 19
       case handicap
       when 2
-        return "HA[2]AB[dd][pp]"
+        return {:add_black => "dd][pp"}
       when 3
-        return "HA[3]AB[dd][dp][pd]"
+        return {:add_black => "dd][dp][pd"}
       when 4
-        return "HA[4]AB[dd][pd][dp][pp]"
+        return {:add_black =>"dd][pd][dp][pp"}
       when 5
-        return "HA[5]AB[dd][pd][dp][pp][jj]"
+        return {:add_black =>"dd][pd][dp][pp][jj"}
       when 6
-        return "HA[6]AB[dd][pd][dp][pp][dj][pj]"
+        return {:add_black =>"dd][pd][dp][pp][dj][pj"}
       when 7
-        return "HA[7]AB[dd][pd][dp][pp][dj][pj][jj]"
+        return {:add_black =>"dd][pd][dp][pp][dj][pj][jj"}
       when 8
-        return "HA[8]AB[dd][jd][pd][dj][pj][dp][jp][pp]"
+        return {:add_black =>"dd][jd][pd][dj][pj][dp][jp][pp"}
       when 9
-        return "HA[9]AB[dd][jd][pd][dj][jj][pj][dp][jp][pp]"
+        return {:add_black =>"dd][jd][pd][dj][jj][pj][dp][jp][pp"}
       else
         raise "Invalid handicap setting #{handicap}"
       end
     when 13
       case handicap
       when 2
-        return "HA[2]AB[dd][jj]"
+        return {:add_black =>"dd][jj"}
       when 3
-        return "HA[3]AB[dd][dj][jd]"
+        return {:add_black =>"dd][dj][jd"}
       when 4
-        return "HA[4]AB[dd][jd][dj][jj]"
+        return {:add_black =>"dd][jd][dj][jj"}
       when 5
-        return "HA[5]AB[dd][jd][dj][gg][jj]"
+        return {:add_black =>"dd][jd][dj][gg][jj"}
       when 6
-        return "HA[6]AB[dd][jd][dj][jj][dg][jg]"
+        return {:add_black =>"dd][jd][dj][jj][dg][jg"}
       when 7
-        return "HA[7]AB[dd][jd][dj][jj][dg][jg][gg]"
+        return {:add_black =>"dd][jd][dj][jj][dg][jg][gg"}
       when 8
-        return "HA[8]AB[dd][jd][dj][gj][jj][jg][gd][dg]"
+        return {:add_black =>"dd][jd][dj][gj][jj][jg][gd][dg"}
       when 9
-        return "HA[9]AB[dd][jd][dj][gj][jj][jg][gg][gd][dg]"
+        return {:add_black =>"dd][jd][dj][gj][jj][jg][gg][gd][dg"}
       else
         raise "Invalid handicap setting #{handicap}"
       end
     when 9
       case handicap
       when 2
-        return "HA[2]AB[cc][gg]"
+        return {:add_black =>"cc][gg"}
       when 3
-        return "HA[3]AB[cc][cg][gg]"
+        return {:add_black =>"cc][cg][gg"}
       when 4
-        return "HA[4]AB[cc][gg][cg][gc]"
+        return {:add_black =>"cc][gg][cg][gc"}
       when 5
-        return "HA[5]AB[cc][gg][cg][gc][ee]"
+        return {:add_black =>"cc][gg][cg][gc][ee"}
       when 6
-        return "HA[6]AB[cc][gg][cg][gc][ee][ge]"
+        return {:add_black =>"cc][gg][cg][gc][ee][ge"}
       when 7
-        return "HA[7]AB[cc][gg][cg][gc][ee][ge][ee]"
+        return {:add_black =>"cc][gg][cg][gc][ee][ge][ee"}
       when 8
-        return "HA[8]AB[cc][gc][cg][gg][ce][ge][ec][eg]"
+        return {:add_black =>"cc][gc][cg][gg][ce][ge][ec][eg"}
       when 9
-        return "HA[9]AB[cc][gc][cg][gg][ce][ge][ec][ee][eg]"
+        return {:add_black =>"cc][gc][cg][gg][ce][ge][ec][ee][eg"}
       else
         raise "Invalid handicap setting #{handicap}"
       end

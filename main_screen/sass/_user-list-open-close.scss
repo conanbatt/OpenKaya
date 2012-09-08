@@ -1,0 +1,78 @@
+#user-list {
+  $opacity-speed: 0.3s;
+  -moz-transition: opacity $opacity-speed, z-index 0s $opacity-speed;
+  -webkit-transition: opacity $opacity-speed, z-index 0s $opacity-speed;
+  transition: opacity $opacity-speed, z-index 0s $opacity-speed;
+  opacity: 0;
+
+  .user-list-slid-open &,
+  .user-list-popped-up & {
+    box-shadow: -1px 0 3px 2px $content-shadow;
+  }
+
+  // used to make sliding close work
+  .user-list-slid-close & {
+    -moz-transition: opacity 0s 1.2s;
+    -webkit-transition: opacity 0s 1.2s;
+    transition: opacity 0s 1.2s;
+    right: auto;
+    bottom: 10px;
+  }
+
+  .user-list-slid-open & {
+    left: 0;
+    right: auto;
+    opacity: 1;
+    bottom: 10px;
+    -moz-transition: opacity 0s;
+    -webkit-transition: opacity 0s;
+    transition: opacity 0s;
+  }
+
+  right: 572px;
+  .user-list-popped-up & {
+    -moz-transition: opacity $opacity-speed;
+    -webkit-transition: opacity $opacity-speed;
+    transition: opacity $opacity-speed;
+    opacity: 1;
+    z-index: 10;
+    #user-list-shiv {
+      position: absolute;
+      bottom: -10px;
+      right: 10px;
+      height: 10px;
+      width: 20px;
+      overflow: hidden;
+     
+      &:before {
+        content: ' ';
+        display: block;
+        margin-left: 5px;
+        margin-top: -5px;
+        height: 10px;
+        width: 10px;
+        background: $background-dark-white;
+        box-shadow: 2px 2px 2px $content-shadow;
+        $angle: 45deg;
+        -moz-transform: rotate($angle);
+        -ms-transform: rotate($angle);
+        -o-transform: rotate($angle);
+        -webkit-transform: rotate($angle);
+        transform: rotate($angle);
+      }
+    }
+  }
+  .ie8 & #user-list-shiv {
+    display: none;
+  }
+  
+}
+.user-list-slid-open,
+.user-list-popped-up {
+  #chat #chat-entry #user-list-toggle-button {
+    color: $icon-gray;
+    .friends {
+      background: $icon-gray;
+    }
+  }
+}

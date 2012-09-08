@@ -1,0 +1,83 @@
+﻿@if import-once("scrollbar") {
+
+.scrollbar-container {
+  overflow: hidden;
+
+  .scrollbar {
+    position: absolute;
+    z-index: 1;
+    top: 5px;
+    right: 0;
+    width: 20px;
+
+    &.disable { display: none; }
+
+    .track {
+      position: relative;
+      width: 20px;
+      .thumb {
+        position: absolute;
+        width: 20px;
+        cursor: pointer;
+        > div {
+          position: absolute;
+          top: 0px;
+          bottom: 0;
+          right: 6px;
+          width: 4px;
+          -o-border-radius: 2px;
+          -webkit-border-radius: 2px;
+          -moz-border-radius: 2px;
+          border-radius: 2px;
+          background: $scrollbar-gray;
+        }
+      }
+
+      &:active .thumb > div,
+      &:focus .thumb > div,
+      &:hover .thumb > div {
+        background: $scrollbar-gray-hover;
+      }
+    }
+  }
+  .viewport {
+    overflow: hidden;
+    position: relative;
+    height: 100%;
+    .overview {
+      left: 0;
+      right: 0;
+      position: absolute;
+    }
+  }
+}
+
+// when browser styles are possible, use them instead of tinyscrollbar
+.cssscrollbar:not(.ie) .scrollbar-container .viewport {
+  overflow-y: auto;
+  margin-right: 2px;
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    margin: 6px;
+  }
+  &::-webkit-scrollbar-track-piece {
+  }
+  &::-webkit-scrollbar-thumb {
+    background: black;
+    border-radius: 10px;
+    margin: 5px;
+    min-height: 20px;
+    background: $scrollbar-gray;
+
+    &:active,
+    &:focus,
+    &:hover {
+      background: $scrollbar-gray-hover;
+    }
+  }
+}
+
+}

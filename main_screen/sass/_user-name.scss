@@ -1,0 +1,28 @@
+@if import-once("user-name") {
+
+// it's expected you'll specify a max-width when extending
+.user-name {
+  > span {
+    //max-width: 100px;
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    vertical-align: bottom; // fixes FF
+  }
+  // need to specify the span too for some reason...
+  &:hover,
+  &:hover > span {
+    @extend .link;
+  }
+}
+
+// this is only to stop the hover effect
+.not-user-name {
+  &:hover,
+  &:hover > span {
+    @extend .not-link;
+  }
+}
+
+}

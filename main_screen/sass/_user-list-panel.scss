@@ -1,0 +1,119 @@
+#user-list li .panel {
+  position: absolute;
+  bottom: 10px;
+  left: 15px;
+  right: 15px;
+  height: 40px;
+  visibility: hidden;
+  opacity: 0;
+  -webkit-transition: visibility 0s 0.5s, opacity 0.5s 0s;
+  -moz-transition: visibility 0s 0.5s, opacity 0.5s 0s;
+  transition: visibility 0s 0.5s, opacity 0.5s 0s;
+
+  p {
+    position: absolute;
+    right: 0;
+    left: 105px;
+    top: 3px;
+    height: 14px * 3;
+    overflow: hidden;
+  }
+
+  a {
+    display: block;
+    float: left;
+    color: $icon-gray;
+    cursor: pointer;
+    margin-right: 6px;
+    overflow: hidden;
+    span {
+      display: none;
+    }
+    &:hover {
+      color: $icon-green;
+    }
+    &:before {
+      font-family: $font-entypo;
+      font-size: 40px;
+      display: inline-block;
+      margin: -14px 0;
+    }
+  }
+  a:first-child + a + a + a {
+    clear: left;
+  }
+  a.message:before {
+    content: '&'; // pencil
+  }
+  a.profile:before {
+    content: '.'; // user card
+  }
+  a.challenge:before {
+    content: ','; // two users
+  }
+  a.friend.selected {
+    color: $icon-red;
+  }
+  a.friend:before {
+    content: '6'; // heart
+  }
+  a.karma:before {
+    content: '8'; // thumbs-up
+  }
+  a.muzzle:before {
+    content: '\00E0'; // mute
+  }
+  .ie8 & a {
+    width: 25px;
+    height: 20px;
+    position: relative;
+    background: url(/images/layout/panel-icons-ie8.png);
+  }
+  .ie8 & a:before {
+    display: none;
+  }
+  .ie8 & a.message {
+    background-position: -0px -0px;
+  }
+  .ie8 & a.profile {
+    background-position: -25px -0px;
+  }
+  .ie8 & a.friend {
+    background-position: -50px -0px;
+  }
+  .ie8 & a.karma {
+    background-position: -0px -20px;
+  }
+  .ie8 & a.challenge {
+    background-position: -25px -20px;
+  }
+  .ie8 & a.muzzle {
+    background-position: -50px -20px;
+  }
+  .ie8 & a:hover.message {
+    background-position: -0px -40px;
+  }
+  .ie8 & a:hover.profile {
+    background-position: -25px -40px;
+  }
+  .ie8 & a:hover.friend {
+    background-position: -50px -40px;
+  }
+  .ie8 & a:hover.karma {
+    background-position: -0px -60px;
+  }
+  .ie8 & a:hover.challenge {
+    background-position: -25px -60px;
+  }
+  .ie8 & a:hover.muzzle {
+    background-position: -50px -60px;
+  }
+  img.avatar {
+    position: absolute;
+    right: 0;
+    top: -21px;
+    width: 60px;
+    height: 60px;
+    border: 1px solid $rule-gray;
+  }
+}

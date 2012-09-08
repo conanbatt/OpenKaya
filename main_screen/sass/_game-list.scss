@@ -1,0 +1,44 @@
+﻿@import "scrollbar";
+@import "basic-button";
+@import "user-name";
+
+@import "game-list-entry";
+@import "game-list-create-game";
+
+#game-list {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 550px;
+  padding: 20px 0;
+  background: $background-white;
+  border-left: 1px solid $background-dark-white;
+  box-shadow: 3px 0px 3px $content-shadow;
+
+  #game-list-controls {
+    padding: 40px 10px 10px 10px;
+    line-height: 20px;
+    min-height: 20px;
+    white-space: nowrap;
+
+    a {
+      display: inline-block;
+      margin-left: 0.3em;
+      @extend .basic-button-off-white;
+    }
+  }
+
+  #game-list-content {
+    position: absolute;
+    top: 102px;
+    bottom: 30px;
+    left: 0px;
+    right: 0px;
+
+    line-height: 20px;
+
+    @extend .scrollbar-container;
+
+  }
+}

@@ -1,0 +1,10 @@
+<!-- opera insists on a real table to make this layout work, oh well -->
+<table id=header><tr><td class="left"><s>&nbsp;</s></td><td class="content">
+  <h1>
+    Welcome back,<br>
+    <span>Gryn</span>
+  </h1>
+  <a id=profile-button>Profile</a>
+  <a id=inbox-button>Inbox <span>2</span></a>
+  <a id=signout-button>Sign Out</a>
+</td><td class="right"><s>&nbsp;</s></td></tr></table>

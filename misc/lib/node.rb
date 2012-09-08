@@ -1,71 +1,27 @@
-class Node
 
-  attr_reader :node_text, :children, :parent
-
-  def initialize(parent,node_text= "")
-    validate_node_format(node_text)
-    @comments = []
-    @node_text = strip_comments!(node_text)
-    @children = []
-    @parent = parent
-    @parent.add_child(self) if parent
-  end
-
-  def strip_comments!(node_text)
-    comments = node_text.scan(/C\[(.*)/m).first
-    if comments
-      comments.first.split("\n")[0..-2].each {|c| add_comment(c) }
-    end
-    node_text.gsub(/C\[(.*)/m,"")  
-  end
-
-  def add_child(node)
-    @children.push(node)
-  end
-
-  def to_move_list
-    children_to_s
-  end
-
-  def children_to_s(with_comments=false)
-    moves = ""
- 
-    if @children.size == 1
-      moves += @children.first.children_to_s(with_comments)
-    else
-      @children.each {|node| moves += "(#{node.children_to_s(with_comments)})"}
-    end
-
-    comment_node = with_comments ? comments : "" 
-    node_text + comment_node + moves
-  end
-
-  def to_s
-    children_to_s(true)
-  end
-
-  def add_comment(comment)
-    @comments << (comment + "\n")
-  end
-  def comments
-    @comments.empty? ? "" : "C[#{@comments.join.gsub("]","\\]").gsub(")","\\)")}]"
-  end
+module KayaInterface
 
   def color
-    @node_text[1]
+    if @properties["B"]
+      return "B"
+    elsif @properties["W"]
+      return "W"
+    end
   end
 
   def x
-    @node_text[3] unless pass_node?
+    @properties[color] && @properties[color][0] 
   end
   def y
-    @node_text[4] unless pass_node?
+    @properties[color] && @properties[color][1] 
   end
+
   def coordinate
     x+y
   end
+
   def pass_node?
-    @node_text.match(/[BW]\[\]/)
+    @properties[color].empty?
   end
 
   def validate_node_format(node)
@@ -76,88 +32,110 @@ class Node
     raise "#{node} is invalid node format" unless valid
   end
 
-  def time_left
-    @node_text.match(/[#{color}]L\[\d{0,6}.\d{3}\]/).to_s[3..-2].to_f
-  end
-  def time_left=(time_left)
-    @node_text.gsub!(/[#{color}]L\[\d{0,6}.\d{3}\]/, "#{color}L[%.3f]" % [time_left])
-  end
-
-
 end
 
-class ConfigNode
+class Node
+  SYM_TO_PROP= {:black_play => "B", :white_play => "W",:black_rank => "BR", :white_rank => "WR",:white_player => "PW", 
+                       :black_player => "PB", :komi => "KM", :date => "DT", :result => "RE",
+                       :file_format => "FF", :black_country => "BC", :add_black => "AB", :add_white => "AW",
+                       :white_country => "WC", :event => "EV", :source => "SO", :black_left => "BL", :white_left => "WL",
+                       :encoding => "CA", :size => "SZ", :rules => "RU", :time_set => "OT",:handicap => "HA"}
 
-  attr_accessor :node_text, :children
+  SGF_PROPERTIES = %w(PC GC CP GN ST AP AW AB AE AR CR DD LB LN MA SL SQ TR VW TB TW B W BR PW PB KM DT RE FF BC WC EV SO BL WL CA SZ RU OT HA WR C TM GM)
 
-  def initialize(property="")
-    @node_text = property.dup
-    write_property(:file_format,4)
-    handicap = property(:handicap)
-    @comments = []
+  include KayaInterface
+
+  attr_accessor :node_text, :children, :properties
+
+  def initialize(options={})
+    @properties = options[:properties] || {}
+
+    @node_text = play_node
+    validate_node_format(@node_text) if options[:parent]
     @children = []
+    @parent = options[:parent] 
+    @parent.add_child(self) if parent
+  end
+
+  def play_node
+    node_text = ""
+    if(@properties["B"])
+      node_text = ";B[#{@properties["B"]}]"
+      node_text << "BL[#{@properties["BL"]}]" if @properties["BL"]
+    elsif(@properties["W"])
+      node_text = ";W[#{@properties["W"]}]"
+      node_text << "WL[#{@properties["WL"]}]" if @properties["WL"]
+    end
+    node_text
   end
 
   def parent
-    #stub
+    @parent
   end
 
   def add_child(node)
     @children.push(node)
   end
 
-  def validate_node_format
-    return true
+  def comments
+    if property("C")
+      "C[#{property("C").gsub("]","\\]")}]"
+    else
+      ""
+    end
   end
 
   def add_comment(comment)
-    @comments << (comment + "\n")
-  end
-  def comments
-    @comments.empty? ? "" : "C[#{@comments.join.gsub("]","\\]").gsub(")","\\)")}]"
+    @properties["C"] ||= ""
+    @properties["C"] = "#{@properties["C"] += comment}\n"
   end
 
-  def to_s
+  def to_s(with_comments=true)
     children_text = @children.first.to_s
-    ";"+node_text + comments + children_text
+    ";" + properties_to_s + children_text
+    
   end
 
   def to_move_list
     result = ""
-    if @children.size == 1
-      result += @children.first.to_move_list
+
+    if @children.empty?
+      result << @node_text
+    elsif @children.size == 1
+      result << @node_text + @children.first.to_move_list
     else 
-      @children.each {|node| result += "(#{node.to_s})"}
+      result << @node_text
+      @children.each {|node| result += "(#{node.to_move_list})"}
     end
     result
   end
 
-  METALABELS= {:black_rank => "BR", :white_rank => "WR",:white_player => "PW", :black_player => "PB",
-               :komi => "KM", :date => "DT", :result => "RE",
-               :file_format => "FF", :black_country => "BC",
-               :white_country => "WC", :event => "EV", :source => "SO",
-               :encoding => "CA", :size => "SZ", :rules => "RU", :time_set => "OT",:handicap => "HA"}
-
-  def property(symbol)
-    return node_text if symbol == :all
-    dup = node_text.dup
-    dup.slice!(/.*#{METALABELS[symbol]}\[/)
-    return nil if dup.length == node_text.length #means it wasnt found
-    dup.slice!(/\].*/m)
-    return dup
+  def properties_to_s
+    res = ""
+    @properties.each do |prop, val|
+      if prop == "C"
+        val = val.gsub("]","\\]")
+      end
+      if val.kind_of?(Array)
+        multi_prop = ""
+        val.each{|el| multi_prop += "[#{el}]"}
+        val = multi_prop[1..-2]
+      end
+      res << "#{SYM_TO_PROP[prop] || prop}[#{val}]"
+    end
+    res 
   end
 
-  def write_property(symbol, value)
-    return unless value
-    raise "Invalid property #{symbol}" unless METALABELS[symbol]
-    node = "#{METALABELS[symbol]}[#{value}]"
-    @node_text.gsub!(/#{METALABELS[symbol]}\[\w*\]/, "") #in case it already had it
-    @node_text = node + @node_text 
-    size = property(:size)
-    #a little hackish to insert the AB node only
-    @node_text += SGF.handi_node(property(:size),value)[5..-1] if(size && 
-                                                           symbol == :handicap)
+  def property(prop)
+    key = SYM_TO_PROP[prop] || prop
+    @properties[key]
   end
 
+  def write_property(prop, val)
+    key = SYM_TO_PROP[prop] || prop
+
+    raise "#{prop} is not a valid SGF property" unless SGF_PROPERTIES.include? key
+    @properties[key] = val
+  end
 end
 

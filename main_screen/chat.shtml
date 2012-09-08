@@ -1,0 +1,127 @@
+<div id=chat>
+  <div id=chat-rooms>
+    <span>CHAT:</span>
+    <a id=chat-rooms-add-button><span>Add Room</span></a>
+    <div id=chat-rooms-content>
+      <a id=chat-rooms-main-room-button class="selected">Main Room</a>
+      <a id=chat-rooms-development-button>Development</a>
+    </div>
+  </div>
+  <div id=chat-content>
+    <div id=chat-content-shadow></div>
+    <div class="scrollbar"><div class="track"><div class="thumb"><div class="end"></div></div></div></div>
+    <div class="viewport"><div class="overview">
+      <ol>
+        <!-- these data-user data-time elements are for your suggested use to
+             easily determine how to add a new <li> element recieved from the
+             server -->
+        <li data-user="petete" data-time="14:27">
+          <h6><a class=translate title=Translate><span>Translate</span></a></h6>
+          <h4><span>petete</span><b>(3d)</b></h4>
+          <h5>14:22</h5>
+          <p><b>conanbatt</b></p>
+          <p>estas?</p>
+          <p>mira mi sandbox</p>
+          <h5>14:27</h5>
+          <p>this is fun <a href="http://draw.to/D2TNfPb">draw.to/D2TNfPb</a></p>
+        </li>
+        <li data-user="JeansebL" data-time="14:57">
+          <h6><a class=translate title=Translate><span>Translate</span></a></h6>
+          <h4><span>JeansebL</span><b>(4d)</b></h4>
+          <h5>14:57</h5>
+          <p><b>what position conanbatt?</b></p>
+        </li>
+        <li data-user="conanbatt" data-time="14:59">
+          <h6><a class=translate title=Translate><span>Translate</span></a></h6>
+          <h4><span>conanbatt</span><b>(6d)</b></h4>
+          <h5>14:59</h5>
+          <p>somewhat like petete's sandbox</p>
+        </li>
+        <li data-user="GoPrince" data-time="16:05">
+          <h6><a class=translate title=Translate><span>Translate</span></a></h6>
+          <h4><span>GoPrince</span><b>(4d)</b></h4>
+          <h5>16:05</h5>
+          <p>what does muzzling some1 mean?</p>
+        </li>
+        <li data-user="conanbatt" data-time="16:11">
+          <h6><a class=translate title=Translate><span>Translate</span></a></h6>
+          <h4><span>conanbatt</span><b>(6d)</b></h4>
+          <h5>16:11</h5>
+          <p>/help</p>
+        </li>
+        <li data-user="GoPrince" data-time="16:16">
+          <h6><a class=translate title=Translate><span>Translate</span></a></h6>
+          <h4><span>GoPrince</span><b>(4d)</b></h4>
+          <h5>16:16</h5>
+          <p>oops i muzzled jeanseb lol</p>
+          <p>every1 muzzle him!</p>
+        </li>
+        <li data-user="conanbatt" data-time="16:27">
+          <h6><a class=translate title=Translate><span>Translate</span></a></h6>
+          <h4><span>conanbatt</span><b>(6d)</b></h4>
+          <h5>16:27</h5>
+          <p>ok</p>
+          <p>he has 3 muzzles :)</p>
+          <p>2 more and he cant speak :)</p>
+        </li>
+        <li data-user="petete" data-time="14:27">
+          <h6><a class=translate title=Translate><span>Translate</span></a></h6>
+          <h4><span>petete</span><b>(3d)</b></h4>
+          <h5>14:22</h5>
+          <p><b>conanbatt</b></p>
+          <p>estas?</p>
+          <p>mira mi sandbox</p>
+          <h5>14:27</h5>
+          <p>this is fun <a href="http://draw.to/D2TNfPb">draw.to/D2TNfPb</a></p>
+        </li>
+        <li data-user="JeansebL" data-time="14:57">
+          <h6><a class=translate title=Translate><span>Translate</span></a></h6>
+          <h4><span>JeansebL</span><b>(4d)</b></h4>
+          <h5>14:57</h5>
+          <p><b>what position conanbatt?</b></p>
+        </li>
+        <li data-user="conanbatt" data-time="14:59">
+          <h6><a class=translate title=Translate><span>Translate</span></a></h6>
+          <h4><span>conanbatt</span><b>(6d)</b></h4>
+          <h5>14:59</h5>
+          <p>somewhat like petete's sandbox</p>
+        </li>
+        <li data-user="GoPrince" data-time="16:05">
+          <h6><a class=translate title=Translate><span>Translate</span></a></h6>
+          <h4><span>GoPrince</span><b>(4d)</b></h4>
+          <h5>16:05</h5>
+          <p>what does muzzling some1 mean?</p>
+        </li>
+        <li data-user="conanbatt" data-time="16:11">
+          <h6><a class=translate title=Translate><span>Translate</span></a></h6>
+          <h4><span>conanbatt</span><b>(6d)</b></h4>
+          <h5>16:11</h5>
+          <p>/help</p>
+        </li>
+        <li class="announcement" data-time="16:14">
+          <h6><a class=translate title=Translate><span>Translate</span></a></h6>
+          <p>The server will be going down for maintenance.</p>
+        </li>
+        <li data-user="GoPrince" data-time="16:16">
+          <h6><a class=translate title=Translate><span>Translate</span></a></h6>
+          <h4><span>GoPrince</span><b>(4d)</b></h4>
+          <h5>16:16</h5>
+          <p>oops i muzzled jeanseb lol</p>
+          <p>every1 muzzle him!</p>
+        </li>
+        <li data-user="conanbatt" data-time="16:27">
+          <h6><a class=translate title=Translate><span>Translate</span></a></h6>
+          <h4><span>conanbatt</span><b>(6d)</b></h4>
+          <h5>16:27</h5>
+          <p>ok</p>
+          <p>he has 3 muzzles :)</p>
+          <p>2 more and he cant speak :)</p>
+        </li>
+      </ol>
+    </div></div>
+  </div>
+  <div id=chat-entry>
+    <input id=chat-entry-input placeholder="Enter a message">
+    <a id=user-list-toggle-button><span>User list</span> <span class="friends">1</span></a>
+  </div>
+</div>

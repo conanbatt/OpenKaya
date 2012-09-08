@@ -1,0 +1,73 @@
+@import "global";
+@import "reset";
+@import "fonts";
+
+body {
+  background: $background-green url(/images/layout/background.jpg) fixed;
+  font-size: 13px;
+  font-family: $font-normal;
+  color: $text-normal;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+a[id*="button"]:hover,
+a:link:hover,
+.link {
+  cursor: pointer;
+  text-decoration: underline;
+}
+.not-link {
+  cursor: default;
+  text-decoration: none;
+}
+
+@import "scrollbar";
+@import "basic-button";
+@import "inset-shadow";
+
+@import "header";
+@import "footer";
+
+#content {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 73px;
+  bottom: 50px;
+
+  @media screen and (max-height: 480px) {
+    position: static;
+  }
+}
+#content > div {
+  position: relative;
+  width: 980px;
+  height: 100%;
+  margin: 0 auto;
+  /* cover the header's shallow area */
+  margin-top: -15px;
+  padding-top: 15px;
+
+  -webkit-transition: width 1s 0.2s;
+  -moz-transition: width 1s 0.2s;
+  transition: width 1s 0.2s;
+
+  @media screen and (max-height: 480px) {
+    min-height: 357px;
+  }
+  .user-list-slid-open & {
+    width: 1260px;
+  }
+
+  .ie8 & {
+    border: 1px solid #aaa;
+  }
+}
+// NOTE: uses the :before and :after on #content > div
+@import "content-shadow";
+
+@import "user-list";
+@import "chat";
+@import "game-list";

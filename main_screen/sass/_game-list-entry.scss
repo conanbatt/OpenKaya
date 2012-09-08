@@ -1,0 +1,233 @@
+﻿#game-list {
+  #game-list-content {
+    li {
+      border-top: 1px solid $rule-gray;
+      overflow: hidden;
+      padding: 15px 0;
+
+      .player-icon.anonymous:before {
+        content: '+'; // person
+        display: inline-block;
+        font-family: $font-entypo;
+        font-size: 70px;
+        width: 80px;
+        height: 80px;
+        line-height: 65px;
+        text-align: center;
+        border: 1px solid $rule-gray;
+      }
+      .player-icon.anonymous-efon {
+        @extend .anonymous;
+      }
+      .player-icon.anonymous-efon:before {
+        font-family: $font-efon;
+        font-size: 50px;
+      }
+
+      &.broadcast {
+        .player-icon {
+          @extend .anonymous;
+          @extend .not-link;
+
+          color: $icon-dark-gray;
+
+          &:hover ~ .players .black,
+          &:hover ~ .players .white {
+            @extend .not-link;
+          }
+        }
+        .players .black,
+        .players .white {
+          @extend .not-user-name;
+        }
+        .observe-game:after {
+          content: 'D'; // camera
+        }
+      }
+
+      .player-icon.bot {
+        @extend .anonymous-efon;
+        &:before {
+          color: $icon-green;
+          content: 'x'; // robot
+        }
+      }
+
+      &.open {
+        .player-icon.black {
+          @extend .anonymous;
+          color: $icon-red;
+          &:before {
+            content: '-'; // add person
+          }
+        }
+        .players .black {
+          color: $text-red;
+          &:before {
+            content: 'Join Match';
+          }
+        }
+        .observe-game {
+          &:after {
+            content: 'R'; // hourglass
+            background: transparent;
+            color: $icon-dark-green;
+            box-shadow: none;
+            text-shadow: 1px 1px 1px $content-shadow;
+            font-size: 60px;
+          }
+
+          &:hover:after {
+            background: transparent;
+            color: $icon-green;
+          }
+        }
+      }
+
+      .player-icon {
+        float: left;
+        height: 80px;
+        cursor: pointer;
+
+        &.black {
+          margin-left: 15px;
+
+          &:hover ~ .players .black {
+            @extend .link;
+            > span {
+              @extend .link;
+            }
+          }
+        }
+
+        &.white {
+          margin-left: 140px;
+
+          &:hover ~ .players .white {
+            @extend .link;
+            > span {
+              @extend .link;
+            }
+          }
+        }
+
+
+        img {
+          border: 1px solid $rule-gray;
+          width: 80px;
+          height: 80px;
+        }
+      }
+
+      .players {
+        position: absolute;
+        left: 82px + 15px + 10px;
+        width: 120px;
+        color: $text-green;
+
+        > span, > a {
+          display: block;
+        }
+
+        .black, .white {
+          @extend .font-bold;
+          @extend .user-name;
+          > span {
+            max-width: 90px;
+          }
+        }
+        .vs {
+          line-height: 40px;
+          color: $text-gray;
+          font-size: 24px;
+          text-align: center;
+        }
+        .white {
+          text-align: right;
+        }
+      }
+
+      .observe-game {
+        float: left;
+        margin: 0 0 0 20px;
+        cursor: pointer;
+
+        img {
+          width: 82px;
+          height: 82px;
+          vertical-align: middle;
+        }
+
+        &:after {
+          content: 'ê'; // right arrow
+          display: inline-block;
+          font-family: $font-entypo;
+          font-size: 40px;
+          margin-left: 8px;
+          height: 30px;
+          width: 30px;
+          background: $icon-dark-green;
+          color: $background-white;
+          text-align: center;
+          vertical-align: middle;
+          border-radius: 100px;
+          box-shadow: 1px 1px 1px $content-shadow;
+        }
+        &:hover:after {
+          background: $icon-green;
+        }
+      }
+
+      .status-bar {
+        float: left;
+        margin: -4px 0;
+        width: 63px;
+        text-align: right;
+        line-height: 30px;
+        height: 80px;
+        @extend .font-bold;
+
+        &:hover {
+          color: $text-strong;
+          cursor: pointer;
+        }
+
+        .observers {
+          &:before {
+            content: ','; // two people
+            display: inline-block;
+            font-family: $font-entypo;
+            font-size: 35px;
+            position: relative;
+            top: 4px;
+            margin-top: -8px;
+            margin-right: 2px;
+          }
+        }
+      }
+
+      .details {
+        clear: both;
+        padding-top: 5px;
+        margin: 0 20px 0 20px;
+        overflow: hidden;
+        height: 0;
+        opacity: 0;
+        -moz-transition: opacity 0.3s, height 0.3s;
+        -webkit-transition: opacity 0.3s, height 0.3s;
+        transition: opacity 0.3s, height 0.3s;
+
+        &.open {
+          height: 65px;
+          opacity: 1;
+        }
+
+        label {
+          display: inline-block;
+          width: 85px;
+          @extend .font-bold;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,103 @@
+@import "scrollbar";
+@import "inset-shadow";
+@import "user-name";
+
+#chat #chat-content {
+  position: absolute;
+  /* javascript updates this top value when #chat-rooms grows */
+  top: 76px;
+  bottom: 70px;
+  left: 20px;
+  right: 20px;
+
+  line-height: 20px;
+  background: $background-white;
+
+  @extend .scrollbar-container;
+
+  li {
+    position: relative;
+    z-index: 0;
+    padding: 10px 25px 10px 15px;
+    line-height: 1.3;
+    h4 {
+      display: inline-block;
+      font-size: 13px;
+      color: $text-green;
+      @extend .user-name;
+      > span {
+        max-width: 285px;
+      }
+    }
+    h5 {
+      float: right;
+      clear: right;
+      font-size: 13px;
+      color: $text-weak;
+      margin-left: 1em;
+      // while Ubuntu font is in place remove this:
+      // margin-top: 3px;
+    }
+    h6 {
+      float: right;
+      visibility: hidden;
+      display: block;
+      height: 16px;
+      a {
+        display: inline-block;
+        color: $icon-gray;
+        cursor: pointer;
+        margin-top: -4px;
+        height: 20px;
+        overflow: hidden;
+        span {
+          display: none;
+        }
+        &:hover {
+          color: $icon-green;
+        }
+        &:before {
+          font-family: $font-entypo;
+          font-size: 40px;
+          display: inline-block;
+          position: relative;
+          top: -21px;
+        }
+      }
+      .translate:before {
+        content: '9';
+      }
+    }
+    &:hover h6 {
+      visibility: visible;
+    }
+    p {
+      @extend .font-bold;
+
+      b {
+        color: $text-dark-red;
+      }
+
+      a {
+        color: $text-blue;
+      }
+    }
+
+    &:nth-child(even) {
+      background: $background-off-white;
+    }
+    // must be separate rule or IE will ignore
+    &.even {
+      background: $background-off-white;
+    }
+  }
+
+  #chat-content-shadow {
+    @extend .inset-shadow-shiv;
+  }
+  .ie8 &, .ie9 & {
+    border: 1px solid #ccc;
+  }
+}
+
+

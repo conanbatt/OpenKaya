@@ -1,0 +1,40 @@
+@import "global";
+
+@if import-once("fonts") {
+
+@font-face {
+    font-family: 'EntypoRegular';
+    src: url('/fonts/entypo-webfont.eot');
+    src: url('/fonts/entypo-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/fonts/entypo-webfont.woff') format('woff'),
+         url('/fonts/entypo-webfont.ttf') format('truetype'),
+         url('/fonts/entypo-webfont.svg#EntypoRegular') format('svg');
+}
+
+@font-face {
+    font-family: 'AierbazziRegular';
+    src: url('/fonts/aierbazzi-webfont.eot');
+    src: url('/fonts/aierbazzi-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/fonts/aierbazzi-webfont.woff') format('woff'),
+         url('/fonts/aierbazzi-webfont.ttf') format('truetype'),
+         url('/fonts/aierbazzi-webfont.svg#AierbazziRegular') format('svg');
+}
+
+@font-face {
+    font-family: 'EfonRegular';
+    src: url('/fonts/EFON-webfont.eot');
+    src: url('/fonts/EFON-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/fonts/EFON-webfont.woff') format('woff'),
+         url('/fonts/EFON-webfont.ttf') format('truetype'),
+         url('/fonts/EFON-webfont.svg#EfonRegular') format('svg');
+}
+
+.font-bold {
+  font-family: $font-bold;
+  font-weight: 600;
+}
+.ie8 .font-bold {
+  font-weight: bold;
+}
+
+}

@@ -1,0 +1,133 @@
+﻿@import "scrollbar";
+@import "content-shadow";
+@import "user-name";
+
+@import "user-list-open-close";
+@import "user-list-panel";
+@import "user-list-toolbar";
+
+#user-list {
+  position: absolute;
+  top: 30px;
+  bottom: 70px;
+  width: 280px;
+  background: $background-dark-white;
+  .ie8 & {
+    border: 1px solid #ccc;
+  }
+
+  #user-list-content { 
+    position: absolute;
+    top: 20px;
+    bottom: 40px;
+    left: 10px;
+    right: 10px;
+    z-index: 1;
+    background: $background-white;
+
+    @extend .scrollbar-container;
+    #user-list-content-shadow {
+      @extend .inset-shadow-shiv;
+    }
+    .ie8 &, .ie9 & {
+      border: 1px solid #ccc;
+    }
+    
+
+    h4 {
+      padding: 10px 15px 10px 15px;
+      background: $background-light-green;
+      color: $text-green;
+    }
+
+    li {
+      position: relative;
+      z-index: 0;
+      padding: 10px 15px 10px 15px;
+      height: 20px;
+
+
+      &.sleeping .name {
+      }
+      &:not(.sleeping) .name {
+        color: $text-green;
+      }
+
+      .name {
+        display: inline-block;
+        line-height: 1.5;
+        @extend .user-name;
+        z-index: 1;
+        position: relative;
+
+        > span {
+          max-width: 170px;
+        }
+      }
+
+      .type {
+        float: right;
+        z-index: 1;
+        position: relative;
+        font-size: 28px;
+        font-family: $font-chinese;
+        margin: -4px 0;
+        color: $text-weakest;
+        -webkit-transition: right 0.5s 0.2s;
+        -moz-transition: right 0.5s 0.2s;
+        transition: right 0.5s 0.2s;
+      }
+      &:not(.sleeping) .type {
+        color: $text-green;
+      }
+
+      > .karma {
+        // TODO: put this back in
+        display: none;
+        font-family: $font-aierbazzi;
+        pointer-events: none;
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        right: 0;
+        height: 40px;
+        line-height: 40px;
+        font-size: 40px;
+        color: rgba(90, 123, 42, 0.1);
+
+        .ie8 & {
+          color: #eef1ea;
+        }
+      }
+
+      &:nth-child(even) {
+        background: $background-off-white;
+      }
+      // must be separate rule or IE will ignore
+      &.even {
+        background: $background-off-white;
+      }
+
+      -webkit-transition: height 0.5s 0.2s;
+      -moz-transition: height 0.5s 0.2s;
+      transition: height 0.5s 0.2s;
+      &.selected {
+        height: 60px;
+
+        .name > span {
+          max-width: 105px;
+        }
+        .type {
+          right: 70px;
+        }
+        .panel {
+          visibility: visible;
+          opacity: 1;
+          -webkit-transition: visibility 0s, opacity 1s 0.2s;
+          -moz-transition: visibility 0s, opacity 1s 0.2s;
+          transition: visibility 0s, opacity 1s 0.2s;
+        }
+      }
+    }
+  }
+}

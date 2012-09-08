@@ -1,0 +1,54 @@
+@import "compass/css3/images";
+
+#game-list {
+  #game-list-content {
+    #game-list-create-game {
+      border-top: 1px solid $rule-gray;
+      > .buttons {
+        padding: 20px 0;
+        text-align: center;
+        #create-game {
+          display: inline-block;
+          margin-bottom: 5px;
+          padding: 10px 30px;
+          background: $icon-green;
+          @include background(linear-gradient($icon-green, $icon-dark-green));
+          border-radius: 5px;
+          box-shadow: 1px 1px 1px $content-shadow;
+          color: $text-white;
+          @extend .font-bold;
+          font-size: 16px;
+          cursor: pointer;
+
+          &:hover {
+            background: $icon-light-green;
+            @include background(linear-gradient($icon-light-green, $icon-green));
+          }
+
+          &:after { 
+            content: ']'; // plus sign
+            font-family: $font-entypo;
+            font-weight: normal;
+            font-size: 70px;
+            margin-left: 20px;
+            display: inline-block;
+            position: relative;
+            top: -10px;
+            vertical-align: bottom;
+          }
+        }
+
+        #create-sandbox {
+          color: $text-green;
+          &:hover {
+            @extend .link;
+          }
+        } 
+      }
+
+      > form {
+        display: none;
+      }
+    }
+  }
+}

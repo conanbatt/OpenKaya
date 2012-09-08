@@ -1,0 +1,89 @@
+﻿@import "global";
+@import "basic-button";
+@import "fonts";
+
+#header {
+  position: absolute;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  min-width: 980px;
+  /* visible height about 73px */
+  height: 90px;
+  margin-bottom: -32px;
+
+  .left {
+    height: 90px;
+    background-image: url(/images/layout/header-left.png);
+  }
+  .right {
+    height: 90px;
+    background: url(/images/layout/header-right.png) repeat-x;
+  }
+  .left s, .right s {
+    width: 0;
+    visibility: hidden;
+  }
+  .content {
+    // doesn't work with table-cell on FF position: relative;
+    vertical-align: top;
+    height: 90px;
+    width: 980px;
+    background: url(/images/layout/header.png) no-repeat;
+    &:after {
+      // FF won't let us use position absolute
+      content: ' ';
+      float: right;
+      margin-top: 90px;
+      margin-right: 21px;
+      margin-left: -131px;
+      margin-bottom: -49px;
+      background: url(/images/layout/header-extra.png) no-repeat;
+      width: 131px;
+      height: 49px;
+      pointer-events: none;
+    }
+  }
+
+  h1 {
+    float: left;
+    min-width: 100px;
+    margin-right: 20px;
+    height: 45px;
+    margin-top: 14px;
+    span {
+      display: inline-block;
+      margin-top: 5px;
+      font-size: 25px;
+    }
+    -moz-transition: padding-left 1s 0.2s;
+    -webkit-transition: padding-left 1s 0.2s;
+    transition: padding-left 1s 0.2s;
+  }
+
+  a[id*="button"] {
+    @extend .basic-button;
+    @extend .font-bold;
+    font-size: 16px;
+    margin-top: 20px;
+
+    > span {
+      @extend .button-note;
+      font-size: 14px;
+      background: $icon-green;
+    }
+  }
+  a[id*="button"] + a[id*="button"] {
+    margin-left: 10px;
+  }
+
+  @media screen and (max-height: 480px) {
+    position: relative;
+  }
+  
+  .user-list-slid-open & > div h1 {
+    padding-left: (1260px - 980px)/2;
+  }
+}

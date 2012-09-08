@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Kaya.gs</title>
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600&subset=latin,vietnamese,greek,cyrillic,latin-ext,cyrillic-ext,greek-ext' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="/css/main.css">
+  <!--[if IE]>
+    <script>document.documentElement.className += " ie ie" + parseInt(navigator.appVersion.split("MSIE")[1]);</script>
+    <script src="js/html5.js"></script>
+  <![endif]-->
+  <script src="js/matchMedia.js"></script>
+  <script src="/js/modernizr-custom.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min.js"></script>
+  <script src="/js/jquery.tinyscrollbar-1.67-with-relative-bottom-minthumb-sizeadjust.js"></script>
+  <script src="/js/layout.js"></script>
+</head>
+<body>
+  <!--#include virtual="/includes/header.shtml"-->
+  <div id=content><div>
+    <!--#include virtual="user-list.shtml"-->
+    <!--#include virtual="chat.shtml"-->
+    <!--#include virtual="game-list.shtml"-->
+    <div id=content-shadow></div>
+  </div></div>
+  <!--#include virtual="/includes/footer.shtml"-->
+</body>
+</html>

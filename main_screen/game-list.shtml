@@ -1,0 +1,205 @@
+<div id=game-list>
+  <div id=game-list-controls>
+    <span>I want to:</span>
+    <a id=game-list-play-button class="selected">Play</a>
+    <a id=game-list-hot-button>See what's hot</a>
+    <a id=game-list-friend-button>See my friends</a>
+    <a id=game-list-all-button>See everything</a>
+  </div>
+  <div id=game-list-content>
+    <div class="scrollbar"><div class="track"><div class="thumb"><div class="end"></div></div></div></div>
+    <div class="viewport"><div class="overview">
+      <div id=game-list-create-game>
+        <div class=buttons>
+          <a id=create-game>Start a New Game</a><br>
+          Or, <a id=create-sandbox>Create a sandbox</a>.
+        </div>
+        <form>
+          <div class=left>
+            <label for=create-game-speed>Speed</label>
+            <select id=create-game-speed>
+              <option>Fast</option>
+              <option selected>Medium</option>
+              <option>Slow</option>
+              <option>Custom...</option>
+            </select>
+            <div class=custom-time>
+              <label for=create-game-time-system>Time system:</label>
+              <select id=create-game-time-system>
+                <option select>Fischer</option>
+                <option>Byoyomi</option>
+                <option>Hourglass</option>
+                <option>Absolute</option>
+                <option>None</option>
+              </select>
+              <a id=create-game-time-system-help-button>Help</a>
+              <div class=create-game-time-system-help>
+                <h3>Fischer</h3>
+                <p>Fischer Time consists of a basic main time and each time a player makes a move the Bonus is added to it. The player loses once his clock reaches 0.</p>
+
+                <h3>Byoyomi</h3>
+                <p>Byoyomi consists of a basic main time and byoyomi periods. Once the main time is over, the player starts overtime and he has to play within the byoyomi time. If he misses the time, he will lose a period. The player loses after his clock reaches 0 and he has no more periods.</p>
+
+                <h3>Hourglass</h3>
+                <p>In Hourglass each second a player takes is added to his opponent time. A player loses after the difference between his clock and his opponents exceeds the differential time. Kaya.gs has a slight modification: if you play, you will at least have 10 seconds to think your next move.</p>
+
+                <h3>Absolute</h3>
+                <p>Absolute time only has a fix time for each player. The player loses once his clock reaches 0.</p>
+
+                <h3>None</h3>
+                <p>There is no clock running. The game can take as long as the players want to.</p>
+              </div>
+              <br>
+              <label for=create-game-main-time>Main time:</label>
+              <input id=create-game-main-time>    
+              <br>
+              <label for=create-game-extra-time>Extra time:</label>
+              <input id=create-game-extra-time>    
+            </div>
+            <br>
+            <label for=create-game-comment>Comment:</label>
+            <input id=create-game-comment>
+            <br>
+            <button id=create-game-submit>Go!</button>
+          </div>
+          <div class=right>
+            <a id=create-game-make-challenge>Pick a challenger?</a>
+            <div class=challenger-details>
+              <label for=create-game-challenger>Challenger:</label>
+              <input id=create-game-challenger value="(as you type you'd get autocomplete with a mini-profile picture)">
+            </div>
+            <br>
+            <label for=create-game-board-size>Size:</a>
+            <select id=create-game-board-size>
+              <option>9x9</option>
+              <option>13x13</option>
+              <option selected>19x19</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <ol>
+        <li class=open>
+          <a class="black player-icon"></a>
+          <a class="white player-icon" data-user="conanbatt"><img src="/images/fpo/conanbatt.jpg"></a>
+          <div class=players>
+            <a class=black></a>
+            <span class=vs>vs.</span>
+            <a class=white data-user="conanbatt"><span>conanbatt</span><b>(6d)</b></a>
+          </div>
+          <a class=observe-game><img src="/images/fpo/board.png"></a>
+          <div class=status-bar>
+            <span class=age>1 min.</span><br>
+            <span class=speed>Medium</span><br>
+            <span class=observers>(0)</span>
+          </div>
+          <div class=details>
+            <label>Time:</label> <span>Absolute, 25m</span><br>
+            <label>Observers:</label> <span>0</span><br>
+            <label>Comment:</label> <span>Just one more game...</span>
+          </div>
+        </li>
+        <li class=open>
+          <a class="black player-icon"></a>
+          <a class="white player-icon bot" data-user="GNUBot"></a>
+          <div class=players>
+            <a class=black></a>
+            <span class=vs>vs.</span>
+            <a class=white data-user="GNUBot"><span>GNUBot</span><b>(6k)</b></a>
+          </div>
+          <a class=observe-game><img src="/images/fpo/board.png"></a>
+          <div class=status-bar>
+            <span class=age>1 min.</span><br>
+            <span class=speed>Medium</span><br>
+            <span class=observers>(0)</span>
+          </div>
+          <div class=details>
+            <label>Time:</label> <span>Absolute, 25m</span><br>
+            <label>Observers:</label> <span>0</span><br>
+            <label>Comment:</label> <span>Just one more game...</span>
+          </div>
+        </li>
+        <li class=broadcast>
+          <a class="black player-icon"></a>
+          <a class="white player-icon"></a>
+          <div class=players>
+            <a class=black><span>Cho Chikun</span><b>(9d)</b></a>
+            <span class=vs>vs.</span>
+            <a class=white><span>Rui Naiwei</span><b>(9d)</b></a>
+          </div>
+          <a class=observe-game><img src="/images/fpo/board.png"></a>
+          <div class=status-bar>
+            <span class=age>1 min.</span><br>
+            <span class=speed>Medium</span><br>
+            <span class=observers>(0)</span>
+          </div>
+          <div class=details>
+            <label>Time:</label> <span>Absolute, 25m</span><br>
+            <label>Observers:</label> <span>0</span><br>
+            <label>Comment:</label> <span>Just one more game...</span>
+          </div>
+        </li>
+        <li>
+          <a class="black player-icon" data-user="gryn"><img src="/images/fpo/gryn.png"></a>
+          <a class="white player-icon" data-user="conanbatt"><img src="/images/fpo/conanbatt.jpg"></a>
+          <div class=players>
+            <a class=black data-user="gryn"><span>gryn</span><b>(1k)</b></a>
+            <span class=vs>vs.</span>
+            <a class=white data-user="conanbatt"><span>conanbatt</span><b>(6d)</b></a>
+          </div>
+          <a class=observe-game><img src="/images/fpo/board.png"></a>
+          <div class=status-bar>
+            <span class=age>1 min.</span><br>
+            <span class=speed>Medium</span><br>
+            <span class=observers>(0)</span>
+          </div>
+          <div class=details>
+            <label>Time:</label> <span>Absolute, 25m</span><br>
+            <label>Observers:</label> <span>0</span><br>
+            <label>Comment:</label> <span>Just one more game...</span>
+          </div>
+        </li>
+        <li>
+          <a class="black player-icon" data-user="gryn"><img src="/images/fpo/gryn.png"></a>
+          <a class="white player-icon" data-user="conanbatt"><img src="/images/fpo/conanbatt.jpg"></a>
+          <div class=players>
+            <a class=black data-user="gryn"><span>gryn</span><b>(1k)</b></a>
+            <span class=vs>vs.</span>
+            <a class=white data-user="conanbatt"><span>conanbatt</span><b>(6d)</b></a>
+          </div>
+          <a class=observe-game><img src="/images/fpo/board.png"></a>
+          <div class=status-bar>
+            <span class=age>1 min.</span><br>
+            <span class=speed>Medium</span><br>
+            <span class=observers>(0)</span>
+          </div>
+          <div class=details>
+            <label>Time:</label> <span>Absolute, 25m</span><br>
+            <label>Observers:</label> <span>0</span><br>
+            <label>Comment:</label> <span>Just one more game...</span>
+          </div>
+        </li>
+        <li>
+          <a class="black player-icon" data-user="gryn"><img src="/images/fpo/gryn.png"></a>
+          <a class="white player-icon" data-user="conanbatt"><img src="/images/fpo/conanbatt.jpg"></a>
+          <div class=players>
+            <a class=black data-user="gryn"><span>gryn</span><b>(1k)</b></a>
+            <span class=vs>vs.</span>
+            <a class=white data-user="conanbatt"><span>conanbatt</span><b>(6d)</b></a>
+          </div>
+          <a class=observe-game><img src="/images/fpo/board.png"></a>
+          <div class=status-bar>
+            <span class=age>1 min.</span><br>
+            <span class=speed>Medium</span><br>
+            <span class=observers>(0)</span>
+          </div>
+          <div class=details>
+            <label>Time:</label> <span>Absolute, 25m</span><br>
+            <label>Observers:</label> <span>0</span><br>
+            <label>Comment:</label> <span>Just one more game...</span>
+          </div>
+        </li>
+      </ol>
+    </div></div>
+  </div>
+</div>

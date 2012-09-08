@@ -1,0 +1,54 @@
+@if import-once("basic-button") {
+
+.basic-button {
+  display: inline-block;
+  padding: 5px 15px 5px 15px;
+  line-height: 20px;
+  border-top: 1px solid $basic-button-top;
+  border-bottom: 1px solid $basic-button-bottom;
+  border-radius: 50px;
+  background: $basic-button-background;
+  box-shadow: inset 0px -1px 2px $basic-button-shadow;
+
+  &:hover, &:active, &.active, &.selected {
+    text-decoration: none;
+    color: $text-strong;
+    background: $basic-button-hover-background;
+    box-shadow: inset 0px -1px 2px $basic-button-hover-shadow;
+  }
+
+  .ie & {
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    &:hover, &:active, &.active, &.selected {
+      background: #fafafa;
+    }
+  }
+}
+
+.basic-button-off-white {
+  @extend .basic-button;
+  background: $basic-button-off-white-background;
+  &:hover, &:active, &.active, &.selected {
+    background: $basic-button-off-white-hover-background;
+    color: $text-white;
+  }
+  .ie & {
+    &:hover, &:active, &.active, &.selected {
+      background: $icon-light-green;
+    }
+  }
+}
+
+.button-note {
+  display: inline-block;
+  background: $icon-black;
+  color: $text-white;
+  text-align: center;
+  border-radius: 3px;
+  min-width: 14px;
+  padding: 1px 3px 1px 3px;
+  margin: -1px 0 -1px 4px;
+}
+
+}
