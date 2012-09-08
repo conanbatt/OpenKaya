@@ -521,7 +521,7 @@ var chinese_score;
                 ["*","*","B","W","*","*"],
                 ["E","*","B","W","*","*"],
                 ["*","*","B","W","*","W"],
-                ["B","B","*","*","W","*"],
+                ["B","B","*","W","W","*"],
                 ["*","*","B","*","*","*"],
                 ["*","*","*","*","*","*"]
             ]);
@@ -650,6 +650,42 @@ var chinese_score;
         equal(score.white_points,37);
     });
 
+
+// Scoring should guess when a point isn't a point after full dame filling (bugcase #2)
+// Thank you Kanin for reporting it!
+
+    module("Dame filling", {
+        setup: function() {
+            genericSetup([
+                ["*","W","B","B","B","W","*","*","*"],
+                ["*","W","B","*","B","W","*","*","*"],
+                ["*","W","B","B","B","W","*","*","*"],
+                ["*","W","B","*","B","W","*","*","*"],
+                ["*","W","B","B","B","W","*","*","*"],
+                ["*","W","B","W","W","W","*","*","*"],
+                ["*","W","B","B","*","W","*","*","*"],
+                ["*","W","B","*","B","W","*","*","*"],
+                ["*","W","W","B","*","W","*","*","*"]
+            ]);
+        },
+        teardown: function() {
+            genericTeardown();
+        }
+    });
+
+    test("shouldn't count the point in the false eyes as they'll be filled after dame filling (Japanese) - bugcase#2", function(){
+        var score = japanese_score.calculate_score();
+        equal(score.black_points,2);
+        equal(score.white_points,36);
+
+    });
+
+    test("should count the points in the false eyes as after filling, it's still one point (Chinese) - bugcase#2", function(){
+        var score = chinese_score.calculate_score();
+        equal(score.black_points,22);
+        equal(score.white_points,57);
+    });
+
     
 /* Grid coloring testing */
 
@@ -734,7 +770,7 @@ var chinese_score;
                 ["*","*","B","W","*","*"],
                 ["E","*","B","W","*","*"],
                 ["*","*","B","W","*","W"],
-                ["B","B","*","*","W","*"],
+                ["B","B","*","W","W","*"],
                 ["*","*","B","*","*","*"],
                 ["*","*","*","*","*","*"]
             ]);
@@ -752,7 +788,7 @@ var chinese_score;
                 ["+","+","B","W","-","-"],
                 ["E","+","B","W","-","-"],
                 ["+","+","B","W","-","W"],
-                ["B","B","X","X","W","X"],
+                ["B","B","X","W","W","X"],
                 ["X","X","B","X","X","X"],
                 ["X","X","X","X","X","X"]
           ]), true);
