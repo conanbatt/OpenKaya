@@ -12,10 +12,15 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js">
 <script type="text/javascript" src="jgo/autodiv.js"></script>
 <script type="text/javascript" src="jgo/jgoboard.js"></script>
 <script type="text/javascript" src="jgo/sgf.js"></script>
- <script type="text/javascript" src="se.js"></script>
- <script type="text/javascript" src="estimator.js"></script>
+<script type="text/javascript" src="scoreboard.js"></script>
+<script type="text/javascript" src="inheritance.js"></script>
+<script type="text/javascript" src="board_exact_analysis.js"></script>
+<script type="text/javascript" src="board_approximated_analysis.js"></script>
+<script type="text/javascript" src="old_estimator.js"></script>
+<script type="text/javascript" src="scoreboard_jgo_adaptor.js"></script>
+
     </link>
-    <title>Score Estimator Demo</title>
+    <title>BoardExactAnalysis Demo</title>
 
 </head>
 <body>
@@ -82,6 +87,10 @@ Variation: <strong><span id="variation">1/1</span></strong></p>
   </div> <!-- center_container -->
 </div> <!-- center_wrap -->
 <input type="button" style="margin-left:15px;margin-bottom:10px;" onclick="useSE = !useSE;doLoad(); updateGameInfo(player.info);" value="change estimator"></input>
+<br/>
+<input type="button" style="margin-left:15px;margin-bottom:10px;" onclick="debugSE = !debugSE;useSE=true;doLoad(); updateGameInfo(player.info);" value="switch debug/normal mode"></input> (more info displayed in debug mode)
+<br/>
+<input type="button" style="margin-left:15px;margin-bottom:10px;" onclick="exactAnalysisOnly = !exactAnalysisOnly;useSE=true;doLoad(); updateGameInfo(player.info);" value="switch exact/approximated analysis"></input>
 
 <br/>
 <input type="button" onclick="loadSGFAt('http://beta.kaya.gs/gospeed/2837.sgf', 30);" value="Example 1"></input>
@@ -93,9 +102,11 @@ Variation: <strong><span id="variation">1/1</span></strong></p>
 <input type="button" onclick="loadSGFAt('http://beta.kaya.gs/gospeed/3723.sgf', 100);" value="Example 7"></input>
 
 <script type="text/javascript">
-var se=new SE(19);
-var estimator = new Estimator();
+var se=null;
+var estimator = new OldEstimator();
 var useSE = true;
+var debugSE = false;
+var exactAnalysisOnly = false;
 var nMove = 0;
 var shownBoard, // this is tied to the DOM table object with board
 	player; // SGF player object
@@ -103,10 +114,12 @@ var shownBoard, // this is tied to the DOM table object with board
 var keysActive = false; // activate keys when load dialog is closed
 
 function doLoad() {
-	se.load(shownBoard, player.info['komi'], player.captures[0], player.captures[1]);
-	estimator = new Estimator({komi:parseInt(player.info['komi'])});
+	se = new ScoreBoardJGOAdaptor(shownBoard, 19, player.info['komi'], player.captures[0], player.captures[1], exactAnalysisOnly);
+	estimator = new OldEstimator({komi:parseInt(player.info['komi'])});
 	estimator.load(shownBoard, player.info['komi'], player.captures[0], player.captures[1]);
-	if(!useSE) {
+	if(useSE) {
+		se.display(shownBoard, debugSE);
+	} else {
 		estimator.display(shownBoard);
 	}
 }
@@ -117,7 +130,7 @@ $(document).ready(function(){
 	
 	shownBoard.click = function(coord) {
 		se.toggleAndEstimate(coord.i, coord.j);
-		se.reload(shownBoard);
+		se.display(shownBoard, debugSE);
 		updateGameInfo(player.info);
 	};
 	var url = window.location.toString(); // check if url query parameter is set
