@@ -1,10 +1,14 @@
 class GTP
 
   def self.run(bot_type, &command)
+    
     if bot_type == 'gnugo'
       new(IO.popen("gnugo --mode gtp", "r+"), &command)
     elsif bot_type == 'fuego'
       new(IO.popen("fuego", "r+"), &command)
+    else
+      ## All falls here to accept commands from the yaml directly 
+      new(IO.popen(bot_type, "r+"), &command) 
     end
   end
 
@@ -35,6 +39,10 @@ class GTP
 
   def loadsgf(path)
     send_command(:loadsgf, path)
+  end
+
+  def score(path)
+    send_command(:score, "aftermath", path)
   end
 
   def list_stones(color)
@@ -70,7 +78,7 @@ class GTP
   end
 end
 
-SGF_FILE_PATH = "gnugo_games/"
+SGF_FILE_PATH = "bot_games/"
 
 def score_game(game_id, game_sgf)
   re = nil
@@ -81,14 +89,12 @@ def score_game(game_id, game_sgf)
   File.open(filepath, "w") do |f|
     f.write game_sgf
   end
-
-  IO.popen("gnugo --score aftermath #{filepath}") do |f|
-    re = f.read
-  end
+  
   dead_stones = ""
-  GTP.run("gnugo") do |gtp|
+  GTP.run(@bot) do |gtp|
     gtp.loadsgf filepath
     dead_stones = gtp.list_dead_stones
+    re = gtp.final_score
   end
 
   p dead_stones
@@ -110,7 +116,7 @@ def ai_move(game_id, game_sgf, color)
   end
 
   size = 19
-  GTP.run(@bot || "gnugo") do |gtp|
+  GTP.run(@bot) do |gtp|
     gtp.loadsgf filepath
     size = @master_node.match(/SZ\[(\d+)\]/)[1]
     re = gtp.genmove color
