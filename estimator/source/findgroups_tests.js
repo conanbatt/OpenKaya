@@ -1,3 +1,4 @@
+//Check API and test "toggle status" feature
 //v0.1.0
 
 /** History
@@ -58,33 +59,29 @@ function are_similar_boards(board1, board2){
 }
 
 
-
-
-test("BoardApproximatedAnalysis: estimateTerritory should find some territories", function(){
+test("FindGroups should detect groups adequately", function(){
 
 	var test_board = [
-                [ e , B  , e  , e , e  , e  ],
-                [ e , B , e  , W, e  , e  ],
-                [ e , B , e  , e , W , e  ],
-                [ e , e  , e  , e , W , e  ],
-                [ e , B , e  , e , W , e  ],
-                [ e , e  , e  , e , e  , e  ],
+                [ e  , B  , W , W  , W , B  ],
+                [ e  , B  , e  , W  , e  , W ],
+                [ B  , B  , W , W  , W , e  ],
+                [ e  , B  , B  , W  , W , W ],
+                [ e  , e  , B  , W  , W , W ],
+                [ e  , B  , B  , W  , B  , e  ]
             ];
 
-	var scoreboard = new BoardApproximatedAnalysis(test_board, 0.5, 0, 0);
+	var findgroups = new FindGroups(test_board);
 
-	scoreboard.estimateTerritory();
-
-	var analysedBoard = scoreboard.getBoardArray();
+	var groups = findgroups.getBoardArray();
 	var expected_result = [
-                [ TB , B  , U  , U , U  , U  ],
-                [ TB , B , U , W, TW , U ],
-                [ TB , B , U , U , W , TW ],
-                [ U , U , U , U , W , TW ],
-                [ U , B , U , U , W , U ],
-                [ TB , U , U , U , U , U ],
+                [ "T0" , "B0" , "W0" , "W0" , "W0" , "B1"  ],
+                [ "T0" , "B0" , "T1" , "W0"  , "T2" , "W1" ],
+                [ "B0" , "B0" , "W0" , "W0" , "W0" , "T3" ],
+                [ "T4" , "B0" , "B0" , "W0" , "W0" , "W0" ],
+                [ "T4" , "T4" , "B0" , "W0" , "W0" , "W0" ],
+                [ "T4" , "B0" , "B0" , "W0" , "B2"  , "T5" ]
             ];
 
-	ok(are_similar_boards(analysedBoard, expected_result));
+	ok(are_equal_boards(groups, expected_result));
     
 });

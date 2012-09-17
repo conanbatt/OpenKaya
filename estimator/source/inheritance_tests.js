@@ -59,7 +59,7 @@ childClass.prototype.doSomething  = function() {
 
 
 
-test("Constructor should be able to call parent class", function(){
+test("Inheritance: constructor should be able to call parent class", function(){
 
 var expected_result = 10;
 var parent = new parentClass(10);
@@ -69,7 +69,7 @@ ok(child.size == expected_result);
 
 });
 
-test("Child should be able to use parent member variables and can overwrite them", function(){
+test("Inheritance: child class should be able to use parent member variables and can overwrite them", function(){
 
 var parent = new parentClass(10);
 var child = new childClass(10, "child");
@@ -79,7 +79,7 @@ ok(parent.getValue2() == "value2 from parent");
 ok(child.getValue2() == "value2 from child");
 });
 
-test("Child should be able to call parent functions", function(){
+test("Inheritance: child class should be able to call parent functions", function(){
 
 var parent = new parentClass(10);
 var child = new childClass(10, "child");

@@ -74,7 +74,7 @@ test("ScoreBoard should define the constants used to mark groups dead or alive",
 	ok(ScoreBoard.TERRITORY_UNKNOWN == "X");
 });
 
-test("Should be able to mark a black string of stones as dead or alive if you select one of them", function(){
+test("ScoreBoard should be able to mark a black string of stones as dead or alive if you select one of them", function(){
 
 	var test_board = [
                 [ e  , B  , e  , W  , e  , B  ],
@@ -136,7 +136,7 @@ test("Should be able to mark a black string of stones as dead or alive if you se
 });
 
 
-test("Should be able to mark a white string of stones as dead or alive if you select one of them", function(){
+test("ScoreBoard should be able to mark a white string of stones as dead or alive if you select one of them", function(){
 
 	var test_board = [
                 [ e  , B  , e  , W  , e  , W  ],
@@ -199,7 +199,7 @@ test("Should be able to mark a white string of stones as dead or alive if you se
 });
 
 
-test("Should implement getSize()", function(){
+test("ScoreBoard should implement getSize()", function(){
 
 	var test_board = [
                 [ e  , B  , e  , W  , e  , e  ],
@@ -217,7 +217,31 @@ test("Should implement getSize()", function(){
 	ok(size == 6);
 });
 
-test("Should store a board independantly of its source and the result of getBoard should be independant from its creator", function(){
+
+test("ScoreBoard should implement getKey() and getCoordFromKey()", function(){
+
+	var i1 = 0;
+	var j1 = 3;
+	var key1 = ScoreBoard.getKey(i1, j1);
+	var ar1 = ScoreBoard.getCoordFromKey(key1);
+	ok(ar1[0] == i1 && ar1[1] == j1);
+	
+	var i2 = 7;
+	var j2 = 0;
+	var key2 = ScoreBoard.getKey(i2, j2);
+	var ar2 = ScoreBoard.getCoordFromKey(key2);
+	ok(ar2[0] == i2 && ar2[1] == j2);
+	
+	var i3 = 3;
+	var j3 = 3;
+	var key3 = ScoreBoard.getKey(i3, j3);
+	var ar3 = ScoreBoard.getCoordFromKey(key3);
+	ok(ar3[0] == i3 && ar3[1] == j3);
+	
+});
+
+
+test("ScoreBoard should store a board independantly of its source and the result of getBoard should be independant from its creator", function(){
 
 	var test_board = [
                 [ e  , B  , e  , W  , e  , e  ],
@@ -266,7 +290,7 @@ test("Should store a board independantly of its source and the result of getBoar
 });
 
 
-test("Should be able to clone a board", function(){
+test("ScoreBoard should be able to clone a board", function(){
 
 	var test_board = [
                 [ e  , B  , e  , W  , e  , e  ],
@@ -297,7 +321,7 @@ test("Should be able to clone a board", function(){
 	ok(are_equal_boards(saved_board, expected_result));
 });
 
-test("Should be able to count komi", function(){
+test("ScoreBoard should be able to count komi", function(){
 
 	var test_board = [
                 [ e  , B  , e  , W  , e  , e  ],
@@ -325,7 +349,7 @@ test("Should be able to count komi", function(){
 	}
 });
 
-test("Should be able to count marked territories", function(){
+test("ScoreBoard should be able to count marked territories", function(){
 
 	var test_board = [
                 [ TB , B  , e  , W  , TW , TW ],
@@ -344,7 +368,7 @@ test("Should be able to count marked territories", function(){
 	ok(scoreboard.getGameResult() == "W+6.5");
 });
 
-test("Should be able to count marked dead groups", function(){
+test("ScoreBoard should be able to count marked dead groups", function(){
 
 	var test_board = [
                 [ e  , BD , e  , e  , e  , e  ],

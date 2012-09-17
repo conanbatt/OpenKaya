@@ -7,6 +7,9 @@
 0.2.0: add radiation territory estimation
 */
 
+//TODO: estimatedDame
+//TODO: removePseudoDame
+
 /**
 Constructor
 Inherits from BoardExactAnalysis
@@ -75,10 +78,10 @@ BoardApproximatedAnalysis.prototype.getStatusByRadiation = function(i0, j0, dMax
 			var i = coordsToCheck.shift();
 			var j = coordsToCheck.shift();
 			//use a map to remember already checked stone coordinates
-			if(alreadySeenThoseCoords[i+1000*j] == true) {
+			if(alreadySeenThoseCoords[ScoreBoard.getKey(i, j)] == true) {
 				continue;
 			}
-			alreadySeenThoseCoords[i+1000*j] = true;
+			alreadySeenThoseCoords[ScoreBoard.getKey(i, j)] = true;
 			
 			//check neighbors
 			for(var k=0; k < ScoreBoard.DISTANCE1.length;) {

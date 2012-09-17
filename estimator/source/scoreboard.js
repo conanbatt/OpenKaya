@@ -68,7 +68,7 @@ ScoreBoard.BLACK_DEAD = "N";
 ScoreBoard.WHITE_DEAD = "E";
 ScoreBoard.BLACK_ALIVE = "A";
 ScoreBoard.WHITE_ALIVE = "Z";
-ScoreBoard.BLACK_SEKI = "B";
+ScoreBoard.BLACK_SEKI = "C";
 ScoreBoard.WHITE_SEKI = "Y";
 ScoreBoard.TERRITORY_BLACK = "BP";
 ScoreBoard.TERRITORY_WHITE = "WP";
@@ -158,6 +158,26 @@ ScoreBoard.getToggleColor  = function(color) {
 };
 
 
+//static
+/**
+return anything that can distinguish (i,j) pairs
+allow inverse operation (ScoreBoard.getCoordFromKey)
+*/
+ScoreBoard.getKey  = function(i, j) {
+	return i + 1000*j;
+};
+
+//static
+/**
+inverse method of ScoreBoard.getKey
+return an array of the coord corresponding to the input param key
+*/
+ScoreBoard.getCoordFromKey  = function(key) {
+	var i = key % 1000;
+	var j = (key-i)/1000;
+	return [i, j];
+};
+
 /**
 return
 	ScoreBoard.BLACK if the stone is black (whatever its status dead/alive etc), 
@@ -185,7 +205,11 @@ ScoreBoard.getBlackOrWhite  = function(kind) {
 
 
 ScoreBoard.prototype.getBoardKindAt  = function(i, j) {
-	return this.board[i][j];
+	var kind = this.board[i][j];
+	if(kind == ScoreBoard.EMPTY) {
+		kind = ScoreBoard.TERRITORY_UNKNOWN;
+	}
+	return kind;
 };
 
 
@@ -241,10 +265,10 @@ ScoreBoard.prototype.toggleAt  = function(i0, j0) {
 		var i = coordsToCheck.shift();
 		var j = coordsToCheck.shift();
 		//use a map to remember already checked stone coordinates
-		if(alreadySeenThoseCoords[i+1000*j] == true) {
+		if(alreadySeenThoseCoords[ScoreBoard.getKey(i, j)] == true) {
 			continue;
 		}
-		alreadySeenThoseCoords[i+1000*j] = true;
+		alreadySeenThoseCoords[ScoreBoard.getKey(i, j)] = true;
 		
 		//toggle if same color
 		if(!this.isSameColorAt(i, j, color)) {
