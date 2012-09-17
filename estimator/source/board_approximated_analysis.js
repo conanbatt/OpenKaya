@@ -99,9 +99,12 @@ BoardApproximatedAnalysis.prototype.getStatusByRadiation = function(i0, j0, dMax
 					var color = ScoreBoard.getBlackOrWhite(this.getBoardKindAt(ii, jj));
 					if(this.getGroupStatusAt(ii, jj) != ScoreBoard.STATUS_GROUP_DEAD) {
 						var multiplier = 1;
-						/*if(this.countGroupSize(stone) == 1) {//TODO
-							multiplier = 0.6;
-						}*/
+						var groupName = this.groupNames[ScoreBoard.getKey(ii, jj)];
+						if(this.groupLibCoords[groupName].length == 2) {//atari
+							multiplier = 0.1;
+						} else if(this.groupCoords[groupName].length == 2) {//single stone
+							multiplier = 0.66;
+						}
 						if(color == ScoreBoard.BLACK) {
 							sum += weights[distance]*multiplier;
 						} else if(color == ScoreBoard.WHITE) {
