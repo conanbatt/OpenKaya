@@ -247,15 +247,15 @@ test("BoardExactAnalysis should find simple eyes", function(){
 	scoreboard1.findConnections();
 	scoreboard1.lookForSimpleEyeOrKo();
 	
-	ok(scoreboard1.isTerritoryPropAt(0, 0, BoardExactAnalysis.PROPERTY_TERRITORY_IS_EYE, true));
-	ok(scoreboard1.isTerritoryPropAt(2, 0, BoardExactAnalysis.PROPERTY_TERRITORY_IS_EYE, true));
-	ok(!scoreboard1.isTerritoryPropAt(4, 0, BoardExactAnalysis.PROPERTY_TERRITORY_IS_EYE, true));
-	ok(!scoreboard1.isTerritoryPropAt(5, 0, BoardExactAnalysis.PROPERTY_TERRITORY_IS_EYE, true));
-	ok(!scoreboard1.isTerritoryPropAt(0, 2, BoardExactAnalysis.PROPERTY_TERRITORY_IS_EYE, true));
-	ok(scoreboard1.isTerritoryPropAt(2, 2, BoardExactAnalysis.PROPERTY_TERRITORY_IS_EYE, true));
-	ok(!scoreboard1.isTerritoryPropAt(4, 2, BoardExactAnalysis.PROPERTY_TERRITORY_IS_EYE, true));
-	ok(!scoreboard1.isTerritoryPropAt(3, 3, BoardExactAnalysis.PROPERTY_TERRITORY_IS_EYE, true));
-	ok(!scoreboard1.isTerritoryPropAt(4, 5, BoardExactAnalysis.PROPERTY_TERRITORY_IS_EYE, true));
+	ok(scoreboard1.getTerritoryPropAt(0, 0, BoardExactAnalysis.PROPERTY_TERRITORY_IS_EYE) == true);
+	ok(scoreboard1.getTerritoryPropAt(2, 0, BoardExactAnalysis.PROPERTY_TERRITORY_IS_EYE) == true);
+	ok(scoreboard1.getTerritoryPropAt(4, 0, BoardExactAnalysis.PROPERTY_TERRITORY_IS_EYE) != true);
+	ok(scoreboard1.getTerritoryPropAt(5, 0, BoardExactAnalysis.PROPERTY_TERRITORY_IS_EYE) != true);
+	ok(scoreboard1.getTerritoryPropAt(0, 2, BoardExactAnalysis.PROPERTY_TERRITORY_IS_EYE) != true);
+	ok(scoreboard1.getTerritoryPropAt(2, 2, BoardExactAnalysis.PROPERTY_TERRITORY_IS_EYE) == true);
+	ok(scoreboard1.getTerritoryPropAt(4, 2, BoardExactAnalysis.PROPERTY_TERRITORY_IS_EYE) != true);
+	ok(scoreboard1.getTerritoryPropAt(3, 3, BoardExactAnalysis.PROPERTY_TERRITORY_IS_EYE) != true);
+	ok(scoreboard1.getTerritoryPropAt(4, 5, BoardExactAnalysis.PROPERTY_TERRITORY_IS_EYE) != true);
 
 
 });
@@ -268,7 +268,7 @@ test("BoardExactAnalysis should find ko", function(){
                 [  B ,  e ,  B ,  W ,  e ,  e ],
                 [  e ,  B ,  W ,  e ,  e ,  W ],
                 [  e ,  e ,  e ,  B ,  W ,  e ],
-                [  e ,  e ,  B ,  e ,  B ,  W ],
+                [  e ,  e ,  B ,  e ,  B ,  W ]
             ];
 
 	var scoreboard1 = new BoardExactAnalysis(test_board1, 0.5, 0, 0);
@@ -282,9 +282,152 @@ test("BoardExactAnalysis should find ko", function(){
                 [  B ,  KB ,  B ,  W ,  U ,  U ],
                 [  U ,  B ,  W ,  U ,  U ,  W ],
                 [  U ,  U ,  U ,  B ,  W ,  KW ],
-                [  U ,  U ,  B ,  KB ,  B ,  W ],
+                [  U ,  U ,  B ,  KB ,  B ,  W ]
             ];
 
 	ok(are_similar_boards(analysedBoard1, expected_result1));
+ 	
+});
+
+
+test("BoardExactAnalysis should find some dead groups in atari (findAtariCapturedForSure)", function(){
+	var test_board1 = [
+                [  e ,  B ,  e ,  B ,  e ,  W ],
+                [  B ,  e ,  B ,  e ,  W ,  B ],
+                [  B ,  W ,  B ,  e ,  W ,  e ],
+                [  e ,  B ,  W ,  W ,  W ,  e ],
+                [  e ,  e ,  e ,  B ,  B ,  W ],
+                [  e ,  e ,  W ,  W , W ,  e ]
+            ];
+
+	var scoreboard1 = new BoardExactAnalysis(test_board1, 0.5, 0, 0);
+	scoreboard1.findAtariCapturedForSure();
+
+	ok(!scoreboard1.isGroupDead(scoreboard1.getGroupNameAt(0, 5)));
+	ok(!scoreboard1.isGroupDead(scoreboard1.getGroupNameAt(1, 5)));
+	ok(scoreboard1.isGroupDead(scoreboard1.getGroupNameAt(2, 1)));
+	ok(scoreboard1.isGroupDead(scoreboard1.getGroupNameAt(4, 4)));
+	ok(scoreboard1.isSameMetaGroup(scoreboard1.getGroupNameAt(3, 3), scoreboard1.getGroupNameAt(4, 5)));
+	ok(scoreboard1.isSameMetaGroup(scoreboard1.getGroupNameAt(3, 3), scoreboard1.getGroupNameAt(5, 3)));
+	ok(scoreboard1.getMetaGroupProp(scoreboard1.getGroupNameAt(3, 3), BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE) != null);
+ 	
+});
+
+
+test("BoardExactAnalysis should find some eyes", function(){
+	var test_board1 = [
+                [  e ,  B ,  B ,  e ,  e ,  e ],
+                [  B ,  e ,  B ,  e ,  B ,  e ],
+                [  B ,  e ,  B ,  W ,  B ,  B ],
+                [  B ,  B ,  W ,  e ,  B ,  e ],
+                [  e ,  e ,  W ,  B ,  e ,  B ],
+                [  e ,  e ,  W ,  e ,  B ,  e ]
+            ];
+
+	var scoreboard1 = new BoardExactAnalysis(test_board1, 0.5, 0, 0);
+	scoreboard1.checkForEyes();
+
+	var analysedBoard1 = scoreboard1.getBoardArray();
+	var expected_result1 = [
+                [  U ,  B ,  B ,  U ,  U ,  U ],
+                [  B ,  TB ,  B ,  U ,  B ,  U ],
+                [  B ,  TB ,  B ,  W ,  B ,  B ],
+                [  B ,  B ,  W ,  U ,  B ,  U ],
+                [  U ,  U ,  W ,  B ,  U ,  B ],
+                [  U ,  U ,  W ,  U ,  B ,  U ]
+            ];
+	ok(are_similar_boards(analysedBoard1, expected_result1));
+
+	ok(scoreboard1.isSameMetaGroup(scoreboard1.getGroupNameAt(0, 1), scoreboard1.getGroupNameAt(1, 0)));
+	ok(scoreboard1.getMetaGroupProp(scoreboard1.getGroupNameAt(1, 0), BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE) != null);
+	ok(scoreboard1.getMetaGroupProp(scoreboard1.getGroupNameAt(4, 3), BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE) == null);
+ 	
+	var test_board2 = [
+                [  e ,  e ,  W ,  W ,  e ,  e ],
+                [  e ,  W ,  e ,  e ,  W ,  e ],
+                [  e ,  W ,  e ,  e ,  W ,  e ],
+                [  e ,  B ,  W ,  W ,  B ,  e ],
+                [  W ,  B ,  B ,  B ,  B ,  e ],
+                [  e ,  W ,  e ,  e ,  e ,  e ]
+            ];
+
+	var scoreboard2 = new BoardExactAnalysis(test_board2, 0.5, 0, 0);
+	scoreboard2.checkForEyes();
+
+	var analysedBoard2 = scoreboard2.getBoardArray();
+	var expected_result2 = [
+                [  U ,  U ,  W ,  W ,  U ,  U ],
+                [  U ,  W ,  TW ,  TW ,  W ,  U ],
+                [  U ,  W ,  TW ,  TW ,  W ,  U ],
+                [  U ,  B ,  W ,  W ,  B ,  U ],
+                [  W ,  B ,  B ,  B ,  B ,  U ],
+                [  U ,  W ,  U ,  U ,  U ,  U ]
+            ];
+	ok(are_similar_boards(analysedBoard2, expected_result2));
+
+	ok(scoreboard2.isSameMetaGroup(scoreboard2.getGroupNameAt(0, 2), scoreboard2.getGroupNameAt(1, 1)));
+	ok(scoreboard2.isSameMetaGroup(scoreboard2.getGroupNameAt(0, 2), scoreboard2.getGroupNameAt(2, 4)));
+	ok(scoreboard2.isSameMetaGroup(scoreboard2.getGroupNameAt(0, 2), scoreboard2.getGroupNameAt(3, 2)));
+	ok(scoreboard2.getMetaGroupProp(scoreboard2.getGroupNameAt(0, 2), BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE) != null);
+	ok(scoreboard2.getMetaGroupProp(scoreboard2.getGroupNameAt(4, 0), BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE) == null);
+ 	
+});
+
+
+test("BoardExactAnalysis should find some live shapes", function(){
+	var test_board1 = [
+                [  e ,  B ,  W ,  e ,  e ,  e ],
+                [  B ,  B ,  W ,  e ,  e ,  e ],
+                [  e ,  B ,  W ,  e ,  B ,  B ],
+                [  B ,  B ,  W ,  B ,  e ,  B ],
+                [  e ,  e ,  W ,  B ,  B ,  e ],
+                [  e ,  e ,  W ,  e ,  B ,  B ]
+            ];
+
+	var scoreboard1 = new BoardExactAnalysis(test_board1, 0.5, 0, 0);
+	scoreboard1.checkForEyes();
+
+	var analysedBoard1 = scoreboard1.getBoardArray();
+	var expected_result1 = [
+                [  TB ,  B ,  W ,  U ,  U ,  U ],
+                [  B ,  B ,  W ,  U ,  U ,  U ],
+                [  TB ,  B ,  W ,  U ,  B ,  B ],
+                [  B ,  B ,  W ,  B ,  TB ,  B ],
+                [  U ,  U ,  W ,  B ,  B ,  TB ],
+                [  U ,  U ,  W ,  U ,  B ,  B ]
+            ];
+	ok(are_similar_boards(analysedBoard1, expected_result1));
+
+	ok(scoreboard1.isSameMetaGroup(scoreboard1.getGroupNameAt(2, 5), scoreboard1.getGroupNameAt(5, 5)));
+	ok(scoreboard1.getMetaGroupProp(scoreboard1.getGroupNameAt(0, 1), BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE) == true);
+	ok(scoreboard1.getMetaGroupProp(scoreboard1.getGroupNameAt(2, 5), BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE) == true);
+ 	
+	var test_board2 = [
+                [  B ,  e ,  B ,  e ,  B ,  B ],
+                [  B ,  B ,  B ,  B ,  B ,  B ],
+                [  B ,  B ,  W ,  W ,  W ,  W ],
+                [  B ,  W ,  e ,  W ,  e ,  W ],
+                [  B ,  W ,  W ,  e ,  W ,  e ],
+                [  B ,  B ,  B ,  W ,  W ,  BA ]
+            ];
+
+	var scoreboard2 = new BoardExactAnalysis(test_board2, 0.5, 0, 0);
+	scoreboard2.checkForEyes();
+
+	var analysedBoard2 = scoreboard2.getBoardArray();
+	var expected_result2 = [
+                [  B ,  TB ,  B ,  TB ,  B ,  B ],
+                [  B ,  B ,  B ,  B ,  B ,  B ],
+                [  B ,  B ,  W ,  W ,  W ,  W ],
+                [  B ,  W ,  TW ,  W ,  TW ,  W ],
+                [  B ,  W ,  W ,  TW ,  W ,  U ],
+                [  B ,  B ,  B ,  W ,  W ,  BA ]
+            ];
+	ok(are_similar_boards(analysedBoard2, expected_result2));
+
+	ok(scoreboard2.isSameMetaGroup(scoreboard2.getGroupNameAt(2, 2), scoreboard2.getGroupNameAt(4, 1)));
+	ok(scoreboard2.isSameMetaGroup(scoreboard2.getGroupNameAt(2, 2), scoreboard2.getGroupNameAt(5, 4)));
+	ok(scoreboard2.getMetaGroupProp(scoreboard2.getGroupNameAt(0, 0), BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE) == true);
+	ok(scoreboard2.getMetaGroupProp(scoreboard2.getGroupNameAt(5, 4), BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE) == true);
  	
 });

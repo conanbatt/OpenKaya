@@ -1,11 +1,12 @@
 //BoardExactAnalysis
 //Analyse a board by computing exact information: dame, eyes for sure, etc
-//v0.3.0
+//v0.4.0
 
 /** History
 0.1.0: creation of this file
 0.2.0: findDame
 0.3.0: initGroups, findConnections, lookForSimpleEyeOrKo
+0.4.0: findAtariCapturedForSure, checkForEyes
 */
 
 
@@ -26,6 +27,8 @@ function BoardExactAnalysis(board, komi, black_captures, white_captures) {
 	this.metagroupChilds = new Object();//this.metagroupChilds[metaGroupName] contains an array with the names of the contained groups (children) of the meta-group
 	this.metagroupProperties = new Object();//this.metagroupProperties[metaGroupName] contains an object with properties (e.g. BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE)
 	this.territoryCoordProps = new Object();//this.territoryCoordProps[ScoreBoard.getKey(i, j)] contains an object with properties (e.g. BoardExactAnalysis.PROPERTY_TERRITORY_IS_SEPARATOR)
+
+	this.mapForCheckMultipleEyes = new Object();
 	
 	this.initGroups();
 }
@@ -38,6 +41,7 @@ BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE = "ALIVE";
 BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD = "DEAD";
 BoardExactAnalysis.PROPERTY_METAGROUP_IS_SEKI = "SEKI";
 BoardExactAnalysis.PROPERTY_METAGROUP_COLOR = "COLOR";
+BoardExactAnalysis.PROPERTY_METAGROUP_IS_TERRITORY_MARKED = "MARKED";//handled, do not need extra analysis
 
 /** territory coords properties */
 BoardExactAnalysis.PROPERTY_TERRITORY_IS_SEPARATOR = "SEPARATOR";
@@ -59,13 +63,13 @@ BoardExactAnalysis.launchAnalysis  = function(scoreboard) {
 
 
 //static private, utility
-BoardExactAnalysis.addItemToArray = function(map, key, value) {
-	var arr = map[key];
-	if( !(arr instanceof Array)) {
-		map[key] = new Array();
-		arr = map[key];
+BoardExactAnalysis.addNewValueToArray = function(array, value) {
+	for(var i=0; i<array.length; i++) {
+		if(array[i] == value) {
+			return;
+		}
 	}
-	arr.push(value);
+	array.push(value);
 };
 
 
@@ -102,6 +106,11 @@ BoardExactAnalysis.prototype.clone  = function() {
 
 BoardExactAnalysis.prototype.computeAnalysis  = function() {
 	this.findDame(false);
+	this.lookForSimpleEyeOrKo();
+	this.findAtariCapturedForSure();
+	this.findConnections();
+	this.checkForEyes();
+
 };
 
 
@@ -120,12 +129,12 @@ BoardExactAnalysis.prototype.initGroupProperties = function(groupName) {
 };
 
 //private
-BoardExactAnalysis.prototype.initMetaGroupProps = function(groupName, i, j, isTerritory) {
+BoardExactAnalysis.prototype.initMetaGroupProps = function(groupName, i, j) {
 	var metaGroupName = this.metagroupName[groupName];
 	var kind = this.getBoardKindAt(i, j);
 	var color = ScoreBoard.getBlackOrWhite(kind);
 	this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR] = color;
-	if(isTerritory) {
+	if(color == null) {//territory
 		return;
 	}
 	if(kind == ScoreBoard.BLACK_DEAD || kind == ScoreBoard.WHITE_DEAD) {
@@ -168,8 +177,34 @@ BoardExactAnalysis.prototype.getMetaGroupProp = function(groupName, prop) {
 /**
 used by tests
 */
-BoardExactAnalysis.prototype.isTerritoryPropAt = function(i, j, prop, value) {
-	return this.territoryCoordProps[ScoreBoard.getKey(i, j)][prop] == value;
+BoardExactAnalysis.prototype.getTerritoryPropAt = function(i, j, prop) {
+	return this.territoryCoordProps[ScoreBoard.getKey(i, j)][prop];
+};
+
+
+BoardExactAnalysis.prototype.isGroupDead = function(groupName) {
+	var metaGroupName = this.metagroupName[groupName];
+	return (this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD] == true);
+};
+
+
+BoardExactAnalysis.prototype.isGroupAlive = function(groupName) {
+	var metaGroupName = this.metagroupName[groupName];
+	return (this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] == true);
+};
+
+
+BoardExactAnalysis.prototype.getGroupSize = function(groupName) {
+	return (this.groupCoords[groupName].length)/2;
+};
+
+
+BoardExactAnalysis.prototype.countNeighbors = function(groupName) {
+	var count = 0;
+	for(var neighbor in this.groupNeighbors[groupName]) {
+		count++;
+	}
+	return count;
 };
 
 
@@ -186,11 +221,11 @@ BoardExactAnalysis.prototype.initGroups = function() {
 				this.initGroupProperties(groupName);
 				alreadySeenThatGroup[groupName] = true;
 			}
-			var isTerritory = (BoardExactAnalysis.getGroupColor(groupName) == null);
-			this.initMetaGroupProps(groupName, i, j, isTerritory);
+			this.initMetaGroupProps(groupName, i, j);
 			this.groupNames[ScoreBoard.getKey(i, j)] = groupName;
 			this.groupCoords[groupName].push(i);
 			this.groupCoords[groupName].push(j);
+			var isTerritory = BoardExactAnalysis.isTerritory(groupName);
 			if(isTerritory) {
 				this.territoryCoordProps[ScoreBoard.getKey(i, j)] = new Object();
 				var alreadySeenThatOtherGroup = new Object();
@@ -275,6 +310,14 @@ BoardExactAnalysis.prototype.getGroupStatusAt = function(i, j) {
 		return ScoreBoard.STATUS_GROUP_UNKNOWN;
 	}
 
+};
+
+
+/**
+return true if in atari, false otherwise
+*/
+BoardExactAnalysis.prototype.isGroupInAtari = function(groupName) {
+	return (this.groupLibCoords[groupName].length < 4);
 };
 
 
@@ -424,19 +467,11 @@ BoardExactAnalysis.prototype.findConnection3 = function(i, j) {
 		}
 		countStones++;
 		var groupName = this.getGroupNameAt(ii, jj);
-		if(this.groupLibCoords[groupName].length < 4) {//in atari: don't match
+		if(this.isGroupInAtari(groupName)) {//in atari: don't match
 			return;
 		}
 		//add group name to groupNames
-		var isAlreadyInGroupNamesArray = false;
-		for(var x=0; x<groupNames.length; x++) {
-			if(groupNames[x] == groupName) {
-				isAlreadyInGroupNamesArray = true;
-			}
-		}
-		if(isAlreadyInGroupNamesArray != true) {
-			groupNames.push(groupName);
-		}
+		BoardExactAnalysis.addNewValueToArray(groupNames, groupName);
 	}
 	if(countStones != 3 && countStones != 4) {
 		return;
@@ -535,6 +570,26 @@ BoardExactAnalysis.prototype.addOneEye = function(metaGroupName, eye) {
 
 
 /**
+mark territory as color
+*/
+BoardExactAnalysis.prototype.markTerritory = function(territoryGroupName, color) {
+	var territoryCoords = this.groupCoords[territoryGroupName];
+	var newKind;
+	if(color == ScoreBoard.BLACK) {
+		newKind = ScoreBoard.TERRITORY_BLACK;
+	} else if(color == ScoreBoard.WHITE) {
+		newKind = ScoreBoard.TERRITORY_WHITE;
+	}
+	for(var k=0; k<territoryCoords.length;) {
+		var i = territoryCoords[k++];
+		var j = territoryCoords[k++];
+		this.changeBoardAt(i, j, newKind);
+	}
+	this.setMetaGroupProp(territoryGroupName, BoardExactAnalysis.PROPERTY_METAGROUP_IS_TERRITORY_MARKED, true);
+};
+
+
+/**
 (i, j) corresponds to a territory
 if this territory is surrounded by 4 stones of the same color:
 - if only one group in atari, then ko
@@ -543,6 +598,9 @@ if this territory is surrounded by 4 stones of the same color:
 BoardExactAnalysis.prototype.checkForSimpleEyeOrKo = function(i, j) {
 	var territoryKind = this.getBoardKindAt(i,j);
 	if(territoryKind != ScoreBoard.TERRITORY_UNKNOWN && territoryKind != ScoreBoard.TERRITORY_BLACK && territoryKind != ScoreBoard.TERRITORY_WHITE) {//skip if not territory or already analysed 
+		return;
+	}
+	if(this.getMetaGroupProp(this.getGroupNameAt(i, j), BoardExactAnalysis.PROPERTY_METAGROUP_IS_TERRITORY_MARKED) == true) {
 		return;
 	}
 	var color;
@@ -567,22 +625,14 @@ BoardExactAnalysis.prototype.checkForSimpleEyeOrKo = function(i, j) {
 			return;
 		}
 		var groupName = this.getGroupNameAt(ii, jj);
-		if(this.groupLibCoords[groupName].length < 4) {//in atari
+		if(this.isGroupInAtari(groupName)) {
 			if(groupInAtari != null) {//two atari
 				return;
 			}
 			groupInAtari = groupName;
 		}
 		//add group name to groupNames
-		var isAlreadyInGroupNamesArray = false;
-		for(var x=0; x<groupNames.length; x++) {
-			if(groupNames[x] == groupName) {
-				isAlreadyInGroupNamesArray = true;
-			}
-		}
-		if(isAlreadyInGroupNamesArray != true) {
-			groupNames.push(groupName);
-		}
+		BoardExactAnalysis.addNewValueToArray(groupNames, groupName);
 	}
 	if(groupInAtari != null) {//ko
 		var newKind;
@@ -592,6 +642,7 @@ BoardExactAnalysis.prototype.checkForSimpleEyeOrKo = function(i, j) {
 			newKind = ScoreBoard.TERRITORY_KO_WHITE;
 		}
 		this.changeBoardAt(i, j, newKind);
+		this.setMetaGroupProp(this.getGroupNameAt(i, j), BoardExactAnalysis.PROPERTY_METAGROUP_IS_TERRITORY_MARKED, true);
 		return;
 	}
 	
@@ -659,6 +710,7 @@ BoardExactAnalysis.prototype.checkForSimpleEyeOrKo = function(i, j) {
 	}
 	//mark territory
 	this.territoryCoordProps[ScoreBoard.getKey(i, j)][BoardExactAnalysis.PROPERTY_TERRITORY_IS_EYE] = true;
+	this.setMetaGroupProp(this.getGroupNameAt(i, j), BoardExactAnalysis.PROPERTY_METAGROUP_IS_TERRITORY_MARKED, true);
 };
 
 
@@ -677,3 +729,382 @@ BoardExactAnalysis.prototype.lookForSimpleEyeOrKo = function() {
 		this.checkForSimpleEyeOrKo(arr[0], arr[1]);
 	}
 };
+
+
+/**
+groups in atari, not surrounded by atari and if play the lib, still in atari ( (ie the lib belong to only one group of that color and no more than one other territory) -> dead, and near groups are connected
+if the group in atari is dead and of size > 1, then it is an eye
+*/
+BoardExactAnalysis.prototype.findAtariCapturedForSure = function() {
+	for(var groupName in this.groupLibCoords) {
+		if(BoardExactAnalysis.isTerritory(groupName)) {
+			continue;
+		}
+		if(!this.isGroupInAtari(groupName)) {//only check groups in atari
+			continue;
+		}
+		var metaGroupName = this.metagroupName[groupName];
+		if(this.isGroupDead(groupName)) {//already dead
+			continue;
+		}
+		if(this.isGroupAlive(groupName)) {//can't be dead
+			continue;
+		}
+		var notAGoodCandidate = false;
+		for(var neighbor in this.groupNeighbors[groupName]) {
+			if(BoardExactAnalysis.isTerritory(neighbor)) {
+				continue;
+			}
+			if(this.groupLibCoords[neighbor].length == 2 || this.isGroupDead(neighbor)) {
+				notAGoodCandidate = true;
+				break;
+			}
+		}
+		if(notAGoodCandidate) {
+			continue;
+		}
+		var color = BoardExactAnalysis.getGroupColor(groupName);
+		var i = this.groupLibCoords[groupName][0];
+		var j = this.groupLibCoords[groupName][1];
+		//check that the lib is not surrounded by other color or more than one territory (except territory marked as color)
+		var countTerritories = 0;
+		var neighborGroupNames = new Array();
+		for(var k=0; k < ScoreBoard.DISTANCE1.length;) {
+			var ii = i+ScoreBoard.DISTANCE1[k++];
+			var jj = j+ScoreBoard.DISTANCE1[k++];
+			if(!this.isInBoard(ii, jj)) {
+				continue; 
+			}
+			var neighborGroupName = this.getGroupNameAt(ii, jj);
+			if(neighborGroupName == groupName) {
+				continue;
+			}
+			var kind = this.getBoardKindAt(ii,jj);
+			var c = ScoreBoard.getBlackOrWhite(kind);
+			if(c == null) {//territory
+				if(color == ScoreBoard.BLACK && kind == ScoreBoard.TERRITORY_BLACK) {
+					continue;
+				} else if(color == ScoreBoard.WHITE && kind == ScoreBoard.TERRITORY_WHITE) {
+					continue;
+				}
+				countTerritories++;
+				if(countTerritories>1) {
+					notAGoodCandidate = true;
+					break;
+				}
+			} else {
+				if(color == null) {
+					color = c;
+				} else if (color == c) {//same color as candidate: don't match
+					notAGoodCandidate = true;
+					break;
+				}
+				BoardExactAnalysis.addNewValueToArray(neighborGroupNames, neighborGroupName);
+			}
+		}
+		if(notAGoodCandidate) {
+			continue;
+		}
+		//check also neighbors of the candidate group
+		for(var neighborGroupName in this.groupNeighbors[groupName]) {
+			if(BoardExactAnalysis.isTerritory(neighborGroupName)) {
+				continue;
+			}
+			if(this.isGroupInAtari(neighborGroupName)) {//in atari: don't match
+				notAGoodCandidate = true;
+				break;
+			}
+			BoardExactAnalysis.addNewValueToArray(neighborGroupNames, neighborGroupName);
+		}
+		if(notAGoodCandidate) {
+			continue;
+		}
+		
+		//mark groupName as dead!
+		var metaGroupName = this.metagroupName[groupName];
+		this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD] = true;
+		//if group size > 1: it's an eye
+		var neighborMetaGroupName = this.metagroupName[neighborGroupNames[0]];
+		var coords = this.groupCoords[groupName];
+		if(this.getGroupSize(groupName) > 1) {
+			this.addOneEye(neighborMetaGroupName, ScoreBoard.getKey(coords[0], coords[1]));			
+		}
+		//merge all neighbors
+		for(var k=1; k<neighborGroupNames.length; k++) {
+			this.mergeMetaGroups(neighborMetaGroupName, this.metagroupName[neighborGroupNames[k]]);
+		}
+	}
+};
+
+
+/**
+return the color of surrounding groups, or null if both colors have been found
+if territory is surrounded by only dead groups of one color: marked as other color
+*/
+BoardExactAnalysis.prototype.checkIfTerritoryIsSurroundedOnlyByOneColor = function(territoryGroupName) {
+	var color = null;
+	var allDeadWhite = null;
+	var allDeadBlack = null;
+
+	for(var neighborGroupName in this.groupNeighbors[territoryGroupName]) {
+		if(BoardExactAnalysis.isTerritory(neighborGroupName)) {
+			continue;
+		}
+		var c = this.getMetaGroupProp(neighborGroupName, BoardExactAnalysis.PROPERTY_METAGROUP_COLOR);
+		var isDead = this.getMetaGroupProp(neighborGroupName, BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD);
+		if(isDead) {
+			if(c == ScoreBoard.BLACK) {
+				allDeadWhite = false;
+				if(allDeadBlack == null) {
+					allDeadBlack = true;
+				}
+				c = ScoreBoard.WHITE;
+			} else if (c == ScoreBoard.WHITE) {
+				allDeadBlack = false;
+				if(allDeadWhite == null) {
+					allDeadWhite = true;
+				}
+				c = ScoreBoard.BLACK;
+			}
+		} else {
+			if(c == ScoreBoard.BLACK) {
+				allDeadBlack = false;
+			} else if (c == ScoreBoard.WHITE) {
+				allDeadWhite = false;
+			}
+		}
+		if(color == null) {
+			color = c;
+		}
+		if(c == null) {//territory: separators?
+			continue;
+		}
+		if(color != c) {//incompatible colors
+			return null;
+		}
+	}
+	if(allDeadWhite || allDeadBlack) {
+		this.markTerritory(territoryGroupName, allDeadWhite?ScoreBoard.BLACK:ScoreBoard.WHITE);
+		return null;
+	}
+	return color;
+};
+
+
+/**
+if territory surrounded by one color, then mark it and check if it is an eye
+return neighbors array (without dead groups nor territories separators)
+*/
+BoardExactAnalysis.prototype.checkEyesInOneTerritory = function(territoryGroupName, color) {
+	if(this.getMetaGroupProp(territoryGroupName, BoardExactAnalysis.PROPERTY_METAGROUP_IS_TERRITORY_MARKED) == true) {
+		return [];
+	}
+	//territoryGroupName should be marked as color, now check if an eye
+	var neighborGroupNames = new Array();//only same color (avoid dead groups and territory separators)
+	var hasTerritorySeparators = false;
+	for(var neighbor in this.groupNeighbors[territoryGroupName]) {
+		if(this.isGroupDead(neighbor)) {
+			continue;
+		}
+		if(BoardExactAnalysis.isTerritory(neighbor)) {
+			hasTerritorySeparators = true;
+			continue;
+		}
+		BoardExactAnalysis.addNewValueToArray(neighborGroupNames, neighbor);
+	}
+
+	var isCandidateForAnEye = false;
+	var countNeighbors = this.countNeighbors(territoryGroupName);
+	if(countNeighbors == 1) {
+		isCandidateForAnEye = true;
+	} else if (countNeighbors == 2) {
+		if(this.getGroupSize(territoryGroupName)>1) {
+			isCandidateForAnEye = true;
+			for(var neighbor in this.groupNeighbors[territoryGroupName]) {
+				if(this.isGroupInAtari(neighbor) && !this.isGroupDead(neighbor)) {
+					isCandidateForAnEye = false;
+					break;
+				}
+			}
+		}
+	} else if (this.getGroupSize(territoryGroupName) > countNeighbors) {
+		isCandidateForAnEye = true;
+	} else {
+		var allMoreThanOneLiberyInT = true;
+		for(var n=0; n<neighborGroupNames.length; n++) {
+			var neighbor = neighborGroupNames[n];
+			var countLibsInTerritory = 0;
+			for(var k=0; k<this.groupLibCoords[neighbor].length;){
+				var i = this.groupLibCoords[neighbor][k++];
+				var j = this.groupLibCoords[neighbor][k++];
+				if(this.groupNames[ScoreBoard.getKey(i, j)] == territoryGroupName){
+					countLibsInTerritory++;
+					if(countLibsInTerritory > 1) {//two territories: ok, next
+						break;
+					}
+				}
+			}
+			if(countLibsInTerritory < 2) {
+				allMoreThanOneLiberyInT = false;
+				break;
+			}
+		}
+		if(allMoreThanOneLiberyInT) {
+			isCandidateForAnEye = true;
+		}
+	}
+	var territoryCoords = this.groupCoords[territoryGroupName];
+	this.markTerritory(territoryGroupName, color);
+	
+	if(!isCandidateForAnEye){
+		return neighborGroupNames;
+	}
+	//territoryGroupName is an eye!
+	
+	//merge all groups
+	var metaGroupName = this.metagroupName[neighborGroupNames[0]];
+	this.addOneEye(metaGroupName, ScoreBoard.getKey(territoryCoords[0], territoryCoords[1]));
+	
+	//check if double eye
+	var hasDoubleEyes = (this.getGroupSize(territoryGroupName) > countNeighbors + 5);
+	if(!hasDoubleEyes && !hasTerritorySeparators) {
+		hasDoubleEyes = this.isKnownDoubleEyeShape(territoryGroupName, neighborGroupNames.length);
+	}
+	if(hasDoubleEyes) {
+		this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] = true;	
+	}
+	
+	for(var k=1; k<neighborGroupNames.length; k++) {
+		this.mergeMetaGroups(metaGroupName, this.metagroupName[neighborGroupNames[k]]);
+	}
+	
+	return neighborGroupNames;
+};
+
+
+/**
+return true if corresponds to a live shape
+*/
+BoardExactAnalysis.prototype.isKnownDoubleEyeShape = function(territoryGroupName, numberOfNeighborsOfSameColor) {
+	var size = this.getGroupSize(territoryGroupName);
+	if(size < 4 || numberOfNeighborsOfSameColor > 2) {
+		return false;
+	} 
+	if(size == 4 || numberOfNeighborsOfSameColor > 1) {
+		return false;
+	}
+	
+	var minDist = 4;
+	if(size == 4) {
+		minDist = 3;
+	} else if(numberOfNeighborsOfSameColor > 1) {
+		minDist += numberOfNeighborsOfSameColor;
+	}
+	
+	//if distance between two coords of the territory is >= minDist then good shape
+	var territoryCoords = this.groupCoords[territoryGroupName];
+	for(var k=0; k<territoryCoords.length-2; k+=2) {
+		for(var l=k+2; l<territoryCoords.length; l+=2) {
+			var dist = Math.abs(territoryCoords[k]-territoryCoords[l]) + Math.abs(territoryCoords[k+1]-territoryCoords[l+1]);
+			if(dist >= minDist) {
+				return true;
+			}
+		}
+	}
+	return false;
+
+};
+
+
+/**
+if 2 territories have exactly 2 neighbors and same neighbors (of same color), then they are 2 eyes, groups are connected and alive. idem with 3 instead of two
+*/
+BoardExactAnalysis.prototype.checkMultipleEyes = function() {
+	var map = this.mapForCheckMultipleEyes;
+	var key2Ar = new Array();
+	var key3Ar = new Array();
+	for(var key in map) {
+		if(map[key].length == 2) {
+			key2Ar.push(key);
+			key3Ar.push(key);
+		} else if(map[key].length == 3) {
+			key3Ar.push(key);
+		}
+	}
+	for(var i = 0; i< key2Ar.length-1; i++) {
+		for(var j = i+1; j< key2Ar.length; j++) {
+			var i0 = map[key2Ar[i]][0];
+			var i1 = map[key2Ar[i]][1];
+			var j0 = map[key2Ar[j]][0];
+			var j1 = map[key2Ar[j]][1];
+			if( (i0 == j0 && i1 == j1) || (i0 == j1 && i1 == j0) ) {//two eyes, connect i0 and i1, mark as alive
+				var metaGroupName = this.metagroupName[i0];
+				this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] = true;	
+				this.mergeMetaGroups(metaGroupName, this.metagroupName[i1]);
+				
+				var color = this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR];
+				this.markTerritory(key2Ar[i], color);
+				this.markTerritory(key2Ar[j], color);
+				map[key2Ar[i]] = [];
+				map[key2Ar[j]] = [];
+			}
+		}
+	}
+	for(var i = 0; i< key3Ar.length-2; i++) {
+		for(var j = i+1; j< key3Ar.length-1; j++) {
+			for(var k = j+1; k< key3Ar.length; k++) {
+				var testMap = new Object();
+				for(var n=0; n<map[key3Ar[i]].length; n++) {
+					testMap[map[key3Ar[i]][n]] = true;
+				}
+				for(var n=0; n<map[key3Ar[j]].length; n++) {
+					testMap[map[key3Ar[j]][n]] = true;
+				}
+				for(var n=0; n<map[key3Ar[k]].length; n++) {
+					testMap[map[key3Ar[k]][n]] = true;
+				}
+				var territoriesGroupNames = new Array();
+				for(var key in testMap) {
+					territoriesGroupNames.push(key);
+				}
+				if(territoriesGroupNames.length != 3) {
+					continue;
+				}
+				//three territories have in common exactly three groups, then three eyes, mark as alive
+				var metaGroupName = this.metagroupName[territoriesGroupNames[0]];
+				this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] = true;	
+				this.mergeMetaGroups(metaGroupName, this.metagroupName[territoriesGroupNames[1]]);
+				this.mergeMetaGroups(metaGroupName, this.metagroupName[territoriesGroupNames[2]]);
+
+				var color = this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR];
+				this.markTerritory(key3Ar[i], color);
+				this.markTerritory(key3Ar[j], color);
+				this.markTerritory(key3Ar[k], color);
+				map[key3Ar[i]] = [];
+				map[key3Ar[j]] = [];
+				map[key3Ar[k]] = [];
+			}
+		}
+	}
+
+};
+
+
+/**
+*/
+BoardExactAnalysis.prototype.checkForEyes = function() {
+	for(var territoryGroupName in this.groupCoords) {
+		if( !(BoardExactAnalysis.isTerritory(territoryGroupName))) {
+			continue;
+		}
+		var color = this.checkIfTerritoryIsSurroundedOnlyByOneColor(territoryGroupName);
+		if(color != null) {
+			var neighbors = this.checkEyesInOneTerritory(territoryGroupName, color);
+			if(neighbors.length > 1) {
+				this.mapForCheckMultipleEyes[territoryGroupName] = neighbors;
+			}
+		}
+	}
+	this.checkMultipleEyes();
+};
+
