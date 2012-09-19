@@ -336,10 +336,7 @@ function fixRanks() {
 
 }
 
-
-
-
-function getGraph(target, username, gamecount) {
+RankGraph.prototype.load_from_kaya = function(target,username, game_count) {
     $.ajax({
         type: 'GET',
         dataType: 'JSON',
