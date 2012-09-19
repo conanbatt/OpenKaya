@@ -24,7 +24,7 @@ class KayaBot
     @title = config["title"]
     @bot = config["bot"]
     @agent = Mechanize.new
-    @status
+    @error_limit = 3
     @sgf
   end
 
@@ -40,13 +40,23 @@ class KayaBot
   TIME_LAPSE = 4
 
   def listener_loop
-    while (true) do
-      connect
-      fetch_and_parse_data
-      open_game if @status=="connected" || @status=="finished"
-      post_score if @status=="scoring"
-      post_move if @bots_turn && @status=="playing"
-      sleep TIME_LAPSE #lets not explode in requests
+    begin 
+      while (true) do
+        connect
+        fetch_and_parse_data
+        open_game if @status=="connected" || @status=="finished"
+        post_score if @status=="scoring"
+        post_move if @bots_turn && @status=="playing"
+        sleep TIME_LAPSE #lets not explode in requests
+      end
+    rescue SystemExit, Interrupt
+      raise
+    rescue Exception => e
+      p "There was an error. Will try to run again. If problems persist, contact Kaya at info@kaya.gs"
+      p e
+      p e.backtrace[0]
+      sleep 5
+      listener_loop
     end
   end
 
@@ -75,7 +85,6 @@ class KayaBot
       bot_move = ";#{color_short}[#{bot_move}]#{color_short}L[#{(25*60) - (@move ? @move.count(";") : 1)}]"
       @agent.post(@server_url+ PLAY_URL,
                   :move => bot_move)
-      #@sgf.add_move(bot_move)
       @move = nil
     end
   end

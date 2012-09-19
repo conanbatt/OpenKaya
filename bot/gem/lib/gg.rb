@@ -121,8 +121,7 @@ def ai_move(game_id, game_sgf, color)
     size = @master_node.match(/SZ\[(\d+)\]/)[1]
     re = gtp.genmove color
   end
-  p re
-  p size
+  p "Bot generated #{re}"
   move = convert_move(re,size)
 
   File.delete(filepath)
@@ -131,11 +130,12 @@ end
 
 #switches GTP move into sgf-like coordinate
 def convert_move(move, size=19)
-  if move == "PASS"
+  if move.downcase == "pass"
     return 'pass'
-  elsif move == "resign"
+  elsif move.downcase == "resign"
     return 'resign'
   else
+
 
     alphabet = "ABCDEFGHIJKLMNOPQRS"[0..size.to_i - 1]
 	  	
