@@ -1,0 +1,5 @@
+# Use PHP5 Single php.ini as default
+AddHandler application/x-httpd-php5s .php
+
+RewriteEngine on
+RewriteRule ^([^/\.]+)/?$ $1.php [L]

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Rank Graph</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" href="qunit/qunit.css" type="text/css" media="screen">
+        <script type="text/javascript" src="qunit/qunit.js"></script>
+        <link type="text/css" href="css/ui-lightness/jquery-ui-1.8.23.custom.css" rel="stylesheet" />
+        <link type="text/css" href="css/chart.css" rel="stylesheet" />
+        <link type="text/css" href="css/tipsy.css" rel="stylesheet" />
+        <script type="text/javascript" src="lib/jquery-1.8.0.min.js"></script>
+        <script type="text/javascript" src="lib/jquery-ui-1.8.23.custom.min.js"></script>
+        <script type="text/javascript" src="lib/d3.v2.js"></script>
+        <script type="text/javascript" src="lib/tipsy.js"></script>
+    </head>
+<body>
+        <h1 id="qunit-header">Rank Graph</h1>
+        <h2 id="qunit-banner"></h2>
+        <div id="qunit-testrunner-toolbar"></div>
+        <h2 id="qunit-userAgent"></h2>
+        <ol id="qunit-tests"></ol>
+        <div id="qunit-fixture">test markup</div>
+        <div id="settings">
+            <form method="post" action"" id="ranksettings">
+                <!-- <div>
+                    <label for="username">Username:</label>
+                    <input type="text/javascript" name="username" id="username" value="" />
+                    <span id="usernamewarn" class="hidden warn"><br />Check your spelling!</span>
+                </div> -->
+                <div>
+                    <label for="gamecount">Gamecount:</label>
+                    <input type="text/javascript" name="gamecount" id="gamecount" value="" />
+                    <span id="gamecountwarn" class="hidden warn"><br />Numbers only my friend!</span>
+                </div>
+                <div>
+                    <input type="submit" value="Go" />
+                </div>
+            </form>
+        </div>
+        <div id="chart-container">
+            <div id="user-chart" height="300" width="700"></div>
+        </div>
+</body>
+    <script type="text/javascript" src="js/chart.js"></script>
+    <script type="text/javascript" src="js/chart_test.js"></script>
+</html>
+
