@@ -1,14 +1,22 @@
 //BoardExactAnalysis
 //Analyse a board by computing exact information: dame, eyes for sure, etc
-//v0.4.0
+//v0.6.0
+
+/*!
+ * This software is licensed under a Creative Commons Attribution 3.0 Unported License:
+ * http://http://creativecommons.org/licenses/by/3.0/
+ *
+ * Date: 2012-09-22
+ */
 
 /** History
 0.1.0: creation of this file
 0.2.0: findDame
 0.3.0: initGroups, findConnections, lookForSimpleEyeOrKo
 0.4.0: findAtariCapturedForSure, checkForEyes
+0.5.0: isAloneInTerritory, minDistanceFromSameColorInTerritory
+0.6.0: findDeadGroups
 */
-
 
 /**
 Constructor
@@ -17,6 +25,8 @@ board param: a square double array like board = [size][size];
 */
 function BoardExactAnalysis(board, komi, black_captures, white_captures) {
 	this._base_BoardExactAnalysis.call(this, board, komi, black_captures, white_captures);//call parent constructor
+	
+	this.findDeadGroupsMaxLibs = 4;
 
 	this.groupNames = new Object();//this.groupNames[ScoreBoard.getKey(i, j)] contains the name of the group at (i,j), name begins with FindGroups.GROUP_PREFIX_BLACK for black, etc
 	this.groupCoords = new Object();//this.groupCoords[groupName] contains a simple array with the coords of the group
@@ -24,7 +34,7 @@ function BoardExactAnalysis(board, komi, black_captures, white_captures) {
 	this.groupNeighbors = new Object();//this.groupNeighbors[groupName] contains a map with the names of the neighbor of the group
 	this.metagroupName = new Object();//this.metagroupName[groupName] contains the name of the meta-group (parent group of groups, name begins with BoardExactAnalysis.PREFIX_METAGROUP) of the group
 	this.metagroupCount = 0;//number of meta-groups already created
-	this.metagroupChilds = new Object();//this.metagroupChilds[metaGroupName] contains an array with the names of the contained groups (children) of the meta-group
+	this.metagroupChildren = new Object();//this.metagroupChildren[metaGroupName] contains an array with the names of the contained groups (children) of the meta-group
 	this.metagroupProperties = new Object();//this.metagroupProperties[metaGroupName] contains an object with properties (e.g. BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE)
 	this.territoryCoordProps = new Object();//this.territoryCoordProps[ScoreBoard.getKey(i, j)] contains an object with properties (e.g. BoardExactAnalysis.PROPERTY_TERRITORY_IS_SEPARATOR)
 
@@ -99,18 +109,32 @@ BoardExactAnalysis.isTerritory  = function(groupName) {
 return a BoardExactAnalysis copy
 */
 BoardExactAnalysis.prototype.clone  = function() {
-
 	return new BoardExactAnalysis(this.board, this.komi, this.black_captures, this.white_captures);
 };
 
 
-BoardExactAnalysis.prototype.computeAnalysis  = function() {
-	this.findDame(false);
-	this.lookForSimpleEyeOrKo();
-	this.findAtariCapturedForSure();
-	this.findConnections();
-	this.checkForEyes();
+BoardExactAnalysis.prototype.thereIsNoWhiteGroup  = function() {
+	for(var metagroupName in this.metagroupProperties) {
+		if(this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR] == ScoreBoard.WHITE) {
+			return false;
+		}
+	}
+	return true;
+};
 
+
+BoardExactAnalysis.prototype.computeAnalysis  = function() {
+	if(this.thereIsNoWhiteGroup()) {
+		return;
+	}
+	this.lookForSimpleEyeOrKo();
+	for(var i=0;i<2;i++) {
+		this.findAtariCapturedForSure();
+		this.findConnections();
+		this.checkForEyes();
+		this.findDeadGroups();
+	}
+	this.findDame();
 };
 
 
@@ -119,30 +143,30 @@ BoardExactAnalysis.prototype.initGroupProperties = function(groupName) {
 	this.groupCoords[groupName] = new Array();
 	this.groupLibCoords[groupName] = new Array();
 	this.groupNeighbors[groupName] = new Object();
-	var metaGroupName = BoardExactAnalysis.PREFIX_METAGROUP + this.metagroupCount++;
-	this.metagroupName[groupName] = metaGroupName;
-	this.metagroupChilds[metaGroupName] = new Array();
-	this.metagroupChilds[metaGroupName].push(groupName);
-	this.metagroupProperties[metaGroupName] = new Object();
-	this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE] = null;
+	var metagroupName = BoardExactAnalysis.PREFIX_METAGROUP + this.metagroupCount++;
+	this.metagroupName[groupName] = metagroupName;
+	this.metagroupChildren[metagroupName] = new Array();
+	this.metagroupChildren[metagroupName].push(groupName);
+	this.metagroupProperties[metagroupName] = new Object();
+	this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE] = null;
 
 };
 
 //private
-BoardExactAnalysis.prototype.initMetaGroupProps = function(groupName, i, j) {
-	var metaGroupName = this.metagroupName[groupName];
+BoardExactAnalysis.prototype.initMetagroupProps = function(groupName, i, j) {
+	var metagroupName = this.metagroupName[groupName];
 	var kind = this.getBoardKindAt(i, j);
 	var color = ScoreBoard.getBlackOrWhite(kind);
-	this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR] = color;
+	this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR] = color;
 	if(color == null) {//territory
 		return;
 	}
 	if(kind == ScoreBoard.BLACK_DEAD || kind == ScoreBoard.WHITE_DEAD) {
-		this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD] = true;
+		this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD] = true;
 	} else if(kind == ScoreBoard.BLACK_ALIVE || kind == ScoreBoard.WHITE_ALIVE) {
-		this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] = true;
+		this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] = true;
 	} else if(kind == ScoreBoard.BLACK_SEKI || kind == ScoreBoard.WHITE_SEKI) {
-		this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_SEKI] = true;
+		this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_SEKI] = true;
 	}
 };
 
@@ -150,27 +174,112 @@ BoardExactAnalysis.prototype.initMetaGroupProps = function(groupName, i, j) {
 /**
 set meta-group property
 */
-BoardExactAnalysis.prototype.isSameMetaGroup = function(groupName1, groupName2) {
-	var metaGroupName1 = this.metagroupName[groupName1];
-	var metaGroupName2 = this.metagroupName[groupName2];
-	return (metaGroupName1 == metaGroupName2);
+BoardExactAnalysis.prototype.isSameMetagroup = function(groupName1, groupName2) {
+	var metagroupName1 = this.metagroupName[groupName1];
+	var metagroupName2 = this.metagroupName[groupName2];
+	return (metagroupName1 == metagroupName2);
 };
 
 
 /**
 set meta-group property
 */
-BoardExactAnalysis.prototype.setMetaGroupProp = function(groupName, prop, value) {
-	var metaGroupName = this.metagroupName[groupName];
-	this.metagroupProperties[metaGroupName][prop] = value;
+BoardExactAnalysis.prototype.setMetagroupProp = function(groupName, prop, value) {
+	var metagroupName = this.metagroupName[groupName];
+	this.metagroupProperties[metagroupName][prop] = value;
 };
 
 /**
 get meta-group property
 */
-BoardExactAnalysis.prototype.getMetaGroupProp = function(groupName, prop) {
-	var metaGroupName = this.metagroupName[groupName];
-	return this.metagroupProperties[metaGroupName][prop];
+BoardExactAnalysis.prototype.getMetagroupProp = function(groupName, prop) {
+	var metagroupName = this.metagroupName[groupName];
+	return this.metagroupProperties[metagroupName][prop];
+};
+
+
+BoardExactAnalysis.prototype.getMetagroupCoordinates = function(metagroupName) {
+	var result = new Array();
+	var map = new Object();
+	var children = this.metagroupChildren[metagroupName];
+	for(var c=0; c<children.length; c++) {
+		var coords = this.groupCoords[children[c]];
+		for(var k=0; k<coords.length;) {
+			var i = coords[k++];
+			var j = coords[k++];
+			var key = ScoreBoard.getKey(i, j);
+			if(map[key] != true) {
+				map[key] = true;
+				result.push(i);
+				result.push(j);
+			}
+		}
+	}
+	return result;
+};
+
+
+BoardExactAnalysis.prototype.getMetagroupLibs = function(metagroupName) {
+	var result = new Array();
+	var map = new Object();
+	var children = this.metagroupChildren[metagroupName];
+	for(var c=0; c<children.length; c++) {
+		var coords = this.groupLibCoords[children[c]];
+		for(var k=0; k<coords.length;) {
+			var i = coords[k++];
+			var j = coords[k++];
+			var key = ScoreBoard.getKey(i, j);
+			if(map[key] != true) {
+				map[key] = true;
+				result.push(i);
+				result.push(j);
+			}
+		}
+	}
+	return result;
+};
+
+
+BoardExactAnalysis.prototype.getMetagroupTerritoryNeighborGroups = function(metagroupName) {
+	var result = new Array();
+	var map = new Object();
+	var children = this.metagroupChildren[metagroupName];
+	for(var c=0; c<children.length; c++) {
+		var neighbors = this.groupNeighbors[children[c]];
+		for(var neighbor in neighbors) {
+			if(!BoardExactAnalysis.isTerritory(neighbor)) {
+				continue;
+			}
+			if(map[neighbor] != true) {
+				map[neighbor] = true;
+				result.push(neighbor);
+			}
+		}
+	}
+	return result;
+};
+
+
+BoardExactAnalysis.prototype.getMetagroupNeighborMetagroupsOfOtherColor = function(metagroupName) {
+	var result = new Array();
+	var map = new Object();
+	var color = this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR];
+	var children = this.metagroupChildren[metagroupName];
+	for(var c=0; c<children.length; c++) {
+		var neighbors = this.groupNeighbors[children[c]];
+		for(var neighbor in neighbors) {
+			var neighborMetagroup = this.metagroupName[neighbor];
+			var otherColor = this.metagroupProperties[neighborMetagroup][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR];
+			if(otherColor == null || otherColor == color) {
+				continue;
+			}
+			if(map[neighborMetagroup] != true) {
+				map[neighborMetagroup] = true;
+				result.push(neighborMetagroup);
+			}
+		}
+	}
+	return result;
 };
 
 
@@ -183,14 +292,14 @@ BoardExactAnalysis.prototype.getTerritoryPropAt = function(i, j, prop) {
 
 
 BoardExactAnalysis.prototype.isGroupDead = function(groupName) {
-	var metaGroupName = this.metagroupName[groupName];
-	return (this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD] == true);
+	var metagroupName = this.metagroupName[groupName];
+	return (this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD] == true);
 };
 
 
 BoardExactAnalysis.prototype.isGroupAlive = function(groupName) {
-	var metaGroupName = this.metagroupName[groupName];
-	return (this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] == true);
+	var metagroupName = this.metagroupName[groupName];
+	return (this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] == true);
 };
 
 
@@ -212,7 +321,12 @@ BoardExactAnalysis.prototype.countNeighbors = function(groupName) {
 BoardExactAnalysis.prototype.initGroups = function() {
 	var findGroups = new FindGroups(this.board);
 	var groupsBoard = findGroups.getBoardArray();
+	
 	var alreadySeenThatGroup = new Object();
+	this.initGroupProperties(ScoreBoard.TERRITORY_DAME);
+	this.initGroupProperties(ScoreBoard.TERRITORY_SEKI);
+	this.initGroupProperties(ScoreBoard.TERRITORY_KO_BLACK);
+	this.initGroupProperties(ScoreBoard.TERRITORY_KO_WHITE);
 
 	for(var i=0;i<this.size;i++) {
 		for(var j=0;j<this.size;j++) {
@@ -221,7 +335,7 @@ BoardExactAnalysis.prototype.initGroups = function() {
 				this.initGroupProperties(groupName);
 				alreadySeenThatGroup[groupName] = true;
 			}
-			this.initMetaGroupProps(groupName, i, j);
+			this.initMetagroupProps(groupName, i, j);
 			this.groupNames[ScoreBoard.getKey(i, j)] = groupName;
 			this.groupCoords[groupName].push(i);
 			this.groupCoords[groupName].push(j);
@@ -267,13 +381,21 @@ BoardExactAnalysis.prototype.initGroups = function() {
 					//groups next to marked-as-dead group are alive
 					var otherKind = this.getBoardKindAt(ii, jj);
 					if(otherKind == ScoreBoard.BLACK_DEAD || otherKind == ScoreBoard.WHITE_DEAD) {
-						if(this.getMetaGroupProp(groupName, BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD) != true) {//maybe marked dead by the user
-							this.setMetaGroupProp(groupName, BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE, true);
+						if(this.getMetagroupProp(groupName, BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD) != true) {//maybe marked dead by the user
+							this.setMetagroupProp(groupName, BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE, true);
 						}
 					}
 				}
 			}
 		}
+	}
+
+	var coords = findGroups.getTerritorySeparators();
+	for(var k=0; k < coords.length;) {
+		var ii = coords[k++];
+		var jj = coords[k++];
+		var key = ScoreBoard.getKey(ii, jj);
+		this.territoryCoordProps[key][BoardExactAnalysis.PROPERTY_TERRITORY_IS_SEPARATOR] = true;
 	}
 };
 
@@ -300,11 +422,11 @@ override ScoreBoard.prototype.getGroupStatusAt, no parent call, rely entirely on
 */
 BoardExactAnalysis.prototype.getGroupStatusAt = function(i, j) {
 	var groupName = this.getGroupNameAt(i, j);
-	if(this.getMetaGroupProp(groupName, BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD) == true) {
+	if(this.getMetagroupProp(groupName, BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD) == true) {
 		return ScoreBoard.STATUS_GROUP_DEAD;
-	} else if(this.getMetaGroupProp(groupName, BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE) == true) {
+	} else if(this.getMetagroupProp(groupName, BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE) == true) {
 		return ScoreBoard.STATUS_GROUP_ALIVE;
-	} else if(this.getMetaGroupProp(groupName, BoardExactAnalysis.PROPERTY_METAGROUP_IS_SEKI) == true) {
+	} else if(this.getMetagroupProp(groupName, BoardExactAnalysis.PROPERTY_METAGROUP_IS_SEKI) == true) {
 		return ScoreBoard.STATUS_GROUP_SEKI;
 	} else {
 		return ScoreBoard.STATUS_GROUP_UNKNOWN;
@@ -348,10 +470,19 @@ BoardExactAnalysis.prototype.isNextToAliveColor = function(i, j, color, onlyIfGr
 
 
 /**
+return true if (i,j) is near (distance <=2) to a non-dead color group.
+if onlyIfGroupIsAlive == true, both groups must be known as alive
+*/
+BoardExactAnalysis.prototype.isNearToAliveColor = function(i, j, color) {
+	return (this.minDistanceFromColorInTerritory([i, j], null, color, 3, false) <=2);
+};
+
+
+/**
 change board kind to ScoreBoard.TERRITORY_DAME if relevant
 */
-BoardExactAnalysis.prototype.findDameAt = function(i, j, onlyIfGroupsAreAlive) {
-	if(this.isNextToAliveColor(i, j, ScoreBoard.BLACK, onlyIfGroupsAreAlive) && this.isNextToAliveColor(i, j, ScoreBoard.WHITE, onlyIfGroupsAreAlive)) {
+BoardExactAnalysis.prototype.findDameAt = function(i, j) {
+	if(this.isNearToAliveColor(i, j, ScoreBoard.BLACK) && this.isNearToAliveColor(i, j, ScoreBoard.WHITE)) {
 		this.changeBoardAt(i, j, ScoreBoard.TERRITORY_DAME);
 	}
 };
@@ -362,7 +493,7 @@ search territories next to non-dead groups of both colors.
 if onlyIfGroupsAreAlive == true, both groups must be known as alive
 found territories are marked as ScoreBoard.TERRITORY_DAME
 */
-BoardExactAnalysis.prototype.findDame  = function(onlyIfGroupsAreAlive) {
+BoardExactAnalysis.prototype.findDame  = function() {
 	for(var groupName in this.groupCoords) {
 		if( !(BoardExactAnalysis.isTerritory(groupName))) {
 			continue;
@@ -371,9 +502,25 @@ BoardExactAnalysis.prototype.findDame  = function(onlyIfGroupsAreAlive) {
 		for(var k=0; k < arr.length;) {
 			var i = arr[k++];
 			var j = arr[k++];
-			this.findDameAt(i, j, onlyIfGroupsAreAlive);
+			this.findDameAt(i, j);
 		}
 	}
+};
+
+/**
+only mark as separator if bamboo join
+*/
+BoardExactAnalysis.prototype.maybeAddSeparator  = function(key1, key2) {
+	var coord1 = ScoreBoard.getCoordFromKey(key1);
+	var coord2 = ScoreBoard.getCoordFromKey(key2);
+	if(coord1[0] != coord2[0] && coord1[1] != coord2[1]) {
+		return;
+	}
+	if(Math.abs(coord1[0] - coord2[0]) > 1 || Math.abs(coord1[1] - coord2[1]) > 1) {
+		return;
+	}
+	this.territoryCoordProps[key1][BoardExactAnalysis.PROPERTY_TERRITORY_IS_SEPARATOR] = true;
+	this.territoryCoordProps[key2][BoardExactAnalysis.PROPERTY_TERRITORY_IS_SEPARATOR] = true;
 };
 
 
@@ -383,19 +530,19 @@ three groups of the same color, not in atari and with one common lib, no other c
 */
 BoardExactAnalysis.prototype.findConnections = function() {
 	//get name of all meta-groups (not territories)
-	var metaGroupNames = new Array();
-	for(var metaGroupName in this.metagroupProperties) {
-		if(this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR] == null) {//territory
+	var metagroupNames = new Array();
+	for(var metagroupName in this.metagroupProperties) {
+		if(this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR] == null) {//territory
 			continue;
 		}
-		metaGroupNames.push(metaGroupName);
+		metagroupNames.push(metagroupName);
 	}
-	for(var m1=0; m1<metaGroupNames.length-1; m1++) {
-		var metaGroupName1 = metaGroupNames[m1];
+	for(var m1=0; m1<metagroupNames.length-1; m1++) {
+		var metagroupName1 = metagroupNames[m1];
 		//create a map of the libs coords to match them more easily
 		var coordMap = new Object();
-		for(var c1=0; c1<this.metagroupChilds[metaGroupName1].length; c1++) {
-			var groupName = this.metagroupChilds[metaGroupName1][c1];
+		for(var c1=0; c1<this.metagroupChildren[metagroupName1].length; c1++) {
+			var groupName = this.metagroupChildren[metagroupName1][c1];
 			for(var k=0; k<this.groupLibCoords[groupName].length;) {
 				var ii = this.groupLibCoords[groupName][k++];
 				var jj = this.groupLibCoords[groupName][k++];
@@ -403,28 +550,43 @@ BoardExactAnalysis.prototype.findConnections = function() {
 			}
 		}
 		//compare coords with all other meta-groups
-		for(var m2=m1+1; m2<metaGroupNames.length; m2++) {
-			var metaGroupName2 = metaGroupNames[m2];
+		for(var m2=m1+1; m2<metagroupNames.length; m2++) {
+			var metagroupName2 = metagroupNames[m2];
 			//connect only if same color
-			if(this.metagroupProperties[metaGroupName1][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR] != this.metagroupProperties[metaGroupName2][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR]) {
+			if(this.metagroupProperties[metagroupName1][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR] != this.metagroupProperties[metagroupName2][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR]) {
+				continue;
+			}
+			//avoid empty metagroups (already merged)
+			if(this.metagroupChildren[metagroupName1].length == 0) {
+				continue;
+			}
+			//avoid empty metagroups (already merged)
+			if(this.metagroupChildren[metagroupName2].length == 0) {
 				continue;
 			}
 			//compare coords
 			var libInCommon = null;
-			for(var c2=0; c2<this.metagroupChilds[metaGroupName2].length; c2++) {
-				var groupName = this.metagroupChilds[metaGroupName2][c2];
+			for(var c2=0; c2<this.metagroupChildren[metagroupName2].length; c2++) {
+				var groupName = this.metagroupChildren[metagroupName2][c2];
+				var shouldBreak = false;
 				for(var k=0; k<this.groupLibCoords[groupName].length;) {
 					var ii = this.groupLibCoords[groupName][k++];
 					var jj = this.groupLibCoords[groupName][k++];
 					var key = ScoreBoard.getKey(ii, jj);
 					if(coordMap[key] == true) {
 						if(libInCommon != null && libInCommon != key) {//two libs in common
-							this.mergeMetaGroups(metaGroupName2, metaGroupName1);
+							this.mergeMetagroups(metagroupName2, metagroupName1);
+							metagroupName1 = metagroupName2;
+							this.maybeAddSeparator(libInCommon, key);
 							libInCommon = null;//no need to check for more connection later
+							shouldBreak = true;
 							break;
 						}
 						libInCommon = key;
 					}
+				}
+				if(shouldBreak) {
+					break;
 				}
 			}
 			if(libInCommon != null) {//only one lib in common
@@ -480,9 +642,9 @@ BoardExactAnalysis.prototype.findConnection3 = function(i, j) {
 		return;
 	}
 	//merge all groups
-	var metaGroupName = this.metagroupName[groupNames[0]];
+	var metagroupName = this.metagroupName[groupNames[0]];
 	for(var k=1; k<groupNames.length; k++) {
-		this.mergeMetaGroups(metaGroupName, this.metagroupName[groupNames[k]]);
+		this.mergeMetagroups(metagroupName, this.metagroupName[groupNames[k]]);
 	}
 	//mark territory
 	var newKind;
@@ -497,55 +659,55 @@ BoardExactAnalysis.prototype.findConnection3 = function(i, j) {
 
 /**
 merge meta-groups
-metaGroupName2 properties and children are copied into metaGroupName1
+metagroupName2 properties and children are copied into metagroupName1
 */
-BoardExactAnalysis.prototype.mergeMetaGroups = function(metaGroupName1, metaGroupName2) {
-	if(metaGroupName1 == metaGroupName2) {
+BoardExactAnalysis.prototype.mergeMetagroups = function(metagroupName1, metagroupName2) {
+	if(metagroupName1 == metagroupName2) {
 		return;
 	}
 	//do not merge if not same color
-	if(this.metagroupProperties[metaGroupName1][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR] != this.metagroupProperties[metaGroupName2][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR]) {
+	if(this.metagroupProperties[metagroupName1][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR] != this.metagroupProperties[metagroupName2][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR]) {
 		return;
 	}
 	
 	//do not merge groups marked as dead and alive
-	if(this.metagroupProperties[metaGroupName1][BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD] == true 
-				&& this.metagroupProperties[metaGroupName2][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] == true) {
+	if(this.metagroupProperties[metagroupName1][BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD] == true 
+				&& this.metagroupProperties[metagroupName2][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] == true) {
 		return;
 	}
-	if(this.metagroupProperties[metaGroupName2][BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD] == true 
-				&& this.metagroupProperties[metaGroupName1][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] == true) {
+	if(this.metagroupProperties[metagroupName2][BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD] == true 
+				&& this.metagroupProperties[metagroupName1][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] == true) {
 		return;
 	}
 
 	//BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE
-	if(this.metagroupProperties[metaGroupName1][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] != true) {
-		if(this.metagroupProperties[metaGroupName2][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] == true) {
-			this.metagroupProperties[metaGroupName1][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] = true;
-		} else if(this.metagroupProperties[metaGroupName1][BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE] != null
-					&& this.metagroupProperties[metaGroupName2][BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE] != null) {
-			this.metagroupProperties[metaGroupName1][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] = true;			
+	if(this.metagroupProperties[metagroupName1][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] != true) {
+		if(this.metagroupProperties[metagroupName2][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] == true) {
+			this.metagroupProperties[metagroupName1][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] = true;
+		} else if(this.metagroupProperties[metagroupName1][BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE] != null
+					&& this.metagroupProperties[metagroupName2][BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE] != null) {
+			this.metagroupProperties[metagroupName1][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] = true;			
 		}
 	}
 
 	//BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD	
-	if(this.metagroupProperties[metaGroupName2][BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD] == true) {
-		this.metagroupProperties[metaGroupName1][BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD] = true;
+	if(this.metagroupProperties[metagroupName2][BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD] == true) {
+		this.metagroupProperties[metagroupName1][BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD] = true;
 	}
 
 	//BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE
-	var hasOneEyeProp = this.metagroupProperties[metaGroupName2][BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE];
+	var hasOneEyeProp = this.metagroupProperties[metagroupName2][BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE];
 	if(hasOneEyeProp != null) {
-		this.addOneEye(metaGroupName1, hasOneEyeProp);
+		this.addOneEye(metagroupName1, hasOneEyeProp);
 	}
 
-	//merge group childs
-	for(var i=0; i<this.metagroupChilds[metaGroupName2].length; i++) {
-		var groupName = this.metagroupChilds[metaGroupName2][i];
-		this.metagroupChilds[metaGroupName1].push(groupName);
-		this.metagroupName[groupName] = metaGroupName1;
+	//merge group Children
+	for(var i=0; i<this.metagroupChildren[metagroupName2].length; i++) {
+		var groupName = this.metagroupChildren[metagroupName2][i];
+		this.metagroupChildren[metagroupName1].push(groupName);
+		this.metagroupName[groupName] = metagroupName1;
 	}
-	this.metagroupChilds[metaGroupName2] = new Array();
+	this.metagroupChildren[metagroupName2] = new Array();
 
 };
 
@@ -555,16 +717,16 @@ eye is a ScoreBoard.getKey(i, j)
 if new eye, add it
 if two eyes and not dead, then alive
 */
-BoardExactAnalysis.prototype.addOneEye = function(metaGroupName, eye) {
-	if(this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD] == true) {
+BoardExactAnalysis.prototype.addOneEye = function(metagroupName, eye) {
+	if(this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD] == true) {
 		return;
 	}
 
-	var hasOneEyeProp = this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE];
+	var hasOneEyeProp = this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE];
 	if(hasOneEyeProp != null && hasOneEyeProp != eye) {
-		this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] = true;
+		this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] = true;
 	} else if(hasOneEyeProp == null) {
-		this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE] = eye;
+		this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE] = eye;
 	}
 };
 
@@ -583,9 +745,10 @@ BoardExactAnalysis.prototype.markTerritory = function(territoryGroupName, color)
 	for(var k=0; k<territoryCoords.length;) {
 		var i = territoryCoords[k++];
 		var j = territoryCoords[k++];
-		this.changeBoardAt(i, j, newKind);
+		if(!this.isTerritorySeparator(i, j)) {
+			this.changeBoardAt(i, j, newKind);
+		}
 	}
-	this.setMetaGroupProp(territoryGroupName, BoardExactAnalysis.PROPERTY_METAGROUP_IS_TERRITORY_MARKED, true);
 };
 
 
@@ -600,7 +763,7 @@ BoardExactAnalysis.prototype.checkForSimpleEyeOrKo = function(i, j) {
 	if(territoryKind != ScoreBoard.TERRITORY_UNKNOWN && territoryKind != ScoreBoard.TERRITORY_BLACK && territoryKind != ScoreBoard.TERRITORY_WHITE) {//skip if not territory or already analysed 
 		return;
 	}
-	if(this.getMetaGroupProp(this.getGroupNameAt(i, j), BoardExactAnalysis.PROPERTY_METAGROUP_IS_TERRITORY_MARKED) == true) {
+	if(this.getMetagroupProp(this.getGroupNameAt(i, j), BoardExactAnalysis.PROPERTY_METAGROUP_IS_TERRITORY_MARKED) == true) {
 		return;
 	}
 	var color;
@@ -642,7 +805,7 @@ BoardExactAnalysis.prototype.checkForSimpleEyeOrKo = function(i, j) {
 			newKind = ScoreBoard.TERRITORY_KO_WHITE;
 		}
 		this.changeBoardAt(i, j, newKind);
-		this.setMetaGroupProp(this.getGroupNameAt(i, j), BoardExactAnalysis.PROPERTY_METAGROUP_IS_TERRITORY_MARKED, true);
+		this.setMetagroupProp(this.getGroupNameAt(i, j), BoardExactAnalysis.PROPERTY_METAGROUP_IS_TERRITORY_MARKED, true);
 		return;
 	}
 	
@@ -703,14 +866,14 @@ BoardExactAnalysis.prototype.checkForSimpleEyeOrKo = function(i, j) {
 	//congrats, it' an eye!
 		
 	//merge all groups
-	var metaGroupName = this.metagroupName[groupNames[0]];
-	this.addOneEye(metaGroupName, ScoreBoard.getKey(i, j));
+	var metagroupName = this.metagroupName[groupNames[0]];
+	this.addOneEye(metagroupName, ScoreBoard.getKey(i, j));
 	for(var k=1; k<groupNames.length; k++) {
-		this.mergeMetaGroups(metaGroupName, this.metagroupName[groupNames[k]]);
+		this.mergeMetagroups(metagroupName, this.metagroupName[groupNames[k]]);
 	}
 	//mark territory
 	this.territoryCoordProps[ScoreBoard.getKey(i, j)][BoardExactAnalysis.PROPERTY_TERRITORY_IS_EYE] = true;
-	this.setMetaGroupProp(this.getGroupNameAt(i, j), BoardExactAnalysis.PROPERTY_METAGROUP_IS_TERRITORY_MARKED, true);
+	this.setMetagroupProp(this.getGroupNameAt(i, j), BoardExactAnalysis.PROPERTY_METAGROUP_IS_TERRITORY_MARKED, true);
 };
 
 
@@ -743,7 +906,7 @@ BoardExactAnalysis.prototype.findAtariCapturedForSure = function() {
 		if(!this.isGroupInAtari(groupName)) {//only check groups in atari
 			continue;
 		}
-		var metaGroupName = this.metagroupName[groupName];
+		var metagroupName = this.metagroupName[groupName];
 		if(this.isGroupDead(groupName)) {//already dead
 			continue;
 		}
@@ -821,17 +984,17 @@ BoardExactAnalysis.prototype.findAtariCapturedForSure = function() {
 		}
 		
 		//mark groupName as dead!
-		var metaGroupName = this.metagroupName[groupName];
-		this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD] = true;
+		var metagroupName = this.metagroupName[groupName];
+		this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD] = true;
 		//if group size > 1: it's an eye
-		var neighborMetaGroupName = this.metagroupName[neighborGroupNames[0]];
+		var neighborMetagroupName = this.metagroupName[neighborGroupNames[0]];
 		var coords = this.groupCoords[groupName];
 		if(this.getGroupSize(groupName) > 1) {
-			this.addOneEye(neighborMetaGroupName, ScoreBoard.getKey(coords[0], coords[1]));			
+			this.addOneEye(neighborMetagroupName, ScoreBoard.getKey(coords[0], coords[1]));			
 		}
 		//merge all neighbors
 		for(var k=1; k<neighborGroupNames.length; k++) {
-			this.mergeMetaGroups(neighborMetaGroupName, this.metagroupName[neighborGroupNames[k]]);
+			this.mergeMetagroups(neighborMetagroupName, this.metagroupName[neighborGroupNames[k]]);
 		}
 	}
 };
@@ -850,8 +1013,8 @@ BoardExactAnalysis.prototype.checkIfTerritoryIsSurroundedOnlyByOneColor = functi
 		if(BoardExactAnalysis.isTerritory(neighborGroupName)) {
 			continue;
 		}
-		var c = this.getMetaGroupProp(neighborGroupName, BoardExactAnalysis.PROPERTY_METAGROUP_COLOR);
-		var isDead = this.getMetaGroupProp(neighborGroupName, BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD);
+		var c = this.getMetagroupProp(neighborGroupName, BoardExactAnalysis.PROPERTY_METAGROUP_COLOR);
+		var isDead = this.getMetagroupProp(neighborGroupName, BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD);
 		if(isDead) {
 			if(c == ScoreBoard.BLACK) {
 				allDeadWhite = false;
@@ -867,11 +1030,8 @@ BoardExactAnalysis.prototype.checkIfTerritoryIsSurroundedOnlyByOneColor = functi
 				c = ScoreBoard.BLACK;
 			}
 		} else {
-			if(c == ScoreBoard.BLACK) {
-				allDeadBlack = false;
-			} else if (c == ScoreBoard.WHITE) {
-				allDeadWhite = false;
-			}
+			allDeadBlack = false;
+			allDeadWhite = false;
 		}
 		if(color == null) {
 			color = c;
@@ -896,7 +1056,7 @@ if territory surrounded by one color, then mark it and check if it is an eye
 return neighbors array (without dead groups nor territories separators)
 */
 BoardExactAnalysis.prototype.checkEyesInOneTerritory = function(territoryGroupName, color) {
-	if(this.getMetaGroupProp(territoryGroupName, BoardExactAnalysis.PROPERTY_METAGROUP_IS_TERRITORY_MARKED) == true) {
+	if(this.getMetagroupProp(territoryGroupName, BoardExactAnalysis.PROPERTY_METAGROUP_IS_TERRITORY_MARKED) == true) {
 		return [];
 	}
 	//territoryGroupName should be marked as color, now check if an eye
@@ -962,8 +1122,8 @@ BoardExactAnalysis.prototype.checkEyesInOneTerritory = function(territoryGroupNa
 	//territoryGroupName is an eye!
 	
 	//merge all groups
-	var metaGroupName = this.metagroupName[neighborGroupNames[0]];
-	this.addOneEye(metaGroupName, ScoreBoard.getKey(territoryCoords[0], territoryCoords[1]));
+	var metagroupName = this.metagroupName[neighborGroupNames[0]];
+	this.addOneEye(metagroupName, ScoreBoard.getKey(territoryCoords[0], territoryCoords[1]));
 	
 	//check if double eye
 	var hasDoubleEyes = (this.getGroupSize(territoryGroupName) > countNeighbors + 5);
@@ -971,11 +1131,11 @@ BoardExactAnalysis.prototype.checkEyesInOneTerritory = function(territoryGroupNa
 		hasDoubleEyes = this.isKnownDoubleEyeShape(territoryGroupName, neighborGroupNames.length);
 	}
 	if(hasDoubleEyes) {
-		this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] = true;	
+		this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] = true;	
 	}
 	
 	for(var k=1; k<neighborGroupNames.length; k++) {
-		this.mergeMetaGroups(metaGroupName, this.metagroupName[neighborGroupNames[k]]);
+		this.mergeMetagroups(metagroupName, this.metagroupName[neighborGroupNames[k]]);
 	}
 	
 	return neighborGroupNames;
@@ -1020,7 +1180,7 @@ BoardExactAnalysis.prototype.isKnownDoubleEyeShape = function(territoryGroupName
 if 2 territories have exactly 2 neighbors and same neighbors (of same color), then they are 2 eyes, groups are connected and alive. idem with 3 instead of two
 */
 BoardExactAnalysis.prototype.checkMultipleEyes = function() {
-	var map = this.mapForCheckMultipleEyes;
+	var map = this.mapForCheckMultipleEyes;//key is territory group name, value is array of neighbor group names
 	var key2Ar = new Array();
 	var key3Ar = new Array();
 	for(var key in map) {
@@ -1038,11 +1198,11 @@ BoardExactAnalysis.prototype.checkMultipleEyes = function() {
 			var j0 = map[key2Ar[j]][0];
 			var j1 = map[key2Ar[j]][1];
 			if( (i0 == j0 && i1 == j1) || (i0 == j1 && i1 == j0) ) {//two eyes, connect i0 and i1, mark as alive
-				var metaGroupName = this.metagroupName[i0];
-				this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] = true;	
-				this.mergeMetaGroups(metaGroupName, this.metagroupName[i1]);
+				var metagroupName = this.metagroupName[i0];
+				this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] = true;	
+				this.mergeMetagroups(metagroupName, this.metagroupName[i1]);
 				
-				var color = this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR];
+				var color = this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR];
 				this.markTerritory(key2Ar[i], color);
 				this.markTerritory(key2Ar[j], color);
 				map[key2Ar[i]] = [];
@@ -1052,8 +1212,45 @@ BoardExactAnalysis.prototype.checkMultipleEyes = function() {
 	}
 	for(var i = 0; i< key3Ar.length-2; i++) {
 		for(var j = i+1; j< key3Ar.length-1; j++) {
+			var testMap = new Object();
+			if(map[key3Ar[i]].length <2 || map[key3Ar[j]].length <2) {//already handled
+				continue;
+			}
+			for(var n=0; n<map[key3Ar[i]].length; n++) {
+				testMap[map[key3Ar[i]][n]] = true;
+			}
+			for(var n=0; n<map[key3Ar[j]].length; n++) {
+				testMap[map[key3Ar[j]][n]] = true;
+			}
+			var territoriesGroupNames = new Array();
+			for(var key in testMap) {
+				territoriesGroupNames.push(key);
+			}
+			if(territoriesGroupNames.length != 3 && territoriesGroupNames.length != 2) {
+				continue;
+			}
+			//two territories have in common exactly two or three groups, then eyes, mark as alive
+			var metagroupName = this.metagroupName[territoriesGroupNames[0]];
+			this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] = true;	
+			this.mergeMetagroups(metagroupName, this.metagroupName[territoriesGroupNames[1]]);
+			if(territoriesGroupNames.length == 3) {
+				this.mergeMetagroups(metagroupName, this.metagroupName[territoriesGroupNames[2]]);
+			}
+			var color = this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR];
+			this.markTerritory(key3Ar[i], color);
+			this.markTerritory(key3Ar[j], color);
+			map[key3Ar[i]] = [];
+			map[key3Ar[j]] = [];
+		}
+	}
+
+	for(var i = 0; i< key3Ar.length-2; i++) {
+		for(var j = i+1; j< key3Ar.length-1; j++) {
 			for(var k = j+1; k< key3Ar.length; k++) {
 				var testMap = new Object();
+				if(map[key3Ar[i]].length <2 || map[key3Ar[j]].length <2 || map[key3Ar[k]].length <2) {//already handled
+					continue;
+				}
 				for(var n=0; n<map[key3Ar[i]].length; n++) {
 					testMap[map[key3Ar[i]][n]] = true;
 				}
@@ -1067,16 +1264,17 @@ BoardExactAnalysis.prototype.checkMultipleEyes = function() {
 				for(var key in testMap) {
 					territoriesGroupNames.push(key);
 				}
-				if(territoriesGroupNames.length != 3) {
+				if(territoriesGroupNames.length != 3 && territoriesGroupNames.length != 2) {
 					continue;
 				}
-				//three territories have in common exactly three groups, then three eyes, mark as alive
-				var metaGroupName = this.metagroupName[territoriesGroupNames[0]];
-				this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] = true;	
-				this.mergeMetaGroups(metaGroupName, this.metagroupName[territoriesGroupNames[1]]);
-				this.mergeMetaGroups(metaGroupName, this.metagroupName[territoriesGroupNames[2]]);
-
-				var color = this.metagroupProperties[metaGroupName][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR];
+				//three territories have in common exactly two or three groups, then eyes, mark as alive
+				var metagroupName = this.metagroupName[territoriesGroupNames[0]];
+				this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] = true;	
+				this.mergeMetagroups(metagroupName, this.metagroupName[territoriesGroupNames[1]]);
+				if(territoriesGroupNames.length == 3) {
+					this.mergeMetagroups(metagroupName, this.metagroupName[territoriesGroupNames[2]]);
+				}
+				var color = this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR];
 				this.markTerritory(key3Ar[i], color);
 				this.markTerritory(key3Ar[j], color);
 				this.markTerritory(key3Ar[k], color);
@@ -1091,6 +1289,7 @@ BoardExactAnalysis.prototype.checkMultipleEyes = function() {
 
 
 /**
+main entry for searching eyes
 */
 BoardExactAnalysis.prototype.checkForEyes = function() {
 	for(var territoryGroupName in this.groupCoords) {
@@ -1100,7 +1299,7 @@ BoardExactAnalysis.prototype.checkForEyes = function() {
 		var color = this.checkIfTerritoryIsSurroundedOnlyByOneColor(territoryGroupName);
 		if(color != null) {
 			var neighbors = this.checkEyesInOneTerritory(territoryGroupName, color);
-			if(neighbors.length > 1) {
+			if(neighbors.length > 0) {
 				this.mapForCheckMultipleEyes[territoryGroupName] = neighbors;
 			}
 		}
@@ -1108,3 +1307,298 @@ BoardExactAnalysis.prototype.checkForEyes = function() {
 	this.checkMultipleEyes();
 };
 
+
+/**
+return true if metagroupName is the only group of territoryGroupName of its color (except deads)
+*/
+BoardExactAnalysis.prototype.isAloneInTerritory = function(metagroupName, territoryGroupName) {
+	var childrenMap = new Object();
+	var childrenArray = this.metagroupChildren[metagroupName];
+	for(var c=0; c<childrenArray.length; c++) {
+		childrenMap[childrenArray[c]] = true;
+	}
+	var color = this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR];
+	for(var neighbor in this.groupNeighbors[territoryGroupName]) {
+		if(BoardExactAnalysis.getGroupColor(neighbor) != color) {
+			continue;
+		}
+		if(childrenMap[neighbor] != true && !this.isGroupDead(neighbor)) {
+			return false;				
+		}
+	}
+	return true;
+};
+
+
+/**
+return maxDistance if too far
+*/
+BoardExactAnalysis.prototype.isFarFromSameColor = function(metagroupName, maxDistance) {
+	var color = this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR];
+	var coords = this.getMetagroupCoordinates(metagroupName);
+	var territories = this.getMetagroupTerritoryNeighborGroups(metagroupName);
+	for(var t=0; t<territories.length; t++) {
+		var territoryGroupName = territories[t];
+		if(this.minDistanceFromColorInTerritory(coords, metagroupName, color, maxDistance, true) < maxDistance) {
+			return false;
+		}
+	}
+	return true;
+};
+
+BoardExactAnalysis.prototype.isTerritorySeparator = function(i, j) {
+	return (this.territoryCoordProps[ScoreBoard.getKey(i, j)][BoardExactAnalysis.PROPERTY_TERRITORY_IS_SEPARATOR] == true);
+};
+
+
+/**
+return the distance between coords and the nearest group of the same color (except dead, with maximum distance of distanceMax). 
+do not take into account stones of avoidedMetagroupName if not null
+*/
+BoardExactAnalysis.prototype.minDistanceFromColorInTerritory = function(coords, avoidedMetagroupName, color, distanceMax, stopOnSeparators) {
+	var alreadySeenCoords = new Object();
+	var distance = 0;
+
+	for(var distance=1;distance<distanceMax+1;distance++) {
+		var newCoords = new Array();
+
+		for(var k=0;k<coords.length;) {
+			var i = coords[k++];
+			var j = coords[k++];
+			var key = ScoreBoard.getKey(i, j);
+			if(alreadySeenCoords[key] == true) {
+				continue;
+			}
+			alreadySeenCoords[key] = true;
+			for(var kk=0; kk < ScoreBoard.DISTANCE1.length;) {
+				var ii = i+ScoreBoard.DISTANCE1[kk++];
+				var jj = j+ScoreBoard.DISTANCE1[kk++];
+				if(!this.isInBoard(ii, jj)) {
+					continue; 
+				}
+				var otherMetagroupName = this.metagroupName[this.getGroupNameAt(ii, jj)];
+				if(avoidedMetagroupName != null && otherMetagroupName == avoidedMetagroupName) {
+					continue;
+				}
+				var otherColor = this.metagroupProperties[otherMetagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR];
+				var otherGroupIsDead = (this.metagroupProperties[otherMetagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD] == true);
+				if(color == otherColor && !otherGroupIsDead) {
+					return distance;
+				}
+				if(otherColor == null) {//territory
+					if(!stopOnSeparators || !this.isTerritorySeparator(ii, jj)) {
+						newCoords.push(ii);
+						newCoords.push(jj);
+					}
+				}
+			}
+		}
+		if(distance == distanceMax) {
+			return distanceMax;
+		}
+		coords = newCoords;
+	}
+	return distance;
+};
+
+
+BoardExactAnalysis.prototype.getFarDistance = function(metagroupName) {
+	return 12;
+};
+
+BoardExactAnalysis.prototype.getNotSoFarGroupsOfDifferentColorInNeighborTerritories = function(metagroupName, distanceMax) {
+	var color = this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR];
+	var alreadySeenCoords = new Object();
+	var alreadySeenGroup = new Object();
+	var distance = 0;
+	var coords = this.getMetagroupLibs(metagroupName);
+	var result = new Array();
+	
+	//first, add direct neighbors of other color
+	var children = this.metagroupChildren[metagroupName];
+	for(var c=0; c<children.length; c++) {
+		var neighbors = this.groupNeighbors[children[c]];
+		for(var neighbor in neighbors) {
+			var neighborMetagroup = this.metagroupName[neighbor];
+			var otherColor = this.metagroupProperties[neighborMetagroup][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR];
+			if(otherColor == null || otherColor == color) {
+				continue;
+			}
+			if(alreadySeenGroup[neighbor] != true) {
+				alreadySeenGroup[neighbor] = true;
+				result.push(neighbor);
+			}
+		}
+	}
+	
+	for(var distance=1;distance<distanceMax+1;distance++) {
+		var newCoords = new Array();
+
+		for(var k=0;k<coords.length;) {
+			var i = coords[k++];
+			var j = coords[k++];
+			for(var kk=0; kk < ScoreBoard.DISTANCE1.length;) {
+				var ii = i+ScoreBoard.DISTANCE1[kk++];
+				var jj = j+ScoreBoard.DISTANCE1[kk++];
+				if(!this.isInBoard(ii, jj)) {
+					continue; 
+				}
+				var key = ScoreBoard.getKey(ii, jj);
+				if(alreadySeenCoords[key] == true) {
+					continue;
+				}
+				alreadySeenCoords[key] = true;
+				var otherGroupName = this.getGroupNameAt(ii, jj);
+				if(alreadySeenGroup[otherGroupName] == true) {
+					continue;
+				}
+				var otherMetagroupName = this.metagroupName[otherGroupName];
+				if(otherMetagroupName == metagroupName) {
+					continue;
+				}
+				var otherColor = this.metagroupProperties[otherMetagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR];
+				if(otherColor == null) {//territory
+					if(!this.isTerritorySeparator(ii, jj)) {
+						newCoords.push(ii);
+						newCoords.push(jj);
+					}
+				} else if(color != otherColor) {
+					result.push(otherGroupName);
+					alreadySeenGroup[otherGroupName] = true;
+				}
+
+			}
+		}
+		if(distance == distanceMax || newCoords == 0) {
+			if(newCoords.length > (3*distanceMax)) {//many empty intersections reachable... probably not surrounded!
+				return new Array();
+			}
+			return result;
+		}
+		coords = newCoords;
+	}
+	return result;
+};
+
+BoardExactAnalysis.prototype.getGroupsOfDifferentColorInNeighborTerritories = function(metagroupName) {
+	var territories = this.getMetagroupTerritoryNeighborGroups(metagroupName);
+	var result = new Array();
+	var alreadySeen = new Object();
+	var color = this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR];
+	for(var t=0;t<territories.length;t++) {
+		var neighbors = this.groupNeighbors[territories[t]];
+		for(var neighbor in neighbors) {
+			var neighborMetagroup = this.metagroupName[neighbor];
+			if(neighborMetagroup == metagroupName) {
+				continue;
+			}
+			var otherColor = this.metagroupProperties[neighborMetagroup][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR];
+			if(otherColor == null || otherColor == color) {
+				continue;
+			}
+			if(alreadySeen[neighbor] != true) {
+				alreadySeen[neighbor] = true;
+				result.push(neighbor);
+			}
+		}
+	}
+	return result;
+};
+
+
+/**
+metagroupName is supposed not marked dead nor alive
+if no neighbor groups of different color is dead, and metagroupName has less liberties and same or less eyes than its neighbors, and far from same color, then dead 
+*/
+BoardExactAnalysis.prototype.isMetagroupDead = function(metagroupName, nLibs) {
+	if(this.metagroupChildren[metagroupName].length == 0) {//already merged
+		return false;
+	}
+	//if nLibs == 1, avoid marking ko as dead
+	if(nLibs == 1) {
+		var libCoords = this.getMetagroupLibs(metagroupName);
+		if(this.isKoTerritoryAt(libCoords[0], libCoords[1])) {
+			return false;
+		}
+	}
+	var maxDistance = this.getFarDistance(metagroupName);
+	if(!this.isFarFromSameColor(metagroupName, maxDistance)) {
+		return false;
+	}
+	var hasOneEye = (this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE] != null);
+
+	var neighborsGroups = this.getNotSoFarGroupsOfDifferentColorInNeighborTerritories(metagroupName, maxDistance);
+	if(neighborsGroups.length == 0) {
+		return false;
+	}
+	for(var n=0; n<neighborsGroups.length; n++) {
+		var neighbor = neighborsGroups[n];
+		var neighborMetagroup = this.metagroupName[neighbor];
+		if(this.metagroupProperties[neighborMetagroup][BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD] == true) {
+			return false;
+		}
+		var neighborHasOneEye = (this.metagroupProperties[neighborMetagroup][BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE] != null);
+		if(hasOneEye && ! neighborHasOneEye) {
+			return false;
+		}
+		if(this.metagroupProperties[neighborMetagroup][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] != true) {
+			var nNeighborLibs = this.groupLibCoords[neighbor].length/2;
+			if(nNeighborLibs <= nLibs) {
+				return false;
+			}
+		}
+	}
+	return true;
+};
+
+
+/**
+search dead groups, lower number of liberties first
+*/
+BoardExactAnalysis.prototype.findDeadGroups = function() {
+	var maxLibs = this.findDeadGroupsMaxLibs;
+	var listByNLibs = new Array();
+	listByNLibs[0] = new Array();
+	for(var k=1; k<=maxLibs; k++) {
+		listByNLibs[k] = new Array();
+	}
+	//select in listByNLibs[n] metagroups that are not territories and that have exactly n liberties
+	for(var metagroupName in this.metagroupProperties) {
+		var color = this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR];
+		if(color == null) {//territory
+			continue;
+		}
+		if(this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD] == true) {
+			continue;
+		}
+		if(this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] == true) {
+			continue;
+		}
+		var n = this.getMetagroupLibs(metagroupName).length/2;
+		if(n<=maxLibs) {
+			listByNLibs[n].push(metagroupName);
+		}
+	}
+	//search deads by order of nLibs
+	for(var nLibs=1; nLibs<=maxLibs; nLibs++) {
+		var arr = listByNLibs[nLibs];
+		for(var k=0; k<arr.length; k++) {
+			var metagroupName = arr[k];
+			if(this.metagroupChildren[metagroupName].length == 0) {//already merged
+				continue;
+			}
+			if(this.isMetagroupDead(metagroupName, nLibs)) {
+				//mark as dead
+				this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD] = true;
+				//merge all neighbors
+				var neighbors = this.getMetagroupNeighborMetagroupsOfOtherColor(metagroupName);
+				if(neighbors.length < 2) {
+					continue;
+				}
+				for(var n=1; n<neighbors.length; n++) {
+					this.mergeMetagroups(neighbors[0], neighbors[n]);
+				}
+			}
+		}
+	}
+};

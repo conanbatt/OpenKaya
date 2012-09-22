@@ -4,6 +4,13 @@
 //Provide count score feature
 //v0.3.0
 
+/*!
+ * This software is licensed under a Creative Commons Attribution 3.0 Unported License:
+ * http://http://creativecommons.org/licenses/by/3.0/
+ *
+ * Date: 2012-09-22
+ */
+
 /** History
 0.1.0: creation of this file
 0.2.0: added some constants + minor code changes
@@ -137,6 +144,12 @@ single-array relative coordinates of neighbors for which distance == 1
 //static final
 ScoreBoard.DISTANCE1 = new Array(1, 0, -1, 0, 0, 1, 0, -1);
 
+/**
+single-array relative coordinates of neighbors for which distance == 2
+*/
+//static final
+ScoreBoard.DISTANCE2 = new Array(1, 1, 1, -1, -1, 1, -1, -1, 2, 0, -2, 0, 0, 2, 0, -2);
+
 //static
 ScoreBoard.getToggleColor  = function(color) {
 	switch(color) {
@@ -223,11 +236,29 @@ ScoreBoard.prototype.isSameColorAt  = function(i, j, color) {
 
 
 /**
+return a boolean, true if same color
+*/
+ScoreBoard.prototype.haveSameColorsAt  = function(i0, j0, i1, j1) {
+
+	return (ScoreBoard.getBlackOrWhite(this.board[i0][j0]) == ScoreBoard.getBlackOrWhite(this.board[i1][j1]));
+};
+
+
+/**
 return a boolean, true if territory
 */
 ScoreBoard.prototype.isTerritoryAt  = function(i, j) {
 
 	return (ScoreBoard.getBlackOrWhite(this.board[i][j]) == null);
+};
+
+
+/**
+return a boolean, true if ko
+*/
+ScoreBoard.prototype.isKoTerritoryAt  = function(i, j) {
+
+	return (this.board[i][j] == ScoreBoard.TERRITORY_KO_BLACK || this.board[i][j] == ScoreBoard.TERRITORY_KO_WHITE);
 };
 
 
