@@ -60,7 +60,7 @@ function are_similar_boards(board1, board2){
 }
 
 
-test("BoardExactAnalysis should int group properties correctly", function(){
+test("BoardExactAnalysis should get group properties correctly", function(){
 
 	var test_board = [
                 [ e  , B  , W , W  , W , B  ],
@@ -102,8 +102,7 @@ test("BoardExactAnalysis should int group properties correctly", function(){
 	}
 	ok(testOk);
 	
-	ok(scoreboard.metagroupCount == 12);
-	ok(scoreboard.metagroupChilds[scoreboard.metagroupName["B0"]][0] == "B0");
+	ok(scoreboard.metagroupChildren[scoreboard.metagroupName["B0"]][0] == "B0");
 	ok(scoreboard.metagroupProperties[scoreboard.metagroupName["W2"]][BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD] == true);
 });
 
@@ -127,10 +126,10 @@ test("BoardExactAnalysis should find some dame territories ", function(){
 	var expected_result1 = [
                 [ e , B , B , D , W , B ],
                 [ e , B , D , W , W , D ],
-                [ B , B , D , W , e , e ],
-                [ e , B , D , W , e , e ],
-                [ B , B , D , W , D , e ],
-                [ e , D , W , D , B , e ]
+                [ B , B , D , W , U , U ],
+                [ e , B , D , W , U , U ],
+                [ B , B , D , W , D , U ],
+                [ U , D , W , D , B , U ]
             ];
 
 	ok(are_similar_boards(analysedBoard1, expected_result1));
@@ -153,9 +152,9 @@ test("BoardExactAnalysis should find some dame territories ", function(){
                 [ e  , BA , BA , D  , WA , BD ],
                 [ e  , BA , D  , WA , WA , e  ],
                 [ BA , BA , D  , WA , e  , e  ],
-                [ e  , BA , D  , WA , e  , e  ],
+                [  e  , BA , D  , WA , e  , e  ],
                 [ BA , BA , D  , WA , e  , e  ],
-                [ e  , e  , W , e  , BD , e  ]
+                [  U  ,  U , W , e  , BD , e  ]
             ];
 
 	ok(are_similar_boards(analysedBoard2, expected_result2));
@@ -198,16 +197,16 @@ test("BoardExactAnalysis should find group connections", function(){
 	var scoreboard1 = new BoardExactAnalysis(test_board1, 0.5, 0, 0);
 	scoreboard1.findConnections();
 	
-	ok(scoreboard1.isSameMetaGroup(scoreboard1.getGroupNameAt(0, 1), scoreboard1.getGroupNameAt(1, 2)));
-	ok(scoreboard1.isSameMetaGroup(scoreboard1.getGroupNameAt(0, 1), scoreboard1.getGroupNameAt(2, 0)));
-	ok(scoreboard1.isSameMetaGroup(scoreboard1.getGroupNameAt(0, 1), scoreboard1.getGroupNameAt(4, 0)));
-	ok(scoreboard1.isSameMetaGroup(scoreboard1.getGroupNameAt(1, 2), scoreboard1.getGroupNameAt(2, 1)));
-	ok(scoreboard1.isSameMetaGroup(scoreboard1.getGroupNameAt(2, 1), scoreboard1.getGroupNameAt(4, 0)));
+	ok(scoreboard1.isSameMetagroup(scoreboard1.getGroupNameAt(0, 1), scoreboard1.getGroupNameAt(1, 2)));
+	ok(scoreboard1.isSameMetagroup(scoreboard1.getGroupNameAt(0, 1), scoreboard1.getGroupNameAt(2, 0)));
+	ok(scoreboard1.isSameMetagroup(scoreboard1.getGroupNameAt(0, 1), scoreboard1.getGroupNameAt(4, 0)));
+	ok(scoreboard1.isSameMetagroup(scoreboard1.getGroupNameAt(1, 2), scoreboard1.getGroupNameAt(2, 1)));
+	ok(scoreboard1.isSameMetagroup(scoreboard1.getGroupNameAt(2, 1), scoreboard1.getGroupNameAt(4, 0)));
 
-	ok(scoreboard1.isSameMetaGroup(scoreboard1.getGroupNameAt(0, 3), scoreboard1.getGroupNameAt(1, 4)));
-	ok(!scoreboard1.isSameMetaGroup(scoreboard1.getGroupNameAt(0, 5), scoreboard1.getGroupNameAt(1, 4)));
+	ok(scoreboard1.isSameMetagroup(scoreboard1.getGroupNameAt(0, 3), scoreboard1.getGroupNameAt(1, 4)));
+	ok(!scoreboard1.isSameMetagroup(scoreboard1.getGroupNameAt(0, 5), scoreboard1.getGroupNameAt(1, 4)));
 
-	ok(scoreboard1.isSameMetaGroup(scoreboard1.getGroupNameAt(3, 3), scoreboard1.getGroupNameAt(3, 5)));
+	ok(scoreboard1.isSameMetagroup(scoreboard1.getGroupNameAt(3, 3), scoreboard1.getGroupNameAt(3, 5)));
 
 
 	var test_board2 = [
@@ -221,12 +220,12 @@ test("BoardExactAnalysis should find group connections", function(){
 
 	var scoreboard2 = new BoardExactAnalysis(test_board2, 0.5, 0, 0);
 	scoreboard2.findConnections();
-	ok(scoreboard2.isSameMetaGroup(scoreboard2.getGroupNameAt(0, 1), scoreboard2.getGroupNameAt(1, 2)));
-	ok(scoreboard2.isSameMetaGroup(scoreboard2.getGroupNameAt(1, 4), scoreboard2.getGroupNameAt(2, 3)));
-	ok(scoreboard2.isSameMetaGroup(scoreboard2.getGroupNameAt(1, 4), scoreboard2.getGroupNameAt(2, 5)));
-	ok(scoreboard2.isSameMetaGroup(scoreboard2.getGroupNameAt(3, 1), scoreboard2.getGroupNameAt(4, 2)));
-	ok(scoreboard2.isSameMetaGroup(scoreboard2.getGroupNameAt(4, 3), scoreboard2.getGroupNameAt(4, 5)));
-	ok(scoreboard2.isSameMetaGroup(scoreboard2.getGroupNameAt(4, 3), scoreboard2.getGroupNameAt(5, 4)));
+	ok(scoreboard2.isSameMetagroup(scoreboard2.getGroupNameAt(0, 1), scoreboard2.getGroupNameAt(1, 2)));
+	ok(scoreboard2.isSameMetagroup(scoreboard2.getGroupNameAt(1, 4), scoreboard2.getGroupNameAt(2, 3)));
+	ok(scoreboard2.isSameMetagroup(scoreboard2.getGroupNameAt(1, 4), scoreboard2.getGroupNameAt(2, 5)));
+	ok(scoreboard2.isSameMetagroup(scoreboard2.getGroupNameAt(3, 1), scoreboard2.getGroupNameAt(4, 2)));
+	ok(scoreboard2.isSameMetagroup(scoreboard2.getGroupNameAt(4, 3), scoreboard2.getGroupNameAt(4, 5)));
+	ok(scoreboard2.isSameMetagroup(scoreboard2.getGroupNameAt(4, 3), scoreboard2.getGroupNameAt(5, 4)));
 
 	
 });
@@ -307,9 +306,9 @@ test("BoardExactAnalysis should find some dead groups in atari (findAtariCapture
 	ok(!scoreboard1.isGroupDead(scoreboard1.getGroupNameAt(1, 5)));
 	ok(scoreboard1.isGroupDead(scoreboard1.getGroupNameAt(2, 1)));
 	ok(scoreboard1.isGroupDead(scoreboard1.getGroupNameAt(4, 4)));
-	ok(scoreboard1.isSameMetaGroup(scoreboard1.getGroupNameAt(3, 3), scoreboard1.getGroupNameAt(4, 5)));
-	ok(scoreboard1.isSameMetaGroup(scoreboard1.getGroupNameAt(3, 3), scoreboard1.getGroupNameAt(5, 3)));
-	ok(scoreboard1.getMetaGroupProp(scoreboard1.getGroupNameAt(3, 3), BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE) != null);
+	ok(scoreboard1.isSameMetagroup(scoreboard1.getGroupNameAt(3, 3), scoreboard1.getGroupNameAt(4, 5)));
+	ok(scoreboard1.isSameMetagroup(scoreboard1.getGroupNameAt(3, 3), scoreboard1.getGroupNameAt(5, 3)));
+	ok(scoreboard1.getMetagroupProp(scoreboard1.getGroupNameAt(3, 3), BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE) != null);
  	
 });
 
@@ -338,9 +337,9 @@ test("BoardExactAnalysis should find some eyes", function(){
             ];
 	ok(are_similar_boards(analysedBoard1, expected_result1));
 
-	ok(scoreboard1.isSameMetaGroup(scoreboard1.getGroupNameAt(0, 1), scoreboard1.getGroupNameAt(1, 0)));
-	ok(scoreboard1.getMetaGroupProp(scoreboard1.getGroupNameAt(1, 0), BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE) != null);
-	ok(scoreboard1.getMetaGroupProp(scoreboard1.getGroupNameAt(4, 3), BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE) == null);
+	ok(scoreboard1.isSameMetagroup(scoreboard1.getGroupNameAt(0, 1), scoreboard1.getGroupNameAt(1, 0)));
+	ok(scoreboard1.getMetagroupProp(scoreboard1.getGroupNameAt(1, 0), BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE) != null);
+	ok(scoreboard1.getMetagroupProp(scoreboard1.getGroupNameAt(4, 3), BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE) == null);
  	
 	var test_board2 = [
                 [  e ,  e ,  W ,  W ,  e ,  e ],
@@ -365,11 +364,11 @@ test("BoardExactAnalysis should find some eyes", function(){
             ];
 	ok(are_similar_boards(analysedBoard2, expected_result2));
 
-	ok(scoreboard2.isSameMetaGroup(scoreboard2.getGroupNameAt(0, 2), scoreboard2.getGroupNameAt(1, 1)));
-	ok(scoreboard2.isSameMetaGroup(scoreboard2.getGroupNameAt(0, 2), scoreboard2.getGroupNameAt(2, 4)));
-	ok(scoreboard2.isSameMetaGroup(scoreboard2.getGroupNameAt(0, 2), scoreboard2.getGroupNameAt(3, 2)));
-	ok(scoreboard2.getMetaGroupProp(scoreboard2.getGroupNameAt(0, 2), BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE) != null);
-	ok(scoreboard2.getMetaGroupProp(scoreboard2.getGroupNameAt(4, 0), BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE) == null);
+	ok(scoreboard2.isSameMetagroup(scoreboard2.getGroupNameAt(0, 2), scoreboard2.getGroupNameAt(1, 1)));
+	ok(scoreboard2.isSameMetagroup(scoreboard2.getGroupNameAt(0, 2), scoreboard2.getGroupNameAt(2, 4)));
+	ok(scoreboard2.isSameMetagroup(scoreboard2.getGroupNameAt(0, 2), scoreboard2.getGroupNameAt(3, 2)));
+	ok(scoreboard2.getMetagroupProp(scoreboard2.getGroupNameAt(0, 2), BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE) != null);
+	ok(scoreboard2.getMetagroupProp(scoreboard2.getGroupNameAt(4, 0), BoardExactAnalysis.PROPERTY_METAGROUP_HAS_ONE_EYE) == null);
  	
 });
 
@@ -398,9 +397,9 @@ test("BoardExactAnalysis should find some live shapes", function(){
             ];
 	ok(are_similar_boards(analysedBoard1, expected_result1));
 
-	ok(scoreboard1.isSameMetaGroup(scoreboard1.getGroupNameAt(2, 5), scoreboard1.getGroupNameAt(5, 5)));
-	ok(scoreboard1.getMetaGroupProp(scoreboard1.getGroupNameAt(0, 1), BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE) == true);
-	ok(scoreboard1.getMetaGroupProp(scoreboard1.getGroupNameAt(2, 5), BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE) == true);
+	ok(scoreboard1.isSameMetagroup(scoreboard1.getGroupNameAt(2, 5), scoreboard1.getGroupNameAt(5, 5)));
+	ok(scoreboard1.getMetagroupProp(scoreboard1.getGroupNameAt(0, 1), BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE) == true);
+	ok(scoreboard1.getMetagroupProp(scoreboard1.getGroupNameAt(2, 5), BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE) == true);
  	
 	var test_board2 = [
                 [  B ,  e ,  B ,  e ,  B ,  B ],
@@ -425,9 +424,47 @@ test("BoardExactAnalysis should find some live shapes", function(){
             ];
 	ok(are_similar_boards(analysedBoard2, expected_result2));
 
-	ok(scoreboard2.isSameMetaGroup(scoreboard2.getGroupNameAt(2, 2), scoreboard2.getGroupNameAt(4, 1)));
-	ok(scoreboard2.isSameMetaGroup(scoreboard2.getGroupNameAt(2, 2), scoreboard2.getGroupNameAt(5, 4)));
-	ok(scoreboard2.getMetaGroupProp(scoreboard2.getGroupNameAt(0, 0), BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE) == true);
-	ok(scoreboard2.getMetaGroupProp(scoreboard2.getGroupNameAt(5, 4), BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE) == true);
+	ok(scoreboard2.isSameMetagroup(scoreboard2.getGroupNameAt(2, 2), scoreboard2.getGroupNameAt(4, 1)));
+	ok(scoreboard2.isSameMetagroup(scoreboard2.getGroupNameAt(2, 2), scoreboard2.getGroupNameAt(5, 4)));
+	ok(scoreboard2.getMetagroupProp(scoreboard2.getGroupNameAt(0, 0), BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE) == true);
+	ok(scoreboard2.getMetagroupProp(scoreboard2.getGroupNameAt(5, 4), BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE) == true);
  	
+});
+
+
+test("BoardExactAnalysis.isAloneInTerritory", function(){
+	var test_board1 = [
+                [  e ,  e ,  W ,  e ,  e ,  B ],
+                [  e ,  B ,  W ,  B ,  e ,  e ],
+                [  e ,  B ,  W ,  W ,  W ,  W ],
+                [  e ,  B ,  W ,  B ,  e ,  B ],
+                [  e ,  e ,  W ,  B ,  e ,  B ],
+                [  e ,  e ,  W ,  e ,  e ,  e ]
+            ];
+
+	var scoreboard1 = new BoardExactAnalysis(test_board1, 0.5, 0, 0);
+	scoreboard1.findConnections();
+	
+	ok(scoreboard1.isAloneInTerritory(scoreboard1.metagroupName[scoreboard1.getGroupNameAt(1, 1)], scoreboard1.getGroupNameAt(0, 0)) == true);
+	ok(scoreboard1.isAloneInTerritory(scoreboard1.metagroupName[scoreboard1.getGroupNameAt(0, 5)], scoreboard1.getGroupNameAt(0, 4)) == false);
+	ok(scoreboard1.isAloneInTerritory(scoreboard1.metagroupName[scoreboard1.getGroupNameAt(4, 5)], scoreboard1.getGroupNameAt(5, 5)) == true);
+});
+
+
+test("BoardExactAnalysis should find some dead groups", function(){
+	var test_board1 = [
+                [  e ,  e ,  W ,  W ,  e ,  e ],
+                [  e ,  B ,  W ,  B ,  e ,  e ],
+                [  e ,  B ,  W ,  W , W , W ],
+                [  e ,  B ,  W ,  B ,  e ,  W ],
+                [  W , W , W ,  B ,  W , W ],
+                [  e ,  e ,  W ,  e ,  W ,  e ]
+            ];
+
+	var scoreboard1 = new BoardExactAnalysis(test_board1, 0.5, 0, 0);
+	scoreboard1.findDeadGroups();
+	
+	ok(scoreboard1.getMetagroupProp(scoreboard1.getGroupNameAt(2, 0), BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD) != true);
+	ok(scoreboard1.getMetagroupProp(scoreboard1.getGroupNameAt(3, 1), BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD) == true);
+	ok(scoreboard1.getMetagroupProp(scoreboard1.getGroupNameAt(3, 3), BoardExactAnalysis.PROPERTY_METAGROUP_IS_DEAD) == true);
 });

@@ -56,6 +56,8 @@ ScoreBoardJGOAdaptor.prototype.display  = function(jgoboard, showDebugInfo) {
 				}
 			} else if(status == ScoreBoard.STATUS_GROUP_DEAD) {
 				mark = "*";
+			} else if(showDebugInfo && this.board.isTerritoryAt(i, j) && this.board.isTerritorySeparator(i, j)) {
+				mark = "S";
 			} else if(kind == ScoreBoard.TERRITORY_BLACK) {
 				mark = ".";
 			} else if(kind == ScoreBoard.TERRITORY_WHITE) {

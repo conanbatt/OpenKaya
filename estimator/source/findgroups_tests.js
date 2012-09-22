@@ -85,3 +85,31 @@ test("FindGroups should detect groups adequately", function(){
 	ok(are_equal_boards(groups, expected_result));
     
 });
+
+test("FindGroups should add territories separators on first line", function(){
+
+	var test_board = [
+                [ e  , B  , e ,  e   , e  , B  ],
+                [ e  , B  , e  , W  , e  , W ],
+                [ B  , B  , W , W  , W , e  ],
+                [ e  , B  , B  , W  , W , e ],
+                [ e  , B  , B  , W  , W , e ],
+                [ e  , e  , e  , e  , e  , e  ]
+            ];
+
+	var findgroups = new FindGroups(test_board);
+
+	var groups = findgroups.getBoardArray();
+	var expected_result = [
+                [ "T0" , "B0" ,   U   ,    U    ,    U  , "B1"  ],
+                [ "T0" , "B0" , "T1" , "W0"  , "T2" , "W1" ],
+                [ "B0" , "B0" , "W0" , "W0" , "W0" , "T3" ],
+                [ "T4" , "B0" , "B0" , "W0" , "W0" ,   U    ],
+                [ "T4" , "B0" , "B0" , "W0" , "W0" ,   U    ],
+                [   U   ,    U  ,   U   ,    U   ,    U   ,   U    ]
+            ];
+
+	ok(are_similar_boards(groups, expected_result));
+	ok(findgroups.getTerritorySeparators().length >= 2);
+    
+});
