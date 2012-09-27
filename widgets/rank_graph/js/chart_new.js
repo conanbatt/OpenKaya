@@ -74,7 +74,22 @@ $(document).ready(function() {
 						});
 
 						return s;
-					}
+					},
+					positioner: function (lblWidth, lblHeight, point) {
+						var new_y = point.plotY - lblHeight;
+						if (new_y < 0) {
+							new_y = point.plotY + 20;
+							//new_y = 0;
+						}
+						var new_x = point.plotX - lblWidth / 2;
+						if (new_x < 0) {
+							new_x = 0;
+						}
+						return {
+							x: new_x,
+							y: new_y,
+						};
+					},
 				},
 				rangeSelector: {
 					// Enable this line to remove top navigator
