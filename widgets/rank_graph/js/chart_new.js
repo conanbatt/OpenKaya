@@ -76,13 +76,13 @@ $(document).ready(function() {
 						return s;
 					}
 				},
-				navigator: {
-					// Enable this line to remove bottom navigator
-					enabled: false,
-				},
 				rangeSelector: {
 					// Enable this line to remove top navigator
 					enabled: false,
+				},
+				navigator: {
+					// Enable this line to remove bottom navigator
+					//enabled: false,
 				},
 				xAxis: {
 					// Enable this line to hold x axis scale ratio
