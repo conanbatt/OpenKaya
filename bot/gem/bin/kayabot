@@ -9,7 +9,6 @@ require File.expand_path("../lib/kayabot", File.dirname(__FILE__))
 require File.expand_path("../lib/gg", File.dirname(__FILE__))
 $0='kayabot'
 
-
 @url = ""
 
 if ARGV.length > 0
@@ -23,10 +22,10 @@ if ARGV.length > 0
         k = KayaBot.new(config)
         k.listener_loop
       else
-        puts "Invalid config file. url,user, pass, title, size required."
+        $stderr.puts "Invalid config file. url,user, pass, title, size required."
       end
     else
-      puts "File does not exist."
+      $stderr.puts "File does not exist."
     end
   elsif ARGV.length >= 3
     k = KayaBot.new(ARGV[0], ARGV[1], ARGV[2])
@@ -34,4 +33,5 @@ if ARGV.length > 0
   end
 else
     puts "Usage:\n - kayabot <yaml_config_file>\n - kayabot <url> <bot_nickname> <password>"
+    puts "For redirecting output: kayabot <args> 1> output.log 2> errors.log"
 end

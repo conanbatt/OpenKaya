@@ -97,7 +97,7 @@ def score_game(game_id, game_sgf)
     re = gtp.final_score
   end
 
-  p dead_stones
+  $stdout.puts "dead stones are #{dead_stones}"
 
   File.delete(filepath)
   return {:score => re, :dead_stones => dead_stones}
@@ -121,7 +121,7 @@ def ai_move(game_id, game_sgf, color)
     size = @master_node.match(/SZ\[(\d+)\]/)[1]
     re = gtp.genmove color
   end
-  p "Bot generated #{re}"
+  $stdout.puts "Bot generated #{re}"
   move = convert_move(re,size)
 
   File.delete(filepath)

@@ -55,9 +55,9 @@ class KayaBot
     rescue SystemExit, Interrupt
       raise
     rescue Exception => e
-      p "There was an error. Will try to run again. If problems persist, contact Kaya at info@kaya.gs"
-      p e
-      p e.backtrace[0]
+      $stderr.puts "There was an error. Will try to run again. If problems persist, contact Kaya at info@kaya.gs"
+      $stderr.puts e
+      $stderr.puts e.backtrace[0]
       sleep 5
       listener_loop
     end
@@ -66,7 +66,7 @@ class KayaBot
   def fetch_and_parse_data
      page = @agent.get(@server_url + "/bot/status", {:version => VERSION })
      json = JSON.parse(page.body)
-     p json
+     $stdout.puts json
      @status = json["status"]
      @move = json["moves"]
      @bots_turn = json["bot_play?"]
@@ -100,7 +100,7 @@ class KayaBot
 
   def post_score
     result = score_game("temp", sgf_content)
-    p result
+    $stdout.puts result
     @agent.post(@server_url+ SCORE_URL, {:score => parse_result_from_bot(result[:score]), :dead_stones => result[:dead_stones]})
   end
   #Black wins by 61.5 points
