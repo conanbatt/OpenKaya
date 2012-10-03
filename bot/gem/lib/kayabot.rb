@@ -53,6 +53,7 @@ class KayaBot
         sleep TIME_LAPSE #lets not explode in requests
       end
     rescue SystemExit, Interrupt
+      close_game
       raise
     rescue Exception => e
       $stderr.puts "There was an error. Will try to run again. If problems persist, contact Kaya at info@kaya.gs"
