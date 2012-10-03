@@ -14,6 +14,8 @@ class KayaBot
   CLOSE_GAME_URL = "/bot/close_game"
   VERSION =  Gem::Specification.find_by_name("kayabot").version.to_s
 
+  OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
+
   attr_accessor :challenger, :status, :move
 
   def initialize(config)
