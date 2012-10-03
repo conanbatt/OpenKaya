@@ -11,6 +11,7 @@ class KayaBot
   OPEN_GAME_URL = "/bot/open_game"
   RESIGN_URL = "/bot/resign"
   SCORE_URL = "/bot/score"
+  CLOSE_GAME_URL = "/bot/close_game"
   VERSION =  Gem::Specification.find_by_name("kayabot").version.to_s
 
   attr_accessor :challenger, :status, :move
@@ -90,6 +91,9 @@ class KayaBot
   end
   def resign
     @agent.post(@server_url+ RESIGN_URL, {:result => "resign"})
+  end
+  def close_game
+    @agent.post(@server_url + CLOSE_GAME_URL)
   end
 
   def post_score
