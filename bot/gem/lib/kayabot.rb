@@ -12,6 +12,7 @@ class KayaBot
   RESIGN_URL = "/bot/resign"
   SCORE_URL = "/bot/score"
   CLOSE_GAME_URL = "/bot/close_game"
+  ERROR_REPORT_URL = "/bot/error"
   VERSION =  Gem::Specification.find_by_name("kayabot").version.to_s
 
   OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
@@ -27,8 +28,9 @@ class KayaBot
     @title = config["title"]
     @bot = config["bot"]
     @agent = Mechanize.new
+    @agent.max_history = 2
     @error_limit = 3
-    @sgf
+    @loop_reading = 50
   end
 
   def game_configuration
@@ -36,15 +38,17 @@ class KayaBot
   end
 
   def connect
-    return if @agent.cookies.last && @agent.cookies.last.name == "kaya.session"
+    return if @agent.cookies.last && @agent.cookies.last.name == "rack.session"
     page = @agent.post(@server_url+ "/session/create", {:id => @user, :password => @pass})
+    page.body
   end
 
   TIME_LAPSE = 4
 
   def listener_loop
-    begin 
+    begin
       while (true) do
+        $stdout.puts GC::Profiler.report
         connect
         fetch_and_parse_data
         open_game if @status=="connected" || @status=="finished"
@@ -59,6 +63,9 @@ class KayaBot
       $stderr.puts "There was an error. Will try to run again. If problems persist, contact Kaya at info@kaya.gs"
       $stderr.puts e
       $stderr.puts e.backtrace[0]
+      btrace = "" 
+      e.backtrace.each {|line| btrace < "\n#{line}"}
+      post_error(e.to_s,btrace)
       sleep 5
       listener_loop
     end
@@ -73,10 +80,12 @@ class KayaBot
      @bots_turn = json["bot_play?"]
      @color = json["next"]
      @master_node = json["sgf_master_node"]
+     page.body
   end
 
   def open_game
-    @agent.post(@server_url+ OPEN_GAME_URL, game_configuration)
+    res = @agent.post(@server_url+ OPEN_GAME_URL, game_configuration)
+    p res.body
   end
   def post_move
     #TODO should insert master node . Need handi/komi
@@ -93,17 +102,31 @@ class KayaBot
     end
   end
   def resign
-    @agent.post(@server_url+ RESIGN_URL, {:result => "resign"})
+    $stdout.puts (@agent.post(@server_url+ RESIGN_URL, {:result => "resign"}).body)
   end
   def close_game
-    @agent.post(@server_url + CLOSE_GAME_URL)
+    res = @agent.post(@server_url + CLOSE_GAME_URL)
+    $stdout.puts res.body
   end
 
   def post_score
     result = score_game("temp", sgf_content)
     $stdout.puts result
-    @agent.post(@server_url+ SCORE_URL, {:score => parse_result_from_bot(result[:score]), :dead_stones => result[:dead_stones]})
+    res = @agent.post(@server_url+ SCORE_URL, {:score => parse_result_from_bot(result[:score]), :dead_stones => result[:dead_stones]})
+    res.body
   end
+
+  def post_error(title,exception_message="Unavailable")
+    if @error_limit > 0
+      exception_message = "Unavailable" if exception_message.empty?
+      res = @agent.post(@server_url + ERROR_REPORT_URL, {:title=> title, :content => exception_message})
+      $stdout.puts res.body
+      @error_limit -= 1
+    else
+      $stdout.puts "Error report limit passed."
+    end
+  end
+
   #Black wins by 61.5 points
   def parse_result_from_bot(result)
     color = result[0].chr
@@ -112,9 +135,9 @@ class KayaBot
   end
 
   def sgf_content
-    @sgf = SGF.new
-    @sgf.add_move(@move) if @move
-    return "(#{@master_node}#{@sgf.move_list})"
+    sgf = SGF.new
+    sgf.add_move(@move) if @move
+    return "(#{@master_node}#{sgf.move_list})"
   end
 
 end
