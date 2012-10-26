@@ -18,7 +18,7 @@ class SGF
   def self.kaya_sgf(moves, properties)
     sgf = nil
     
-    if moves
+    if moves && (!moves.empty?)
       moves = "(#{moves})" unless moves[0] == "("
       sgf = SGF::Parser.parse(moves)
       properties.each{|k,v| sgf.root.write_property(k,v)}
@@ -66,7 +66,23 @@ class SGF
       raise "#{node} is invalid node format" unless time_color
       res[time_color[1]] = time_color[2]
     end
-    res
+    if node.include?("OW") || node.include?("OB")
+      periods = node.match(/(O[BW])\[(\d{1,2})\]/)
+      raise "#{node} is invalid node format" unless periods
+      res[periods[1]] = periods[2]
+    end
+    res  
+  end
+
+  def valid_focus?(focus_code)
+    focus = @root
+    return if focus_code == "root"
+    focus_code.split("-").each do |branch|
+      node = focus.children[branch.to_i]
+      return false unless node
+      focus = node
+    end
+    focus
   end
 
   def code_to_focus(focus_code)

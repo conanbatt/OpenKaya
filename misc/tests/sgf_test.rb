@@ -472,3 +472,18 @@ test "should write the hadnicap info" do
 
 end
 
+test "should be able to know if the focus points to a node" do
+
+  sgf = SGF::Parser.parse("(;B[aa];W[bb];B[cc])")
+
+  assert sgf.code_to_focus("0-0-0")
+  assert sgf.valid_focus?("0-0-0")
+
+  assert_raise(RuntimeError) do
+    sgf.code_to_focus("0-0-0-0")
+  end
+
+  assert !sgf.valid_focus?("0-0-0-0")
+  
+
+end
