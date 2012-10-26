@@ -56,24 +56,231 @@ test "Can delete put stones" do
 
 end
 
-test "should be able to get which adjacent stones" do
+test "should be able to get adjacent stones by color" do
 
   gridboard = GridBoard.new
 
   gridboard.put_stone("B",5,5)
 
-  assert_equal gridboard.get_adjacent(5,5).size, 0
+  assert_equal gridboard.get_adjacent("B",5,5).size, 0
   assert_equal gridboard.count_stone_liberties(5,5),4
 
   gridboard.put_stone("B",6,5)
   gridboard.put_stone("B",5,6)
+
+  assert_equal gridboard.count_stone_liberties(5,5),2
+
   gridboard.put_stone("W",4,5)
   gridboard.put_stone("W",5,4)
 
-  assert_equal gridboard.get_adjacent(5,5).size, 4
-  assert (gridboard.get_adjacent(5,5).include? ({:color => "B", :col => 6, :row => 5}))
+  assert_equal gridboard.get_adjacent("B",5,5).size, 2
+  assert_equal gridboard.get_adjacent("W",5,5).size, 2
+  assert (gridboard.get_adjacent("B",5,5).include? ({:color => "B", :col => 6, :row => 5}))
 
   assert_equal gridboard.count_stone_liberties(5,5),0
+
+  gridboard.put_stone("B",0,0)
+
+  assert_equal gridboard.count_stone_liberties(0,0),2
+end
+
+test "should get if a chain has any liberty" do 
+
+  gridboard = GridBoard.new
+
+  gridboard.put_stone("B",1,1)
+  gridboard.put_stone("B",1,2)
+
+  gridboard.put_stone("W",1,0)
+  gridboard.put_stone("W",0,1)
+  gridboard.put_stone("W",0,2)
+  gridboard.put_stone("W",2,1)
+  gridboard.put_stone("W",2,2)
+
+  chain = [{:color => "B",:row => 1,:col => 1}, {:color => "B",:row => 1,:col => 2}]
+
+  assert !gridboard.chain_is_restricted(chain)
+
+  gridboard.put_stone("W",1,3)
+
+  assert gridboard.chain_is_restricted(chain)
+   
+end
+
+
+test "should get all the groups given a set of stones" do
+
+  gridboard = GridBoard.new
+
+  gridboard.put_stone("B",2,2)
+
+  gridboard.put_stone("B",3,3)
+
+  stones = [{:color => "B",:row => 2, :col => 2}, 
+            {:color => "B",:row => 3, :col => 3}]
+
+  assert_equal gridboard.get_distinct_chains(stones).size,2
+
+  #groups are of the same color
+  gridboard.put_stone("W",3,4)  
+  assert_equal gridboard.get_distinct_chains(stones).size,2
+
+  #if the stones are connected they are a single group
+  gridboard.put_stone("B",2,3)  
+  assert_equal gridboard.get_distinct_chains(stones).size,1
+  
+
+end
+
+test "should be able to apply and undo moves" do
+
+  gridboard = GridBoard.new
+
+  play = GridBoard::Play.new("W",2,2) 
+
+  gridboard.apply_play(play)
+  assert_equal gridboard.get_pos(2,2), "W"
+
+  gridboard.undo_play(play)
+  assert_equal gridboard.get_pos(2,2), nil
+
+  gridboard.apply_play(play)
+  assert_equal gridboard.get_pos(2,2), "W"
+
+  play_with_remove = GridBoard::Play.new("B",3,3)
+  play_with_remove.remove = [{:color => "W", :row => 2, :col => 2}]
+ 
+  gridboard.apply_play(play_with_remove)
+  assert_equal gridboard.get_pos(2,2), nil
+  assert_equal gridboard.get_pos(3,3), "B"
+
+  gridboard.undo_play(play_with_remove)
+  assert_equal gridboard.get_pos(2,2), "W"
+  assert_equal gridboard.get_pos(3,3), nil
+
+  play_with_ko = GridBoard::Play.new("W",5,5)
+  play_with_ko.ko = {:row =>4, :col => 4}
+
+  gridboard.apply_play(play_with_ko)
+  assert_equal gridboard.get_pos(4,4), "KO"
+
+  gridboard.undo_play(play_with_ko)
+  assert_equal gridboard.get_pos(4,4), nil
+
+end
+
+test "should remove the stone that was eaten" do 
+
+  gridboard = GridBoard.new
+
+  gridboard.put_stone("B",2,2)
+  gridboard.put_stone("B",2,3)
+
+  gridboard.put_stone("W",2,1)
+  gridboard.put_stone("W",1,2)
+  gridboard.put_stone("W",1,3)
+  gridboard.put_stone("W",3,2)
+  gridboard.put_stone("W",3,3)
+
+  #This is a gospeed convenience? no point having it here?
+  play = GridBoard::Play.new("W", 2,4)
+  to_remove_stones = gridboard.play_eat(play).remove
+
+  #the stones should no longer be in the board
+  assert to_remove_stones.include? ({:color => "B", :row => 2, :col => 3})
+  assert to_remove_stones.include? ({:color => "B", :row => 2, :col => 2})
+  
+end
+
+
+test "should know if there is a ko" do
+
+  gridboard = GridBoard.new
+
+  gridboard.put_stone("B",2,2)
+  gridboard.put_stone("B",3,3)
+  gridboard.put_stone("B",3,1)
+  gridboard.put_stone("B",4,2)
+
+  gridboard.put_stone("W",4,3)
+  gridboard.put_stone("W",4,1)
+  gridboard.put_stone("W",5,2)
+ 
+  play = GridBoard::Play.new("W", 3,2)
+  gridboard.play_eat(play)
+  
+  play_with_ko = gridboard.play_check_ko(play)
+
+  assert play_with_ko
+  assert_equal play_with_ko.ko[:row], 4
+  assert_equal play_with_ko.ko[:col], 2
+  
+
+end
+
+test "should prevent suicide move" do
+
+  gridboard = GridBoard.new
+
+  gridboard.put_stone("B",2,2)
+  gridboard.put_stone("B",3,3)
+  gridboard.put_stone("B",2,4)
+  gridboard.put_stone("B",1,3)
+
+  play = GridBoard::Play.new("W",2,3)
+
+  gridboard.play_eat(play)
+
+  assert gridboard.play_check_suicide(play)
+
+end
+
+def mock_grid
+  
+  #same play position
+  #ko position
+  #suicide position
+  [
+    [nil, "B" , nil, nil, "W", nil],
+    ["B", "KO", "B", nil, "W", "W"],
+    ["W", "B" , "W", nil, "B", nil],
+    [nil, "W" , nil, "B", nil, "B"],
+    [nil, nil , nil, "W", "B", "W"],
+    [nil, nil , nil, nil, "W", nil]
+  ]
+end
+
+test "should validate a play entirely(Japanese) and raise proper errors" do
+
+  
+
+  gridboard= GridBoard.new(:grid => mock_grid,:size => mock_grid.size)
+
+  #Already occupied position
+  assert_raise(Validator::Japanese::RuleError) do
+    gridboard.validate!("W",1,0)
+  end
+  #Ko position
+  assert_raise(Validator::Japanese::RuleError) do
+    gridboard.validate!("W",1,1)
+  end
+  #suicide position
+  assert_raise(Validator::Japanese::RuleError) do
+    gridboard.validate!("B",0,5)
+  end
+
+
+
+end
+
+test "should update the ko position" do
+  gridboard= GridBoard.new(:grid => mock_grid,:size => mock_grid.size)
+
+  gridboard.validate!("W",3,4)
+
+  assert_equal gridboard.get_pos(4,4), "KO"
+  assert_equal gridboard.get_pos(3,4), "W"
+  #TODO add a case for capture without suicide
 
 end
 

@@ -1,6 +1,78 @@
+module Validator
+  module Japanese
 
+    class RuleError < StandardError
+
+    end
+    
+    #Takes sgf-like node and goes through the validation process.
+    #Requires a valid grid
+    #def validate(node)
+      
+    #end
+    def validate!(color,row, col)
+  
+      if get_pos(row,col) == "KO"
+        raise RuleError.new("Position #{row},#{col} is a Ko position. #{print_grid}")
+      end
+      if get_pos(row,col)
+        raise RuleError.new("Position #{row},#{col} is already taken! #{print_grid}")
+      end
+      play = GridBoard::Play.new(color,row,col)
+
+      play_with_removals = play_eat(play)
+      if play_check_suicide(play_with_removals)
+        raise RuleError.new("Position #{row},#{col} is suicide! #{print_grid}")
+      end
+
+      play_check_ko(play_with_removals)
+
+      apply_play(play_with_removals)
+
+      grid
+    end
+
+=begin
+
+        setup_play: function(row, col) {
+                // Can't override a stone
+                if (this.board.get_pos(row, col) != undefined) {
+                        return false;
+                }
+                // Can't place a stone on ko.
+                if (this.board.pos_is_ko(row, col)) {
+                        return false;
+                }
+
+                // Place stone
+                var tmp_play = new Play(this.get_next_move(), row, col);
+
+                // Eat stones if surrounded
+                this.board.play_eat(tmp_play);
+
+                // Check suicide
+                if (this.board.play_check_suicide(tmp_play)) {
+                        return false;
+                }
+
+                // Update play's ko.
+                this.board.play_check_ko(tmp_play);
+
+                // Update play's captures
+                this.update_play_captures(tmp_play);
+
+                return tmp_play;
+        },
+
+=end
+
+
+  end
+end
 
 class GridBoard
+
+  include Validator::Japanese
 
   attr_accessor :grid,:size
 
@@ -31,68 +103,180 @@ class GridBoard
     grid[row][col]
   end
 
-  def get_adjacent(row,col)
+  def get_adjacent(color,row,col)
     res = []
 
     [[row+1,col],[row-1,col],[row,col+1],[row,col-1]].each do |ar|
-      r = ar.first
-      c = ar.last
-      if grid[r][c]
-        res << ({:color => grid[r][c], :row => r, :col => c})
+      ro = ar.first
+      co = ar.last
+      if (ro >= size || ro < 0) || (co >= size || co < 0)
+        next
+      elsif grid[ro][co] == color
+        res << ({:color => grid[ro][co], :row => ro, :col => co})
       end
     end
     res
   end
 
   def count_stone_liberties(row,col)
-    4 - get_adjacent(row,col).count 
+    res = 0
+
+    [[row+1,col],[row-1,col],[row,col+1],[row,col-1]].each do |ar|
+      ro = ar.first
+      co = ar.last
+      if (ro >= size || ro < 0) || (co >= size || co < 0)
+        next
+      elsif (get_pos(ro,co) != "B" && get_pos(ro,co) != "W")
+        res += 1
+      end  
+    end
+    res
   end
  
+  def chain_is_restricted(chain)
+    chain.each {|stone| (return false) if count_stone_liberties(stone[:row],stone[:col]) > 0 }
+    return true
+  end
+
   #Untested
-  def get_distinct_chains 
-    res,stone_touched = [];
+  def get_distinct_chains(stones)
+    res = []
+    stone_touched = []
 
     stone,touched,cur_chain = nil
 
+    stones.each_with_index do |el,index|
 
+      #Escape stones already added for being part of another chain.
+      next if stone_touched[index]
 
-                for (var i = 0, li = stones.length; i < li; ++i) {
-                        // Escape stones already added for being part of another chain.
-                        if (stone_touched[i] === true) {
-                                continue;
-                        }
-                        cur_chain = [];
-                        chains_pend = [];
-                        cur_chain.push(stones[i]);
-                        chains_pend.push(stones[i]);
-                        stone_touched[i] = true;
-                        while (chains_pend.length > 0) {
-                                stone = chains_pend.pop();
-                                touched = this.get_touched(stone.color, stone.row, stone.col);
-                                for (var j = 0, lj = touched.length; j < lj; ++j) {
-                                        // Check that the stone has not been added before.
-                                        if (this.list_has_stone(cur_chain, touched[j])) {
-                                                continue;
-                                        }
-                                        // Check if i'm including one of the original stones.
-                                        for (var k = i, lk = stones.length; k < lk; ++k) {
-                                                if (stones[k].color == touched[j].color && stones[k].row == touched[j].row && stones[k].col == touched[j].col) {
-                                                        stone_touched[k] = true;
-                                                }
-                                        }
-                                        cur_chain.push(touched[j]);
-                                        chains_pend.push(touched[j]);
-                                }
-                        }
-                        res.push(cur_chain);
-                }
-                return res;
+      current_chain = [el];
+      chains_pending = [el];
+      
+      while(!chains_pending.empty?)
+        stone = chains_pending.pop
+        touched = get_adjacent(stone[:color], stone[:row], stone[:col])
 
+        touched.each do |touched_stone|
+          #Check that the stone has not been added before.
+          next if(current_chain.include? touched_stone) 
+          #Check if i'm including one of the original stones.
+          if stones.include?(touched_stone)
+            stone_touched[stones.index(touched_stone)] = true
+          end
+          current_chain << touched_stone
+          chains_pending << touched_stone
+        end
+      end
+      res.push(current_chain)
+    end
+    res
+  end 
 
+  #Untested
+  #Takes a play and completes it's 'remove' property with the stones that would eat from the board.
+  def play_eat(play)
+    #return
+    stone = play.put
+    put_stone(stone[:color], stone[:row], stone[:col])
+    
+    target_color = (stone[:color] == "W" ? "B" : "W")
+    adjacent_stones = get_adjacent(target_color, stone[:row], stone[:col])
+    chains = get_distinct_chains(adjacent_stones);
 
+    chains.each do |chain|
+      if (chain_is_restricted(chain))
+        chain.each do |stone_in_chain|
+          play.remove << ({:color => target_color, :row => stone_in_chain[:row], :col => stone_in_chain[:col]})
+        end
+      end
+    end
+    play
+    #?? ASK pato remove_stone(stone[:row],stone[:col])
   end
-end
 
+  #Checks if the play triggers ko. Updates it's ko property.
+  def play_check_ko(play);
+    is_ko = false
+    recapture = nil
+
+    apply_play(play)
+
+    if(play.remove.length == 1) 
+      recapture = GridBoard::Play.new(play.remove.first[:color], play.remove.first[:row],play.remove.first[:col])
+      play_eat(recapture)
+      if(recapture.remove.length == 1)
+        if ((play.put == recapture.remove.first) && (recapture.put == play.remove[0]))
+          is_ko = true
+        end
+
+      end
+    end
+    undo_play(play)
+    if is_ko
+      play.ko = {:row => recapture.put[:row],:col => recapture.put[:col]}
+    end
+    play
+  end 
+
+  def print_grid
+    grid.each do |row|
+      line = ""
+      row.each do |stone|
+        line << "#{stone || "E"} "
+      end
+      p line
+    end
+  end
+
+  def apply_play(play)
+    put_stone(play.put[:color], play.put[:row], play.put[:col])
+    play.remove.each do |remove|
+      remove_stone(remove[:row],remove[:col])
+    end
+    if play.ko
+      grid[play.ko[:row]][play.ko[:col]] = "KO"
+    end
+  end
+
+  def undo_play(play)
+    play.remove.each do |remove|
+      put_stone(remove[:color],remove[:row],remove[:col])
+    end
+    remove_stone(play.put[:row],play.put[:col])
+    if play.ko
+      grid[play.ko[:row]][play.ko[:col]] = nil
+    end
+  end
+
+  def play_check_suicide(play)
+
+    res = false
+    if(play.remove.empty?)
+      if(count_stone_liberties(play.put[:row],play.put[:col]) == 0)
+        put_stone(play.put[:color],play.put[:row],play.put[:col])
+        chain = get_distinct_chains([play.put]).first
+        if(chain_is_restricted(chain))
+          res = true
+        end
+        remove_stone(play.put[:row],play.put[:col])
+      end 
+    end
+    res
+  end
+
+
+
+  class Play
+    attr_accessor :put, :remove, :ko
+    def initialize(color,row,col)
+      @put = {:color => color, :row => row, :col => col}
+      @remove = []
+    end
+  end
+
+
+end
 
 #Gospeed rule validator. Copy to ruby.
 
@@ -107,6 +291,7 @@ GoBan.prototype = {
 	init: function(game, args) {
 
 //	Manage Board
+
 
 ///////////// DONE ///////////////////////
 	put_stone: function(color, row, col) {
@@ -144,53 +329,7 @@ GoBan.prototype = {
 			return this.grid[row][col];
 		}
 	},
-///////////// END ///////////////////////
 
-	pos_is_ko: function(row, col) {
-		var ret = false;
-		var ko = this.game.get_ko();
-		if (ko != undefined) {
-			if (ko.row == row && ko.col == col) {
-				ret = true;
-			}
-		}
-		return ret;
-	},
-
-//	Plays and Moves
-	// Takes a play and spreads it's content to the grid
-	make_play: function(play) {
-		if (play instanceof FreePlay) {
-			for (var s = 0, ls = play.remove.length; s < ls; ++s) {
-				this.remove_stone(play.remove[s].row, play.remove[s].col);
-			}
-			for (var s = 0, ls = play.put.length; s < ls; ++s) {
-				this.put_stone(play.put[s].color, play.put[s].row, play.put[s].col);
-			}
-		} else if (play instanceof Play) {
-			this.put_stone(play.put.color, play.put.row, play.put.col);
-			for (var s = 0, ls = play.remove.length; s < ls; ++s) {
-				this.remove_stone(play.remove[s].row, play.remove[s].col);
-			}
-		}
-	},
-
-	// Takes a play and undoes it's content to the grid
-	undo_play: function(play) {
-		if (play instanceof FreePlay) {
-			for (var s = 0, ls = play.put.length; s < ls; ++s) {
-				this.remove_stone(play.put[s].row, play.put[s].col);
-			}
-			for (var s = 0, ls = play.remove.length; s < ls; ++s) {
-				this.put_stone(play.remove[s].color, play.remove[s].row, play.remove[s].col);
-			}
-		} else if (play instanceof Play) {
-			this.remove_stone(play.put.row, play.put.col);
-			for (var s = 0, ls = play.remove.length; s < ls; ++s) {
-				this.put_stone(play.remove[s].color, play.remove[s].row, play.remove[s].col);
-			}
-		}
-	},
 
 	// Takes a play and completes it's 'remove' property with the stones that would eat from the board.
 	play_eat: function(play) {
@@ -235,6 +374,19 @@ GoBan.prototype = {
 			play.ko = undefined;
 		}
 	},
+///////////// END ///////////////////////
+
+	pos_is_ko: function(row, col) {
+		var ret = false;
+		var ko = this.game.get_ko();
+		if (ko != undefined) {
+			if (ko.row == row && ko.col == col) {
+				ret = true;
+			}
+		}
+		return ret;
+	},
+/////// DONE ////
 
 	// Takes a play and checks if it's suicide.
 	// WARNING: use this after play_eat, otherwise you might be using an incomplete play, and fake truth might occur.
@@ -262,7 +414,6 @@ GoBan.prototype = {
 		}
 		return true;
 	},
-/////// DONE ////
 
 	get_adjacent: function(color, row, col) {
 		var res = [];
@@ -308,7 +459,6 @@ GoBan.prototype = {
 		}
 		return count;
 	},
-/////// END //////
 
 	list_has_stone: function(list, stone) {
 		for (var i = 0, li = list.length; i < li; ++i) {
@@ -358,9 +508,13 @@ GoBan.prototype = {
 		}
 		return res;
 	},
+/////// END //////
 
 
 };
 
 =end
+
+
+
 
