@@ -13,6 +13,7 @@
 0.1.0: creation of this file
 0.2.0: add radiation territory estimation
 0.3.0: cleanAloneMarkedTerritory
+1.0.0: territoryCoordsToToggle
 */
 
 
@@ -21,8 +22,8 @@ Constructor
 Inherits from BoardExactAnalysis
 board param: a square double array like board = [size][size];
 */
-function BoardApproximatedAnalysis(board, komi, black_captures, white_captures) {
-	this._base_BoardApproximatedAnalysis.call(this, board, komi, black_captures, white_captures);//call parent constructor
+function BoardApproximatedAnalysis(board, komi, black_captures, white_captures, territoryCoordsToToggle) {
+	this._base_BoardApproximatedAnalysis.call(this, board, komi, black_captures, white_captures, territoryCoordsToToggle);//call parent constructor
 	this.findDeadGroupsMaxLibs = 6;
 }
 
@@ -46,7 +47,7 @@ BoardApproximatedAnalysis.launchAnalysis  = function(scoreboard) {
 return a BoardApproximatedAnalysis copy
 */
 BoardApproximatedAnalysis.prototype.clone  = function() {
-	return new BoardApproximatedAnalysis(this.board, this.komi, this.black_captures, this.white_captures);
+	return new BoardApproximatedAnalysis(this.board, this.komi, this.black_captures, this.white_captures, this.territoryCoordsToToggle);
 };
 
 

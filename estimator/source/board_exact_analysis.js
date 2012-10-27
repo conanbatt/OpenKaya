@@ -1,6 +1,6 @@
 //BoardExactAnalysis
 //Analyse a board by computing exact information: dame, eyes for sure, etc
-//v0.6.0
+//v1.0.0
 
 /*!
  * This software is licensed under a Creative Commons Attribution 3.0 Unported License:
@@ -16,6 +16,7 @@
 0.4.0: findAtariCapturedForSure, checkForEyes
 0.5.0: isAloneInTerritory, minDistanceFromSameColorInTerritory
 0.6.0: findDeadGroups
+1.0.0: territoryCoordsToToggle, fixed findConnection3 to avoid dead groups
 */
 
 /**
@@ -23,8 +24,8 @@ Constructor
 Inherits from ScoreBoard
 board param: a square double array like board = [size][size];
 */
-function BoardExactAnalysis(board, komi, black_captures, white_captures) {
-	this._base_BoardExactAnalysis.call(this, board, komi, black_captures, white_captures);//call parent constructor
+function BoardExactAnalysis(board, komi, black_captures, white_captures, territoryCoordsToToggle) {
+	this._base_BoardExactAnalysis.call(this, board, komi, black_captures, white_captures, territoryCoordsToToggle);//call parent constructor
 	
 	this.findDeadGroupsMaxLibs = 4;
 
@@ -109,7 +110,7 @@ BoardExactAnalysis.isTerritory  = function(groupName) {
 return a BoardExactAnalysis copy
 */
 BoardExactAnalysis.prototype.clone  = function() {
-	return new BoardExactAnalysis(this.board, this.komi, this.black_captures, this.white_captures);
+	return new BoardExactAnalysis(this.board, this.komi, this.black_captures, this.white_captures, this.territoryCoordsToToggle);
 };
 
 
@@ -600,7 +601,7 @@ BoardExactAnalysis.prototype.findConnections = function() {
 
 /**
 (i, j) corresponds to a territory
-if this territory is surrounded by 3 or 4 stones of the same color, no stone of the other color, and that all those stones belong to groups not in atari, then all those groups are connected
+if this territory is surrounded by 3 or 4 stones of the same color, no stone of the other color, and that all those stones belong to groups not in atari and not dead, then all those groups are connected
 */
 BoardExactAnalysis.prototype.findConnection3 = function(i, j) {
 	var territoryKind = this.getBoardKindAt(i,j);
@@ -629,7 +630,7 @@ BoardExactAnalysis.prototype.findConnection3 = function(i, j) {
 		}
 		countStones++;
 		var groupName = this.getGroupNameAt(ii, jj);
-		if(this.isGroupInAtari(groupName)) {//in atari: don't match
+		if(this.isGroupDead(groupName) || this.isGroupInAtari(groupName)) {//don't match
 			return;
 		}
 		//add group name to groupNames

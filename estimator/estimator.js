@@ -2,7 +2,7 @@
 //Store a board with marked as dead/alive info
 //Provide a toggle dead/alive feature
 //Provide count score feature
-//v0.3.0
+//v1.0.0
 
 /*!
  * This software is licensed under a Creative Commons Attribution 3.0 Unported License:
@@ -15,6 +15,7 @@
 0.1.0: creation of this file
 0.2.0: added some constants + minor code changes
 0.3.0: added count score feature
+1.0.0: new territoryCoordsToToggle. external display code should call getBoardFinalKindAt instead of getBoardKindAt
 */
 
 /** Note
@@ -33,7 +34,7 @@
 Constructor
 board param : a square double array like board = [size][size];
 */
-function ScoreBoard(board, komi, black_captures, white_captures) {
+function ScoreBoard(board, komi, black_captures, white_captures, territoryCoordsToToggle) {
 //TODO: test if a double array
 	this.size = board.length;
 	this.board = ScoreBoard.cloneBoardArray(board);
@@ -47,12 +48,17 @@ function ScoreBoard(board, komi, black_captures, white_captures) {
 	this.white_estimated_territory = "unknown";
 	this.white_estimated_captures = "unknown";
 
+	if(territoryCoordsToToggle != null && territoryCoordsToToggle != undefined) {
+		this.territoryCoordsToToggle = territoryCoordsToToggle;
+	} else {
+		this.territoryCoordsToToggle = new Object();
+	}
 }
 
 
 ScoreBoard.getAsInt = function(s) {
 	var n =parseInt(""+s);
-	if(n == NaN) {
+	if(isNaN(n)) {
 		n = 0;
 	}
 	return n;
@@ -60,7 +66,7 @@ ScoreBoard.getAsInt = function(s) {
 
 ScoreBoard.getAsFloat = function(s) {
 	var n =parseFloat(""+s);
-	if(n == NaN) {
+	if(isNaN(n)) {
 		n = 0;
 	}
 	return n;
@@ -133,7 +139,7 @@ return a ScoreBoard copy
 */
 ScoreBoard.prototype.clone  = function() {
 
-	return new ScoreBoard(this.board, this.komi, this.black_captures, this.white_captures);
+	return new ScoreBoard(this.board, this.komi, this.black_captures, this.white_captures, this.territoryCoordsToToggle);
 };
 
 
@@ -151,25 +157,63 @@ single-array relative coordinates of neighbors for which distance == 2
 ScoreBoard.DISTANCE2 = new Array(1, 1, 1, -1, -1, 1, -1, -1, 2, 0, -2, 0, 0, 2, 0, -2);
 
 //static
-ScoreBoard.getToggleColor  = function(color) {
+ScoreBoard.getToggleColor  = function(color, isDead) {
 	switch(color) {
 	case ScoreBoard.BLACK:
+		if(isDead == true) {
+			return ScoreBoard.BLACK_ALIVE;
+		}
 		return ScoreBoard.BLACK_DEAD;
 	case ScoreBoard.BLACK_DEAD:
 		return ScoreBoard.BLACK_ALIVE;
 	case ScoreBoard.BLACK_ALIVE:
 		return ScoreBoard.BLACK_DEAD;
 	case ScoreBoard.WHITE:
+		if(isDead == true) {
+			return ScoreBoard.WHITE_ALIVE;
+		}
 		return ScoreBoard.WHITE_DEAD;
 	case ScoreBoard.WHITE_DEAD:
 		return ScoreBoard.WHITE_ALIVE;
 	case ScoreBoard.WHITE_ALIVE:
 		return ScoreBoard.WHITE_DEAD;
 	default:
-		return ScoreBoard.TERRITORY_UNKNOWN;
+		return null;
 	}
 };
 
+
+//static
+/**
+when toggling same territory, the following kinds are toggled, according to the original kind (E means empty):
+B -> E -> W -> E -> B
+W -> E -> B -> E -> W
+E -> W -> E -> B -> E
+*/
+ScoreBoard.getToggleTerritory  = function(kind, count) {
+	if(kind == ScoreBoard.TERRITORY_BLACK || kind == ScoreBoard.TERRITORY_KO_BLACK) {
+		if(count%2 == 1) {
+			return ScoreBoard.TERRITORY_SEKI;
+		} else if(count%4 == 2) {
+			return ScoreBoard.TERRITORY_WHITE;
+		}
+	} else if(kind == ScoreBoard.TERRITORY_WHITE || kind == ScoreBoard.TERRITORY_KO_WHITE) {
+		if(count%2 == 1) {
+			return ScoreBoard.TERRITORY_SEKI;
+		} else if(count%4 == 2) {
+			return ScoreBoard.TERRITORY_BLACK;
+		}
+	} else {
+		if(count%4 == 1) {
+			return ScoreBoard.TERRITORY_WHITE;
+		} else if(count%4 == 3) {
+			return ScoreBoard.TERRITORY_BLACK;
+		} else {
+			return ScoreBoard.TERRITORY_SEKI;
+		}
+	}
+	return kind;
+};
 
 //static
 /**
@@ -216,7 +260,9 @@ ScoreBoard.getBlackOrWhite  = function(kind) {
 	}
 };
 
-
+/**
+used for estimation computing. use getBoardFinalKindAt instead for final display
+*/
 ScoreBoard.prototype.getBoardKindAt  = function(i, j) {
 	var kind = this.board[i][j];
 	if(kind == ScoreBoard.EMPTY) {
@@ -224,6 +270,24 @@ ScoreBoard.prototype.getBoardKindAt  = function(i, j) {
 	}
 	return kind;
 };
+
+
+/**
+to be called for display board (take user territory toggled stones into account)
+*/
+ScoreBoard.prototype.getBoardFinalKindAt  = function(i, j) {
+	var kind = this.board[i][j];
+	if(kind == ScoreBoard.EMPTY) {
+		kind = ScoreBoard.TERRITORY_UNKNOWN;
+	}
+	var key = ScoreBoard.getKey(i, j);
+	var count = this.territoryCoordsToToggle[key];
+	if(!isNaN(count)) {
+			return ScoreBoard.getToggleTerritory(kind, count);
+	}
+	return kind;
+};
+
 
 
 /**
@@ -275,12 +339,19 @@ ScoreBoard.prototype.isInBoard  = function(i, j) {
 change the dead/alive status of the (i0, j0) stone
 return a double-array copy of the board
 */
-ScoreBoard.prototype.toggleAt  = function(i0, j0) {
+ScoreBoard.prototype.toggleAt  = function(i0, j0, isDead) {
 
 	var color = this.board[i0][j0];
-	var newColor = ScoreBoard.getToggleColor(color);
+	var newColor = ScoreBoard.getToggleColor(color, isDead);
 
-	if(newColor == null) {//toggling a territory does nothing: return the same board
+	if(newColor == null) {//toggling a territory: save coords to toggle at the end of the estimation and return the same board
+		var key = ScoreBoard.getKey(i0, j0);
+		var value = this.territoryCoordsToToggle[key];
+		if(isNaN(value)) {
+			this.territoryCoordsToToggle[key] = 1;
+		} else {
+			this.territoryCoordsToToggle[key] += 1;
+		}
 		return ScoreBoard.cloneBoardArray(this.board);
 	}
 
@@ -381,7 +452,7 @@ ScoreBoard.prototype.countJapaneseResult = function() {
 
 	for(var i=0;i<this.size;i++) {
 		for(var j=0;j<this.size;j++) {
-			var kind = this.getBoardKindAt(i, j);
+			var kind = this.getBoardFinalKindAt(i, j);
 			if(kind == ScoreBoard.BLACK_DEAD) {
 				this.white_estimated_territory += 1;
 				this.white_estimated_captures += 1;
@@ -695,7 +766,7 @@ function extendClass(childClass, parClass) {
 
 //BoardExactAnalysis
 //Analyse a board by computing exact information: dame, eyes for sure, etc
-//v0.6.0
+//v1.0.0
 
 /*!
  * This software is licensed under a Creative Commons Attribution 3.0 Unported License:
@@ -711,6 +782,7 @@ function extendClass(childClass, parClass) {
 0.4.0: findAtariCapturedForSure, checkForEyes
 0.5.0: isAloneInTerritory, minDistanceFromSameColorInTerritory
 0.6.0: findDeadGroups
+1.0.0: territoryCoordsToToggle, fixed findConnection3 to avoid dead groups
 */
 
 /**
@@ -718,8 +790,8 @@ Constructor
 Inherits from ScoreBoard
 board param: a square double array like board = [size][size];
 */
-function BoardExactAnalysis(board, komi, black_captures, white_captures) {
-	this._base_BoardExactAnalysis.call(this, board, komi, black_captures, white_captures);//call parent constructor
+function BoardExactAnalysis(board, komi, black_captures, white_captures, territoryCoordsToToggle) {
+	this._base_BoardExactAnalysis.call(this, board, komi, black_captures, white_captures, territoryCoordsToToggle);//call parent constructor
 	
 	this.findDeadGroupsMaxLibs = 4;
 
@@ -804,7 +876,7 @@ BoardExactAnalysis.isTerritory  = function(groupName) {
 return a BoardExactAnalysis copy
 */
 BoardExactAnalysis.prototype.clone  = function() {
-	return new BoardExactAnalysis(this.board, this.komi, this.black_captures, this.white_captures);
+	return new BoardExactAnalysis(this.board, this.komi, this.black_captures, this.white_captures, this.territoryCoordsToToggle);
 };
 
 
@@ -1295,7 +1367,7 @@ BoardExactAnalysis.prototype.findConnections = function() {
 
 /**
 (i, j) corresponds to a territory
-if this territory is surrounded by 3 or 4 stones of the same color, no stone of the other color, and that all those stones belong to groups not in atari, then all those groups are connected
+if this territory is surrounded by 3 or 4 stones of the same color, no stone of the other color, and that all those stones belong to groups not in atari and not dead, then all those groups are connected
 */
 BoardExactAnalysis.prototype.findConnection3 = function(i, j) {
 	var territoryKind = this.getBoardKindAt(i,j);
@@ -1324,7 +1396,7 @@ BoardExactAnalysis.prototype.findConnection3 = function(i, j) {
 		}
 		countStones++;
 		var groupName = this.getGroupNameAt(ii, jj);
-		if(this.isGroupInAtari(groupName)) {//in atari: don't match
+		if(this.isGroupDead(groupName) || this.isGroupInAtari(groupName)) {//don't match
 			return;
 		}
 		//add group name to groupNames
@@ -2313,6 +2385,7 @@ BoardExactAnalysis.prototype.findDeadGroups = function() {
 0.1.0: creation of this file
 0.2.0: add radiation territory estimation
 0.3.0: cleanAloneMarkedTerritory
+1.0.0: territoryCoordsToToggle
 */
 
 
@@ -2321,8 +2394,8 @@ Constructor
 Inherits from BoardExactAnalysis
 board param: a square double array like board = [size][size];
 */
-function BoardApproximatedAnalysis(board, komi, black_captures, white_captures) {
-	this._base_BoardApproximatedAnalysis.call(this, board, komi, black_captures, white_captures);//call parent constructor
+function BoardApproximatedAnalysis(board, komi, black_captures, white_captures, territoryCoordsToToggle) {
+	this._base_BoardApproximatedAnalysis.call(this, board, komi, black_captures, white_captures, territoryCoordsToToggle);//call parent constructor
 	this.findDeadGroupsMaxLibs = 6;
 }
 
@@ -2346,7 +2419,7 @@ BoardApproximatedAnalysis.launchAnalysis  = function(scoreboard) {
 return a BoardApproximatedAnalysis copy
 */
 BoardApproximatedAnalysis.prototype.clone  = function() {
-	return new BoardApproximatedAnalysis(this.board, this.komi, this.black_captures, this.white_captures);
+	return new BoardApproximatedAnalysis(this.board, this.komi, this.black_captures, this.white_captures, this.territoryCoordsToToggle);
 };
 
 
