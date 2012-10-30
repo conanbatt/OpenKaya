@@ -1,5 +1,6 @@
 require "cutest"
 
+require File.expand_path("../lib/sgf", File.dirname(__FILE__))
 require File.expand_path("../lib/gridboard", File.dirname(__FILE__))
 
 require 'ruby-debug'
@@ -252,8 +253,6 @@ end
 
 test "should validate a play entirely(Japanese) and raise proper errors" do
 
-  
-
   gridboard= GridBoard.new(:grid => mock_grid,:size => mock_grid.size)
 
   #Already occupied position
@@ -284,3 +283,33 @@ test "should update the ko position" do
 
 end
 
+def mock_sgf
+  SGF::Parser.parse("mocks/full_parse.sgf")
+end
+
+test "build the grid from an sgf and a focus" do
+
+  gridboard = GridBoard.create_from_sgf(mock_sgf, "0-0-0")
+
+  #handicap stones are present
+  assert_equal gridboard.get_pos(3,3), "B"
+  assert_equal gridboard.get_pos(3,15), "B"
+  assert_equal gridboard.get_pos(15,3), "B"
+
+  #and so are the first 3 moves. 
+
+  assert_equal gridboard.get_pos(2,13), "W"
+  assert_equal gridboard.get_pos(2,10), "B"
+  assert_equal gridboard.get_pos(5,2), "W"
+  
+end
+
+test "should be able to read a whole sgf and validate position" do
+
+
+  sgf = mock_sgf
+  gridboard = GridBoard.create_from_sgf(sgf, sgf.focus_to_code)
+
+  assert_equal gridboard.get_pos(0,11), "B"
+
+end
