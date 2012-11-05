@@ -27,6 +27,7 @@ module Validator
 
       play_check_ko(play_with_removals)
 
+      erase_ko
       apply_play(play_with_removals)
 
       grid
@@ -45,7 +46,6 @@ class GridBoard
   def initialize(options = {})
     @size = options[:size] || 19
     @grid = options[:grid] || Array.new(size) {Array.new(size)}
-
     if grid.size != size
       raise "invalid grid size"
     end
@@ -53,7 +53,6 @@ class GridBoard
   end
 
   def self.create_from_sgf(sgf, focus_code)
-    
     grid = GridBoard.new(:size => sgf.property(:size).to_i)
 
     #Setup handicap stones
@@ -260,7 +259,7 @@ class GridBoard
 
   def setup_handicap(stones)
 
-    case stones 
+    case stones.to_i
 
       when 2
         put_stone("B",3,15)
@@ -317,6 +316,17 @@ class GridBoard
         put_stone("B",9,9)
       end
   end  
+
+private
+
+  def erase_ko
+    grid.each do |row|
+      if i = row.index("KO")
+        row[i] = nil
+      end
+    end
+  
+  end
 
 end
 

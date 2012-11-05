@@ -313,3 +313,10 @@ test "should be able to read a whole sgf and validate position" do
   assert_equal gridboard.get_pos(0,11), "B"
 
 end
+
+test "should wipe the ko field after the next move" do
+
+  sgf = SGF::Parser.parse("mocks/extreme_ko.sgf")
+  gridboard = GridBoard.create_from_sgf(sgf, sgf.focus_to_code)
+
+end
