@@ -218,14 +218,14 @@ class SGF
   def time_left(player)
     raise "Invalid input #{player}. W or B expected" unless player == "B" || player == "W"
     ln = last_node_by_player(player)
-    ln && ln.time_left
+    ln && ln.properties["#{player}L"].to_i
   end
 
   def last_node_by_player(player)
     return if @focus == @root
     if @focus.color == player
       return @focus
-    elsif @focus.parent
+    elsif @focus.parent.color == player
       @focus.parent 
     end 
   end
