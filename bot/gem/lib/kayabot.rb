@@ -32,7 +32,7 @@ class KayaBot
     @error_limit = 3
     @loop_reading = 50
 
-    @rebuild_sgf = config["rebuild_sgf"]
+    @rebuild_sgf = config["rebuild_sgf"] || true
 
   end
 

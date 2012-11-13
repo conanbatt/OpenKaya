@@ -25,6 +25,8 @@ The configuration yaml must look like this:
     title : "my title"
     size  : (9,13 or 19 only)
     bot   : ("gnugo" or "fuego")
+    rebuild_sgf  : "true" #This will rebuild the bots game tree on each move. Its faster on false, but to run correspondence games, or more reliably, we recommend the default on true
+ 
 
 Ask for a bot account at info@kaya.gs to run it!
 
