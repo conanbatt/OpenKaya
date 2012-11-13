@@ -1,5 +1,7 @@
 class GTP
 
+  attr_accessor :size
+
   def self.run(bot_type, &command)
     
     if bot_type == 'gnugo'
@@ -14,7 +16,7 @@ class GTP
 
   def initialize(io)
     @io = io
-
+    @size = 19
     if block_given?
       begin
         yield self
@@ -76,56 +78,51 @@ class GTP
       return rc.first.sub(/^=\s/, "").sub(/\n/, "")
     end
   end
+
+  def ai_move(color,size)
+    re = genmove color
+    $stdout.puts "Bot generated #{re}"
+    move = convert_move(re,size)
+
+    return move
+  end
+
+  SGF_FILE_PATH = "bot_games/"
+
+  def load_from_sgf(game_id, game_sgf)
+
+    if Dir[SGF_FILE_PATH].empty?
+      Dir.mkdir(SGF_FILE_PATH)
+    end
+
+    filepath = SGF_FILE_PATH + "#{game_id}.sgf"
+    File.open(filepath, "w") do |f|
+      f.write game_sgf
+    end
+    loadsgf filepath
+
+    #File.delete(filepath)
+  end
+
+
 end
 
-SGF_FILE_PATH = "bot_games/"
+## ASYNCHRONOUS RUNNING (For multi gaming the same process)
 
 def score_game(game_id, game_sgf)
+
   re = nil
-  if Dir[SGF_FILE_PATH].empty?
-    Dir.mkdir(SGF_FILE_PATH)
-  end
-  filepath = SGF_FILE_PATH + "#{game_id}.sgf"
-  File.open(filepath, "w") do |f|
-    f.write game_sgf
-  end
-  
   dead_stones = ""
+
   GTP.run(@bot) do |gtp|
-    gtp.loadsgf filepath
+    gtp.load_from_sgf(game_id, game_sgf)
     dead_stones = gtp.list_dead_stones
     re = gtp.final_score
   end
 
   $stdout.puts "dead stones are #{dead_stones}"
 
-  File.delete(filepath)
   return {:score => re, :dead_stones => dead_stones}
-end
-
-# return a move coordinates, such as "c17", or "PASS", or "resign"
-def ai_move(game_id, game_sgf, color)
-
-  re = nil
-  if Dir[SGF_FILE_PATH].empty?
-    Dir.mkdir(SGF_FILE_PATH)
-  end
-  filepath = SGF_FILE_PATH + "#{game_id}.sgf"
-  File.open(filepath, "w") do |f|
-    f.write game_sgf
-  end
-
-  size = 19
-  GTP.run(@bot) do |gtp|
-    gtp.loadsgf filepath
-    size = @master_node.match(/SZ\[(\d+)\]/)[1]
-    re = gtp.genmove color
-  end
-  $stdout.puts "Bot generated #{re}"
-  move = convert_move(re,size)
-
-  File.delete(filepath)
-  return move
 end
 
 #switches GTP move into sgf-like coordinate
@@ -135,7 +132,6 @@ def convert_move(move, size=19)
   elsif move.downcase == "resign"
     return 'resign'
   else
-
 
     alphabet = "ABCDEFGHIJKLMNOPQRS"[0..size.to_i - 1]
 	  	

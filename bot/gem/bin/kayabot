@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 
-require File.expand_path("../lib/sgf", File.dirname(__FILE__))
 require 'rubygems'
 require 'mechanize'
 require 'json'
