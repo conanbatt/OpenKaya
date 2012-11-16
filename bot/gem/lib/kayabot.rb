@@ -1,4 +1,3 @@
-require File.expand_path("sgf", File.dirname(__FILE__))
 require 'rubygems'
 require 'mechanize'
 require 'json'
@@ -32,7 +31,7 @@ class KayaBot
     @error_limit = 3
     @loop_reading = 50
 
-    @rebuild_sgf = config["rebuild_sgf"] || true
+    @rebuild_sgf = config["rebuild_sgf"] != "false"
 
   end
 
