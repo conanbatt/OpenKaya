@@ -90,7 +90,6 @@ class GTP
   SGF_FILE_PATH = "bot_games/"
 
   def load_from_sgf(game_id, game_sgf)
-    p "called load sgf"
     if Dir[SGF_FILE_PATH].empty?
       Dir.mkdir(SGF_FILE_PATH)
     end
