@@ -28,7 +28,8 @@ function ScoreBoardJGOAdaptor(jgoboard, size, komi, black_captures, white_captur
 }
 
 ScoreBoardJGOAdaptor.prototype.toggleAndEstimate  = function(i, j) {
-	this.savedboard.toggleAt(i, j);
+	var isDead = (this.board.getGroupStatusAt(i, j) == ScoreBoard.STATUS_GROUP_DEAD);
+	this.savedboard.toggleAt(i, j, isDead);
 	this.board = this.savedboard.clone();
 	this.board.computeAnalysis();
 	this.board.countJapaneseResult();
@@ -39,7 +40,7 @@ ScoreBoardJGOAdaptor.prototype.display  = function(jgoboard, showDebugInfo) {
 		for(var j=0;j<this.size;j++) {
 			var mark = "";
 			var status =this.board.getGroupStatusAt(i, j);
-			var kind = this.board.getBoardKindAt(i, j);
+			var kind = this.board.getBoardFinalKindAt(i, j);
 			if(kind == ScoreBoard.BLACK_DEAD || kind == ScoreBoard.WHITE_DEAD) {
 				if(showDebugInfo) {
 					mark = "D";
