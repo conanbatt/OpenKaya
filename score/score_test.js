@@ -667,18 +667,18 @@ var chinese_score;
     });
 
 
-	/*
-	This bug case has been commented out because it seems to not be worth it to invest the time
-	to fix this in a fullproof way - a naive approach was tried and failed in a previous commit. 
-	
-	For reference, as of 11/27/2012, KGS is also unable to handle this situation correctly.
-	
-	*/
-	
-	// Scoring should guess when a point isn't a point after full dame filling (bugcase #2)
-	// Thank you Kanin for reporting it!
+    /*
+    This bug case has been commented out because it seems to not be worth it to invest the time
+    to fix this in a fullproof way - a naive approach was tried and failed in a previous commit. 
 
-	/*
+    For reference, as of 11/27/2012, KGS is also unable to handle this situation correctly.
+
+    */
+
+    // Scoring should guess when a point isn't a point after full dame filling (bugcase #2)
+    // Thank you Kanin for reporting it!
+
+    /*
     module("Dame filling", {
         setup: function() {
             genericSetup([
@@ -710,12 +710,9 @@ var chinese_score;
         equal(score.black_points,22);
         equal(score.white_points,57);
     });
-	*/
-
-	/* Issue #41: https://github.com/conanbatt/OpenKaya/issues/41 */
-	//One point isn't being counted in https://beta.kaya.gs/gospeed/5839
-
-    module("Miai to make a real point (bugcase extracted from issue #41) - regression", {
+    */
+    
+    module("Miai to make a real point (bugcase extracted regression from Kanin's bug fix)", {
         setup: function() {
             genericSetup([
                 ["*","B","*","W","*"],
@@ -735,12 +732,17 @@ var chinese_score;
         equal(score.white_points,6);
     });
     
-	 module("Normal eye not being seen! (bugcase extracted from issue #41)", {
+
+    /* Issue #41: https://github.com/conanbatt/OpenKaya/issues/41 */
+    //1 point isn't being counted in https://beta.kaya.gs/gospeed/5839
+    //4 points aren't being counted in https://beta.kaya.gs/gospeed/match/36706
+
+     module("Normal eye not being seen! (bugcase extracted from issue #41)", {
         setup: function() {
             genericSetup([
-			    ["B","B","B","B","B","B","B","B"],
+                ["B","B","B","B","B","B","B","B"],
                 ["*","*","*","*","*","*","*","*"],
-				["*","*","*","*","*","*","*","*"],
+                ["*","*","*","*","*","*","*","*"],
                 ["B","B","B","*","*","*","*","*"],
                 ["W","W","B","B","*","*","*","*"],
                 ["*","W","B","*","B","*","*","*"],
@@ -758,7 +760,6 @@ var chinese_score;
         equal(score.white_points,3);
     });
     
-	
     module("Game #1 from bugcase#41 1 Point counted as Dame for no reason", {
         setup: function() {
             genericSetup([
@@ -822,8 +823,8 @@ var chinese_score;
         equal(score.black_points,206);
         equal(score.white_points,151);
     });
-	
-	module("Game #2 from bugcase#41 4 Points counted as Dame for no reason", {
+
+    module("Game #2 from bugcase#41 4 Points counted as Dame for no reason", {
         setup: function() {
             genericSetup([
                 ["*","*","*","*","*","*","*","*","*","*","*","*","*","*","B","W","W","*","*"],
@@ -864,8 +865,8 @@ var chinese_score;
         equal(score.white_points,182);
     });
     
-	/* End of issue #41 test cases */
-	
+    /* End of issue #41 test cases */
+
 /* Grid coloring testing */
 
     module("Basic coloring", {

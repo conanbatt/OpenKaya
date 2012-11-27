@@ -314,22 +314,22 @@ Score.prototype = {
                         [x, y + 1]
                     ]);
                     //possible clean (ONLY) kosumis
-                    if (this.indirectly_connected_stones([x, y], [x + 1, y + 1], true, owned_libs)) {
+                    if (this.indirectly_connected_stones([x, y], [x + 1, y + 1], true)) {
                         stack_coord = stack_coord.concat([
                             [x + 1, y + 1]
                         ]);
                     }
-                    if (this.indirectly_connected_stones([x, y], [x - 1, y - 1], true, owned_libs)) {
+                    if (this.indirectly_connected_stones([x, y], [x - 1, y - 1], true)) {
                         stack_coord = stack_coord.concat([
                             [x - 1, y - 1]
                         ]);
                     }
-                    if (this.indirectly_connected_stones([x, y], [x + 1, y - 1], true, owned_libs)) {
+                    if (this.indirectly_connected_stones([x, y], [x + 1, y - 1], true)) {
                         stack_coord = stack_coord.concat([
                             [x + 1, y - 1]
                         ]);
                     }
-                    if (this.indirectly_connected_stones([x, y], [x - 1, y + 1], true, owned_libs)) {
+                    if (this.indirectly_connected_stones([x, y], [x - 1, y + 1], true)) {
                         stack_coord = stack_coord.concat([
                             [x - 1, y + 1]
                         ]);
@@ -493,7 +493,6 @@ Score.prototype = {
             if (this.visited[x][y] != undefined) {
                 continue;
             }
-				
             switch (board[x][y]) {
                 case (EMPTY): {
                     conexa.score++;
@@ -643,7 +642,6 @@ Score.prototype = {
         var coor_b = group_b.owner_coordinate;
         var stack_coord = [coor_a];
         var owner = board[coor_a[0]][coor_a[1]];
-		var opposite_dead_color = (owner == BLACK) ? WHITE_DEAD : BLACK_DEAD;
         var size = this.grid.length;
         var visited = Array(size);
         for (var row = 0 ; row < size ; row++) {
@@ -660,16 +658,16 @@ Score.prototype = {
             }
             visited[x][y] = READY;
             switch (board[x][y]) {
-			    case (EMPTY):
-					if(this.coor_member([x,y], group_b.empty) || 
-					   this.coor_member([x,y], group_a.empty))
-						stack_coord = stack_coord.concat([
-							[x - 1, y],
-							[x + 1, y],
-							[x, y - 1],
-							[x, y + 1]
-						]);					
-					break;
+            case (EMPTY):
+                if(this.coor_member([x,y], group_b.empty) || 
+                   this.coor_member([x,y], group_a.empty))
+                    stack_coord = stack_coord.concat([
+                        [x - 1, y],
+                        [x + 1, y],
+                        [x, y - 1],
+                        [x, y + 1]
+                    ]);
+                break;
                 case (owner): {
                     if (x == coor_b[0] && y == coor_b[1]) {
                         return true;
@@ -729,7 +727,7 @@ Score.prototype = {
         return false;
     },
 
-    indirectly_connected_stones: function (coor_a, coor_b, only_clean_kosumi, real_libs) {
+    indirectly_connected_stones: function (coor_a, coor_b, only_clean_kosumi) {
 
         if (only_clean_kosumi == undefined) {
             only_clean_kosumi = false;
@@ -767,23 +765,22 @@ Score.prototype = {
         - (1) is [ empty or is a dead stone of A opposite color ]
         - (2) is [ empty or is a dead stone of A opposite color ]
 
-        The "EITHER" becomes a "AND" if only_clean_kosumi == true. The list of real empty spaces must also be supplied.
+        The "EITHER" becomes a "AND" if only_clean_kosumi == true.
         */
-		if ((delta_x == 1 && delta_y == 1) || (delta_x == 1 && delta_y == -1) || (delta_x == -1 && delta_y == 1) || (delta_x == -1 && delta_y == -1)) {
-			if (only_clean_kosumi) {
-				//if (this.coor_member([xa+delta_x, ya], real_libs) && this.coor_member([xa, ya+delta_y], real_libs)) {
-				if ((board[xa + delta_x][ya] == EMPTY || board[xa + delta_x][ya] == opposite_dead_color) &&
-					(board[xa][ya + delta_y] == EMPTY || board[xa][ya + delta_y] == opposite_dead_color))
-					return true;
-			} 
-			else 
-			{
-				if ((board[xa + delta_x][ya] == EMPTY || board[xa + delta_x][ya] == opposite_dead_color) ||
-					(board[xa][ya + delta_y] == EMPTY || board[xa][ya + delta_y] == opposite_dead_color)) 
-					return true;
-			}
-		}
-		
+        if ((delta_x == 1 && delta_y == 1) || (delta_x == 1 && delta_y == -1) || (delta_x == -1 && delta_y == 1) || (delta_x == -1 && delta_y == -1)) {
+            if (only_clean_kosumi) {
+                if ((board[xa + delta_x][ya] == EMPTY || board[xa + delta_x][ya] == opposite_dead_color) &&
+                    (board[xa][ya + delta_y] == EMPTY || board[xa][ya + delta_y] == opposite_dead_color))
+                    return true;
+            } 
+            else 
+            {
+                if ((board[xa + delta_x][ya] == EMPTY || board[xa + delta_x][ya] == opposite_dead_color) ||
+                    (board[xa][ya + delta_y] == EMPTY || board[xa][ya + delta_y] == opposite_dead_color)) 
+                    return true;
+            }
+        }
+
         /*
 
         BAMBOO JOINT
