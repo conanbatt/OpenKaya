@@ -1,0 +1,498 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr"><head>
+    <meta http-equiv="Content-Language" content="en" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	
+    <link rel="stylesheet" href="jgo/jgoboarddemo.css" type="text/css">
+    	
+   <script type="text/javascript"
+src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js">
+</script>
+<!--script type="text/javascript" src="jgo/all-min.js"></script-->
+<script type="text/javascript" src="jgo/autodiv.js"></script>
+<script type="text/javascript" src="jgo/jgoboard.js"></script>
+<script type="text/javascript" src="jgo/sgf.js"></script>
+<script type="text/javascript" src="estimator.js"></script>
+<script type="text/javascript" src="old_estimator.js"></script>
+<script type="text/javascript" src="scoreboard_jgo_adaptor.js"></script>
+
+    </link>
+    <title>BoardExactAnalysis Demo</title>
+
+</head>
+<body>
+
+<div id="overlay">
+     <div>
+          <p>SGF url: <input id="sgf_url" type="text" value=""></input>
+		  <input type="button" id="load_sgf" onclick="return false;" value="load"></input>
+<!--a href="#" id="load_sgf" onclick="return false;">load</a--></p>
+     </div>
+</div>
+
+<div class="center_wrap">
+  <div class="center_container">
+    <div class="center_inner">
+<table border='0'>
+<tr>
+<td valign="top">
+<div class="jgo_board" id="board"></div>
+</td>
+<td valign="top">
+<div id="gameinfo">
+
+<h2>Game Information</h2>
+
+<p id="information"></p>
+
+<p>Black's captures: <strong><span id="blacksCaptures">0</span></strong><br/>
+White's captures: <strong><span id="whitesCaptures">0</span></strong></p>
+
+<p>Move: <strong><span id="move">0</span></strong><br/>
+Variation: <strong><span id="variation">1/1</span></strong></p>
+
+<h2>Controls</h2>
+
+<p id="navigator">
+<a class="disabled" href="#" id="first_move" onclick="return false;">&lt;&lt; start</a>
+<a class="disabled" href="#" id="prev100_move" onclick="return false;">&lt; -100</a>
+<a class="disabled" href="#" id="prev10_move" onclick="return false;">&lt; -10</a>
+<a class="disabled" href="#" id="prev_move" onclick="return false;">&lt; prev</a>
+<a class="" href="#" id="next_move" onclick="return false;">next &gt;</a>
+<a class="" href="#" id="next10_move" onclick="return false;">+10 &gt;</a>
+<a class="" href="#" id="next100_move" onclick="return false;">+100 &gt;</a>
+<a class="" href="#" id="last_move" onclick="return false;">end &gt;&gt;</a>
+</p>
+
+<p class="disabled" id="variations">
+<a href="#" id="prev_var" onclick="return false;">previous variation</a>
+<a href="#" id="next_var" onclick="return false;">next variation</a>
+</p>
+
+<p><a href="http://www.jgoboard.com/">jGoBoard homepage</a></p>
+
+<h2>Comment</h2>
+
+<p id="comment"></p>
+
+</div> <!-- gameinfo -->
+</td>
+</tr>
+</table>
+
+    </div> <!-- center_inner -->
+  </div> <!-- center_container -->
+</div> <!-- center_wrap -->
+<input type="button" style="margin-left:15px;margin-bottom:10px;" onclick="useSE = !useSE;doLoad(); updateGameInfo(player.info);" value="change estimator"></input>
+<br/>
+<input type="button" style="margin-left:15px;margin-bottom:10px;" onclick="debugSE = !debugSE;useSE=true;doLoad(); updateGameInfo(player.info);" value="switch debug/normal mode"></input>
+<br/>
+<input type="button" style="margin-left:15px;margin-bottom:10px;" onclick="exactAnalysisOnly = !exactAnalysisOnly;useSE=true;doLoad(); updateGameInfo(player.info);" value="switch exact/approximated analysis"></input>
+
+<br/>
+<input type="button" onclick="loadSGFAt('http://kaya.gs/sgf_storage/download_game?id=2837.sgf', 30);" value="Example 1"></input>
+<input type="button" onclick="loadSGFAt('http://kaya.gs/sgf_storage/download_game?id=2837.sgf', 230);" value="Example 2"></input>
+<input type="button" onclick="loadSGFAt('http://kaya.gs/sgf_storage/download_game?id=3992.sgf', 40);" value="Example 3"></input>
+<input type="button" onclick="loadSGFAt('http://kaya.gs/sgf_storage/download_game?id=3992.sgf', 90);" value="Example 4"></input>
+<input type="button" onclick="loadSGFAt('http://kaya.gs/sgf_storage/download_game?id=3903.sgf', 130);" value="Example 5"></input>
+<input type="button" onclick="loadSGFAt('http://kaya.gs/sgf_storage/download_game?id=3813.sgf', 174);" value="Example 6"></input>
+<input type="button" onclick="loadSGFAt('http://kaya.gs/sgf_storage/download_game?id=3723.sgf', 100);" value="Example 7"></input>
+<input type="button" onclick="loadSGFAt('http://kaya.gs/sgf_storage/download_game?id=5093.sgf', 100);" value="Example 8"></input>
+
+<script type="text/javascript">
+var se=null;
+var estimator = new OldEstimator();
+var useSE = true;
+var debugSE = false;
+var exactAnalysisOnly = false;
+var nMove = 0;
+var shownBoard, // this is tied to the DOM table object with board
+	player; // SGF player object
+	
+var keysActive = false; // activate keys when load dialog is closed
+
+function doLoad() {
+	se = new ScoreBoardJGOAdaptor(shownBoard, 19, player.info['komi'], player.captures[0], player.captures[1], exactAnalysisOnly);
+	estimator = new OldEstimator({komi:parseInt(player.info['komi'])});
+	estimator.load(shownBoard, player.info['komi'], player.captures[0], player.captures[1]);
+	if(useSE) {
+		se.display(shownBoard, debugSE);
+	} else {
+		estimator.display(shownBoard);
+	}
+}
+
+
+$(document).ready(function(){
+	shownBoard = jgo_generateBoard($("#board"));
+	
+	shownBoard.click = function(coord) {
+		se.toggleAndEstimate(coord.i, coord.j);
+		se.display(shownBoard, debugSE);
+		updateGameInfo(player.info);
+	};
+	var url = window.location.toString(); // check if url query parameter is set
+	var matches = url.match(/\?url=(.+)$/); // only allowed parameter is url=<url>
+	if(matches != null) // if there's url parameter, load SGF straight away
+		loadSGF(matches[1]);
+		
+	$("#load_file").click(loadFile);
+	$("#load_sgf").click(function(event) { loadSGF($('#sgf_url').val()) });
+	$("#show_loader").click(function(event) { $('#overlay').show(); });
+	
+	$("#first_move").click(firstMove);
+	$("#next_move").click(nextMove);
+	$("#prev_move").click(prevMove);
+	$("#last_move").click(lastMove);
+	$("#next10_move").click(next10Move);
+	$("#prev10_move").click(prev10Move);
+	$("#next100_move").click(next100Move);
+	$("#prev100_move").click(prev100Move);
+	
+	$("#prev_var").click(prevVar);
+	$("#next_var").click(nextVar);
+		
+	$(window).keydown(function(event) {
+		if(!keysActive)
+			return;
+		
+		if(event.which == 40)
+			nextVar(event);
+		else if(event.which == 38)
+			prevVar(event);
+		else if(event.which == 37)
+			prevMove(event);
+		else if(event.which == 39)
+			nextMove(event);
+	});
+});
+
+// only tested working on Firefox 3.6
+function loadFile(event) {
+	var files = document.getElementById("sgf_file").files;
+	
+	if(!files || files.length == 0)
+		alert("File loading either not supported or no file selected!");
+		
+	var reader = new FileReader();
+	
+	reader.onload = function() { processSGF(reader.result); };
+	reader.readAsText(files[0], "UTF-8");
+}
+
+function loadSGFAt(url, n) {
+	nMove = n;
+	loadSGF(url);
+}
+
+function loadSGF(url) {
+	if(url.indexOf("http:") == 0) { // use YML service to fetch remove urls
+		url = encodeURIComponent(url);
+
+		$.ajax({
+			type: 'GET',
+			url: 'http://jgosgf.appspot.com/?url='+url, 
+			dataType: 'jsonp',
+			success: function(gameTree, textStatus) {
+				if(gameTree.error)
+					alert(gameTree.error);
+				else
+					processSGF(gameTree);				
+			}
+		});
+	} else { // local urls can be fetched directly
+		$.ajax({
+			url: url, type: 'GET',
+			success: function(sgf) {
+				var gameTree = jgo_parseSGF(sgf); // parse SGF file string into game tree
+	
+				if(!gameTree) {
+					alert(jgo_error());
+					return;
+				}
+				
+				processSGF(gameTree);
+			},
+			error: function(data) { alert("Could not find the SGF file in " + url); }
+		});
+	}
+	
+	return false;
+}
+
+function processSGF(gameTree) {	
+	shownBoard.clear(); // clear the board
+	
+	player = new JGOPlayer(gameTree);
+
+	for(var i=0;i<nMove;i++) {
+		player.next();
+	}
+	nMove = 0;
+	updateVisuals();
+	
+	keysActive = true; // arrow key navigation activated
+}
+
+function nextMove(event) {
+	if(player.next())
+		updateVisuals();
+}
+
+function prevMove(event) {
+	if(player.previous())
+		updateVisuals(true);
+}
+
+function next10Move(event) {
+	var b = false;
+	for(var i=0; i<10; i++)
+		b|= player.next();
+	if(b)
+		updateVisuals();
+}
+
+function prev10Move(event) {
+	var b = false;
+	for(var i=0; i<10; i++)
+		b|= player.previous();
+	if(b)
+		updateVisuals();
+}
+
+function next100Move(event) {
+	var b = false;
+	for(var i=0; i<100; i++)
+		b|= player.next();
+	if(b)
+		updateVisuals();
+}
+
+function prev100Move(event) {
+	var b = false;
+	for(var i=0; i<100; i++)
+		b|= player.previous();
+	if(b)
+		updateVisuals();
+}
+
+function firstMove(event) {
+	if(player.reset())
+		updateVisuals(true);
+}
+
+function lastMove(event) {
+	while(player.next());
+	
+	updateVisuals(true);
+}
+
+function prevVar(event) {
+	var variation = player.navigator.getVariation();
+	
+	if(variation > 0)
+		changeVar(variation-1);
+}
+
+function nextVar(event) {
+	var variation = player.navigator.getVariation();
+	
+	if(variation < player.navigator.getVariations())	
+		changeVar(variation+1);
+}
+
+function changeVar(variation) {
+	player.previous();
+	player.next(variation);
+	
+	updateVisuals(); // update navigation elements
+}
+
+// forceUpdate is for fast forward and rewind where we assume board and 
+// info may have changed regardless of current player state
+function updateVisuals(forceUpdate) {
+	shownBoard.clearMarkers();
+		
+	if(forceUpdate || "setup" in player.state || "moveCoordinate" in player.state) // mere pass does not update
+		shownBoard.setBoard(player.board);
+		
+	if("markers" in player.state)
+		$.each(player.state["markers"], function(marker, coords) { shownBoard.mark(coords, marker); });
+	
+		
+	updateUI(); // update UI
+	doLoad();
+	if("moveCoordinate" in player.state) {
+		var coord = player.state["moveCoordinate"];
+		
+		// only show last move if no markers on that position
+		if(!shownBoard.markers[coord.sgf()]) 
+			shownBoard.mark(coord, '0');
+	}
+	updateGameInfo(player.info);
+}
+
+// update game info
+function updateGameInfo(info) {
+	var html = [];
+	
+	if("black" in info) {
+		html.push("Black: <strong>");
+		html.push(info.black);
+		if("blackRank" in info) {
+			html.push(", ");
+			html.push(info.blackRank);
+		}
+		html.push("</strong><br />");
+	}
+	
+	if("white" in info) {
+		html.push("White: <strong>");
+		html.push(info.white);
+		if("whiteRank" in info) {
+			html.push(", ");
+			html.push(info.whiteRank);
+		}
+		html.push("</strong><br />");
+	}
+	
+	var additional = [["result", "Result"], ["komi", "Komi"]];
+	
+	$.each(additional, function(i, tuple) {
+		if(tuple[0] in info) {
+			html.push(tuple[1]);
+			html.push(": <strong>");
+			html.push(info[tuple[0]]);
+			html.push("</strong><br />");
+		}
+	});
+	html.push("Algorithm used for display: <strong>");
+	if(useSE)
+		html.push("Smart");
+	else
+		html.push("Radiation");
+	html.push("</strong><br /><br />");
+
+
+	html.push("<strong>Smart algorithm: </strong><br/>");
+	if(debugSE) {
+		html.push("Debug mode ON");
+	} else {
+		html.push("Debug mode OFF");
+	}
+	html.push("<br />");
+	if(exactAnalysisOnly) {
+		html.push("Perform exact analysis only");
+	} else {
+		html.push("Perform exact and approximated analysis");
+	}
+	html.push("<br />");
+	html.push("Estimated result: <strong>");
+	html.push(se.getGameResult());
+	html.push("</strong><br />");
+	html.push("Estimated white score: <strong>");
+	html.push(se.getWScore());
+	html.push("</strong><br />");
+	html.push("Estimated black score: <strong>");
+	html.push(se.getBScore());
+	html.push("</strong><br />");
+
+	html.push("<br/><br/><strong>Radiation algorithm: </strong><br/>");
+	html.push("Estimated result: ");
+	html.push(estimator.getGameResult());
+	html.push("<br />");
+	html.push("Estimated white score: ");
+	html.push(estimator.getWScore());
+	html.push("<br />");
+	html.push("Estimated black score: ");
+	html.push(estimator.getBScore());
+	html.push("<br />");
+	
+
+	$('#information').html(html.join(''));
+}
+
+function updateUI() {
+	$('#move').html(player.navigator.getPosition());
+	
+	if("comment" in player.state)
+		$('#comment').html(player.state["comment"].replace(/\n/g, '<br />'));
+	else
+		$('#comment').html("");
+		
+	$('#blacksCaptures').html(player.captures[0]);
+	$('#whitesCaptures').html(player.captures[1]);
+	
+	var variations = player.navigator.getVariations();
+	if(player.navigator.getVariations() > 0) {
+		$('#variation').html((player.navigator.getVariation()+1) + "/" + (variations+1));
+		$('#variations').removeClass("disabled");
+	} else
+		$('#variations').addClass("disabled");
+	
+	if(player.navigator.isAtBeginning()) {
+		$("#first_move, #prev_move").addClass("disabled");
+		$("#first_move, #prev10_move").addClass("disabled");
+		$("#first_move, #prev100_move").addClass("disabled");
+	} else {
+		$("#first_move, #prev_move").removeClass("disabled");
+		$("#first_move, #prev10_move").removeClass("disabled");
+		$("#first_move, #prev100_move").removeClass("disabled");
+	}
+	
+	if(player.navigator.isAtEnd()) {
+		$("#last_move, #next_move").addClass("disabled");
+		$("#last_move, #next10_move").addClass("disabled");
+		$("#last_move, #next100_move").addClass("disabled");
+	}else {
+		$("#last_move, #next_move").removeClass("disabled");
+		$("#last_move, #next10_move").removeClass("disabled");
+		$("#last_move, #next100_move").removeClass("disabled");
+	}
+}
+
+// this is just a hack, and may stop working if jGoBoard internals change
+function shuffle() {
+	var left, top, c = new JGOCoordinate(0,0);
+
+	for(c.j=0; c.j<19; ++c.j) {
+		for(c.i=0; c.i<19; ++c.i) {
+			left = shownBoard.setup.aaPosition[0] - shownBoard.setup.stoneSize[0]/2 + 
+				c.i*shownBoard.setup.squareSize[0] + Math.round(Math.random());
+			top = shownBoard.setup.aaPosition[1] - shownBoard.setup.stoneSize[1]/2 + 
+				c.j*shownBoard.setup.squareSize[1] + Math.round(Math.random());
+			$("#jgo_st_"+c.sgf())
+				.css('left', left+'px')
+				.css('top', top+'px');
+			$("#jgo_m_"+c.sgf())
+				.css('left', left+'px')
+				.css('top', top+'px');
+		}
+	}
+}
+
+// this is just a hack, and may stop working if jGoBoard internals change
+function align() {
+	var left, top, c = new JGOCoordinate(0,0);
+
+	for(c.j=0; c.j<19; ++c.j) {
+		for(c.i=0; c.i<19; ++c.i) {
+			left = shownBoard.setup.aaPosition[0] - shownBoard.setup.stoneSize[0]/2 + 
+				c.i*shownBoard.setup.squareSize[0];
+			top = shownBoard.setup.aaPosition[1] - shownBoard.setup.stoneSize[1]/2 + 
+				c.j*shownBoard.setup.squareSize[1];
+			$("#jgo_st_"+c.sgf())
+				.css('left', left+'px')
+				.css('top', top+'px');
+			$("#jgo_m_"+c.sgf())
+				.css('left', left+'px')
+				.css('top', top+'px');
+		}
+	}
+}
+
+</script>
+
+
+
+</body></html>
