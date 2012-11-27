@@ -192,7 +192,9 @@ Score.prototype = {
             for (var col = 0; col < size; ++col) {
                 cur_type = board[row][col];
                 if (cur_type == EMPTY) {
-                    result.groups = result.groups.concat(this.connected_component(row, col));
+                    connected_component = this.connected_component(row, col);
+                    if(connected_component.coords.length > 0)
+                        result.groups = result.groups.concat(connected_component);
                 } else if (this.ruleset == 'Chinese') {
                     if (cur_type == WHITE) {
                         result.white_points++;
@@ -491,7 +493,7 @@ Score.prototype = {
             if (this.visited[x][y] != undefined) {
                 continue;
             }
-
+				
             switch (board[x][y]) {
                 case (EMPTY): {
                     conexa.score++;
@@ -605,7 +607,6 @@ Score.prototype = {
                 }
             }
         }
-
         return conexa;
     },
 
@@ -642,6 +643,7 @@ Score.prototype = {
         var coor_b = group_b.owner_coordinate;
         var stack_coord = [coor_a];
         var owner = board[coor_a[0]][coor_a[1]];
+		var opposite_dead_color = (owner == BLACK) ? WHITE_DEAD : BLACK_DEAD;
         var size = this.grid.length;
         var visited = Array(size);
         for (var row = 0 ; row < size ; row++) {
@@ -658,6 +660,16 @@ Score.prototype = {
             }
             visited[x][y] = READY;
             switch (board[x][y]) {
+			    case (EMPTY):
+					if(this.coor_member([x,y], group_b.empty) || 
+					   this.coor_member([x,y], group_a.empty))
+						stack_coord = stack_coord.concat([
+							[x - 1, y],
+							[x + 1, y],
+							[x, y - 1],
+							[x, y + 1]
+						]);					
+					break;
                 case (owner): {
                     if (x == coor_b[0] && y == coor_b[1]) {
                         return true;
@@ -757,22 +769,21 @@ Score.prototype = {
 
         The "EITHER" becomes a "AND" if only_clean_kosumi == true. The list of real empty spaces must also be supplied.
         */
-        if (only_clean_kosumi) {
-            if ((delta_x == 1 && delta_y == 1) || (delta_x == 1 && delta_y == -1) || (delta_x == -1 && delta_y == 1) || (delta_x == -1 && delta_y == -1)) {
-                if (this.coor_member([xa+delta_x, ya], real_libs) && this.coor_member([xa, ya+delta_y], real_libs)) {
-                    return true;
-                }
-            }
-        } else {
-            if ((delta_x == 1 && delta_y == 1) || (delta_x == 1 && delta_y == -1) || (delta_x == -1 && delta_y == 1) || (delta_x == -1 && delta_y == -1)) {
-                if (board[xa + delta_x][ya] == EMPTY || board[xa + delta_x][ya] == opposite_dead_color) {
-                    return true;
-                }
-                if (board[xa][ya + delta_y] == EMPTY || board[xa][ya + delta_y] == opposite_dead_color) {
-                    return true;
-                }
-            }
-        }
+		if ((delta_x == 1 && delta_y == 1) || (delta_x == 1 && delta_y == -1) || (delta_x == -1 && delta_y == 1) || (delta_x == -1 && delta_y == -1)) {
+			if (only_clean_kosumi) {
+				//if (this.coor_member([xa+delta_x, ya], real_libs) && this.coor_member([xa, ya+delta_y], real_libs)) {
+				if ((board[xa + delta_x][ya] == EMPTY || board[xa + delta_x][ya] == opposite_dead_color) &&
+					(board[xa][ya + delta_y] == EMPTY || board[xa][ya + delta_y] == opposite_dead_color))
+					return true;
+			} 
+			else 
+			{
+				if ((board[xa + delta_x][ya] == EMPTY || board[xa + delta_x][ya] == opposite_dead_color) ||
+					(board[xa][ya + delta_y] == EMPTY || board[xa][ya + delta_y] == opposite_dead_color)) 
+					return true;
+			}
+		}
+		
         /*
 
         BAMBOO JOINT
@@ -831,3 +842,4 @@ Score.prototype = {
         return false;
     },
 };
+
