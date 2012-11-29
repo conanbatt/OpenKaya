@@ -11,7 +11,12 @@ module Validator
       
     #end
     def validate!(color,row, col)
-  
+ 
+      if (row.nil? || row.to_s.empty?) &&
+         (col.nil? || col.to_s.empty?)
+        return pass!
+      end
+
       if get_pos(row,col) == "KO"
         raise RuleError.new("Position #{row},#{col} is a Ko position. #{print_grid}")
       end
@@ -30,6 +35,11 @@ module Validator
       erase_ko
       apply_play(play_with_removals)
 
+      grid
+    end
+
+    def pass!
+      erase_ko
       grid
     end
 
@@ -63,7 +73,9 @@ class GridBoard
     focus_code.split("-").each do |branch|
       node = temp_focus.children[branch.to_i]
       raise "There is no node here! #{focus_code}" unless node
-      if node.y && node.x #its not pass
+      if node.pass_node?
+        grid.pass!
+      else
         grid.validate!(node.color, node.y.ord - 97, node.x.ord - 97)
       end
       temp_focus = node

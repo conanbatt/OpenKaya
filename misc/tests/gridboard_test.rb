@@ -320,3 +320,11 @@ test "should wipe the ko field after the next move" do
   gridboard = GridBoard.create_from_sgf(sgf, sgf.focus_to_code)
 
 end
+
+test "should wipe ko on pass too" do
+
+  grid = GridBoard.new(:grid => mock_grid, :size => mock_grid.size)
+  grid.validate!("W",nil,nil)
+
+  assert_equal grid.get_pos(1,1), nil
+end

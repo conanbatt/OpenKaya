@@ -165,7 +165,7 @@ class SGF
     return if (index < 0)
     node = @root.children.first
     while(index >0)
-      node = node.children.first if node.children.first #undos can mess up the move number
+      node = node.children.last if node.children.last #undos can mess up the move number
       index -= 1
     end
     node
