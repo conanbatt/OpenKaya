@@ -21,7 +21,19 @@ var chinese_score;
         chinese_score = undefined;
     }
     
-    function sameBoards(array1, array2)
+    function countChars(array, the_char) {
+        count = 0
+        for(var row_index in array) 
+        {
+            for(var col_index in array[row_index])
+            {
+                if (array[row_index][col_index] == the_char)
+                    count++;
+            }
+        }
+        return count;
+    }
+    function sameBoards(array1, array2, verbose)
     {
         if(array1.length != array2.length)
           return false;
@@ -36,8 +48,12 @@ var chinese_score;
             
           for(var col_index in array2)
           {
-            if (row1[col_index] != row2[col_index])
-              return false;
+            if (row1[col_index] != row2[col_index]) {
+                if(verbose)
+                    return "row: " + row_index + " col: " + col_index; 
+                else
+                    return false;
+            }
           }
         }
         
@@ -651,9 +667,18 @@ var chinese_score;
     });
 
 
-// Scoring should guess when a point isn't a point after full dame filling (bugcase #2)
-// Thank you Kanin for reporting it!
+    /*
+    This bug case has been commented out because it seems to not be worth it to invest the time
+    to fix this in a fullproof way - a naive approach was tried and failed in a previous commit. 
 
+    For reference, as of 11/27/2012, KGS is also unable to handle this situation correctly.
+
+    */
+
+    // Scoring should guess when a point isn't a point after full dame filling (bugcase #2)
+    // Thank you Kanin for reporting it!
+
+    /*
     module("Dame filling", {
         setup: function() {
             genericSetup([
@@ -685,8 +710,163 @@ var chinese_score;
         equal(score.black_points,22);
         equal(score.white_points,57);
     });
-
+    */
     
+    module("Miai to make a real point (bugcase extracted regression from Kanin's bug fix)", {
+        setup: function() {
+            genericSetup([
+                ["*","B","*","W","*"],
+                ["*","B","*","W","*"],
+                ["*","B","W","*","*"],
+                ["*","B","*","W","*"],
+                ["*","B","*","W","*"],
+            ]);
+        },
+        teardown: function() {
+            genericTeardown();
+        }
+    });
+    test("should count 3-4 as a point", function(){
+        var score = japanese_score.calculate_score();
+        equal(score.black_points,5);
+        equal(score.white_points,6);
+    });
+    
+
+    /* Issue #41: https://github.com/conanbatt/OpenKaya/issues/41 */
+    //1 point isn't being counted in https://beta.kaya.gs/gospeed/5839
+    //4 points aren't being counted in https://beta.kaya.gs/gospeed/match/36706
+
+     module("Normal eye not being seen! (bugcase extracted from issue #41)", {
+        setup: function() {
+            genericSetup([
+                ["B","B","B","B","B","B","B","B"],
+                ["*","*","*","*","*","*","*","*"],
+                ["*","*","*","*","*","*","*","*"],
+                ["B","B","B","*","*","*","*","*"],
+                ["W","W","B","B","*","*","*","*"],
+                ["*","W","B","*","B","*","*","*"],
+                ["W","W","W","B","*","*","*","*"],
+                ["*","*","W","B","*","*","*","*"],
+            ]);
+        },
+        teardown: function() {
+            genericTeardown();
+        }
+    });
+    test("should count 6-4 as a point", function(){
+        var score = japanese_score.calculate_score();
+        equal(score.black_points,37);
+        equal(score.white_points,3);
+    });
+    
+    module("Game #1 from bugcase#41 1 Point counted as Dame for no reason", {
+        setup: function() {
+            genericSetup([
+                ["*","N","N","W","*","*","*","*","*","*","*","*","*","W","B","B","W","*","*"],
+                ["W","W","*","W","N","N","W","*","*","W","*","*","*","W","B","W","W","W","*"],
+                ["*","W","W","W","W","N","W","W","W","W","W","W","W","W","B","B","W","*","*"],
+                ["W","W","*","*","*","W","B","B","B","B","W","B","*","W","W","B","W","W","W"],
+                ["B","B","W","W","W","W","W","W","B","B","W","B","B","B","B","B","B","B","B"],
+                ["*","*","B","B","B","B","*","B","*","B","B","B","B","*","*","*","B","*","*"],
+                ["*","B","*","*","*","*","B","*","B","W","*","W","*","B","B","*","B","*","*"],
+                ["*","*","*","*","*","*","*","*","B","W","W","*","W","W","B","*","B","*","*"],
+                ["*","*","*","*","*","*","*","*","*","B","W","*","*","*","W","B","*","*","*"],
+                ["*","*","B","*","*","*","*","*","*","B","B","W","*","W","W","B","B","B","*"],
+                ["*","*","*","*","*","*","*","*","*","B","W","*","*","W","B","B","W","B","*"],
+                ["*","*","*","*","*","*","*","*","B","B","W","W","*","*","W","B","W","W","B"],
+                ["*","B","*","*","*","*","*","*","*","E","B","W","*","*","*","W","W","B","*"],
+                ["B","*","*","*","*","*","*","*","*","E","B","B","W","W","*","W","B","B","*"],
+                ["W","B","B","*","*","*","*","*","*","*","*","B","B","W","*","W","B","*","B"],
+                ["W","W","W","B","B","B","B","*","*","E","*","*","B","W","*","*","W","B","B"],
+                ["*","*","*","W","W","B","*","B","*","*","*","B","B","B","W","*","W","W","W"],
+                ["*","*","W","*","*","W","B","*","*","B","*","*","*","B","W","*","W","*","*"],
+                ["*","*","*","W","*","W","B","*","*","*","*","*","*","B","B","W","*","*","*"]
+            ]);
+        },
+        teardown: function() {
+            genericTeardown();
+        }
+    });
+
+    test("should count the point in this normal eye", function(){
+        var score = japanese_score.calculate_score();
+        equal(score.black_points,119);
+        equal(score.white_points,69);
+        
+        var expected =  [
+            ["-","N","N","W","-","-","-","-","-","-","-","-","-","W","B","B","W","-","-"],
+            ["W","W","-","W","N","N","W","-","-","W","-","-","-","W","B","W","W","W","-"],
+            ["-","W","W","W","W","N","W","W","W","W","W","W","W","W","B","B","W","-","-"],
+            ["W","W","-","-","-","W","B","B","B","B","W","B","X","W","W","B","W","W","W"],
+            ["B","B","W","W","W","W","W","W","B","B","W","B","B","B","B","B","B","B","B"],
+            ["+","+","B","B","B","B","X","B","+","B","B","B","B","+","+","+","B","+","+"],
+            ["+","B","+","+","+","+","B","+","B","W","X","W","X","B","B","+","B","+","+"],
+            ["+","+","+","+","+","+","+","+","B","W","W","-","W","W","B","+","B","+","+"],
+            ["+","+","+","+","+","+","+","+","+","B","W","-","-","-","W","B","+","+","+"],
+            ["+","+","B","+","+","+","+","+","+","B","B","W","-","W","W","B","B","B","+"],
+            ["+","+","+","+","+","+","+","+","+","B","W","-","-","W","B","B","W","B","+"],
+            ["+","+","+","+","+","+","+","+","B","B","W","W","-","-","W","B","W","W","B"],
+            ["+","B","+","+","+","+","+","+","+","E","B","W","-","-","-","W","W","B","+"],
+            ["B","+","+","+","+","+","+","+","+","E","B","B","W","W","-","W","B","B","+"],
+            ["W","B","B","+","+","+","+","+","+","+","+","B","B","W","-","W","B","+","B"],
+            ["W","W","W","B","B","B","B","+","+","E","+","+","B","W","-","-","W","B","B"],
+            ["-","-","-","W","W","B","+","B","+","+","+","B","B","B","W","-","W","W","W"],
+            ["-","-","W","-","-","W","B","+","+","B","+","+","+","B","W","-","W","-","-"],
+            ["-","-","-","W","-","W","B","+","+","+","+","+","+","B","B","W","-","-","-"]
+        ];
+        equal(sameBoards(score.scoring_grid, expected), true);
+    });
+
+    test("should count the point in this normal eye", function(){
+        var score = chinese_score.calculate_score();
+        equal(score.black_points,206);
+        equal(score.white_points,151);
+    });
+
+    module("Game #2 from bugcase#41 4 Points counted as Dame for no reason", {
+        setup: function() {
+            genericSetup([
+                ["*","*","*","*","*","*","*","*","*","*","*","*","*","*","B","W","W","*","*"],
+                ["*","*","B","E","*","E","B","*","*","*","*","*","*","*","B","B","W","*","*"],
+                ["*","*","B","E","*","E","B","B","B","B","*","*","*","*","*","B","W","W","*"],
+                ["*","*","B","B","E","E","E","E","*","E","B","*","*","B","B","B","B","W","*"],
+                ["*","*","B","E","E","B","*","*","E","E","B","*","*","B","W","W","W","N","*"],
+                ["*","B","B","E","B","B","B","B","B","E","B","*","B","B","B","B","W","W","*"],
+                ["*","E","E","E","B","*","*","B","E","*","E","B","B","B","B","W","W","*","*"],
+                ["*","*","E","B","*","*","B","B","*","B","B","B","W","B","B","W","*","W","*"],
+                ["*","B","B","B","B","B","W","B","B","B","W","W","W","W","W","B","W","W","W"],
+                ["B","B","B","B","W","W","W","W","W","W","*","W","*","W","W","B","B","W","B"],
+                ["B","W","B","W","*","W","N","W","W","*","*","*","*","W","W","B","*","B","B"],
+                ["W","W","W","W","W","W","N","N","N","W","*","W","*","W","W","B","*","*","*"],
+                ["N","N","N","N","N","W","N","*","*","W","*","*","W","W","*","B","*","*","*"],
+                ["*","N","*","N","N","N","W","*","*","*","W","W","*","W","B","B","*","*","*"],
+                ["*","W","N","*","W","W","W","*","*","W","*","N","*","W","*","B","*","*","*"],
+                ["*","W","N","N","*","*","*","*","*","*","*","*","*","*","W","B","*","*","*"],
+                ["*","N","W","N","N","W","W","*","*","W","*","N","*","W","*","W","B","*","*"],
+                ["*","W","W","W","W","N","*","*","*","*","*","W","*","*","W","W","B","*","*"],
+                ["*","*","*","*","*","*","*","*","*","*","*","*","*","*","W","B","B","*","*"]
+            ]);
+        },
+        teardown: function() {
+            genericTeardown();
+        }
+    });
+
+    test("should count this game accurately", function(){
+        var score = japanese_score.calculate_score();
+        equal(score.black_points,119);
+        equal(score.white_points,124);
+    });
+
+    test("should count this game accurately", function(){
+        var score = chinese_score.calculate_score();
+        equal(score.black_points,177);
+        equal(score.white_points,182);
+    });
+    
+    /* End of issue #41 test cases */
+
 /* Grid coloring testing */
 
     module("Basic coloring", {
@@ -862,4 +1042,5 @@ var chinese_score;
             genericTeardown();
         }
     });
+
 
