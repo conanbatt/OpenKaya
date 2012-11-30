@@ -6,6 +6,7 @@ function SGFNode() {
 	this.prev = null;
 	this.next = [];
 	this.last_next = null;
+	this.props = {};
 }
 
 SGFNode.prototype = {
@@ -15,7 +16,15 @@ SGFNode.prototype = {
 		if (this.last_next == null) {
 			this.last_next = node;
 		}
-	}
+	},
+
+	toString: function() {
+		var s = ";";
+		for (var prop in this.props) {
+			s += prop + "[" + this.props[prop] + "]";
+		}
+		return s;
+	},
 }
 
 function SGFParser(sSGF) {
@@ -34,9 +43,7 @@ SGFParser.prototype = {
 
 	append_node: function(node) {
 		if (this.pointer == this.root && !this.root.loaded) {
-			for (var prop in node) {
-				this.root[prop] = node[prop];
-			}
+			this.root.props = node.props;
 			this.root.loaded = true;
 		} else {
 			node.prev = this.pointer;
@@ -122,6 +129,13 @@ SGFParser.prototype = {
 
 		this.append_node(new SGFNode());
 
+		buf_end += this.sgf_eat_blank(buffer, buf_end);
+
+		// Handle empty node...
+		if (buffer[buf_end] == ";") {
+			prop_end = true;
+		}
+
 		while (!prop_end) {
 			while (!prop_end) {
 				cur_char = buffer[buf_end];
@@ -130,9 +144,11 @@ SGFParser.prototype = {
 				} else if (cur_char == '[') {
 					prop_end = true;
 				} else {
-					this.status = SGFPARSER_ST_ERROR;
-					this.error = "Error parsing node property name.\nWrong SGF syntax.";
-					return false;
+					if (!/\s/.test(cur_char)) {
+						this.status = SGFPARSER_ST_ERROR;
+						this.error = "Error parsing node property name.\nWrong SGF syntax.";
+						return false;
+					}
 				}
 				buf_end++;
 			}
@@ -149,6 +165,7 @@ SGFParser.prototype = {
 				} else if (!esc_next && cur_char == ']') {
 					prop_arr.push(prop_val);
 					prop_val = "";
+					buf_end += this.sgf_eat_blank(buffer, buf_end + 1);
 					if (buffer[buf_end + 1] != '[') {
 						prop_end = true;
 					} else {
@@ -165,7 +182,7 @@ SGFParser.prototype = {
 				prop_arr = prop_arr[0];
 			}
 
-			this.pointer[prop_ident] = prop_arr;
+			this.pointer.props[prop_ident] = prop_arr;
 			prop_arr = [];
 			prop_ident = "";
 			prop_val = "";
@@ -241,38 +258,38 @@ SGFParser.prototype = {
 	process_root_node: function(game) {
 		// Setup based on root node properties.
 		var sgf_node = this.root;
-		if (sgf_node.RU != undefined) {
-			game.change_ruleset(sgf_node.RU);
+		if (sgf_node.props.RU != undefined) {
+			game.change_ruleset(sgf_node.props.RU);
 		}
-		if (sgf_node.KM != undefined) {
-			game.change_komi(Number(sgf_node.KM));
+		if (sgf_node.props.KM != undefined) {
+			game.change_komi(Number(sgf_node.props.KM));
 		}
-		if (sgf_node.SZ != undefined) {
-			game.change_size(Number(sgf_node.SZ));
+		if (sgf_node.props.SZ != undefined) {
+			game.change_size(Number(sgf_node.props.SZ));
 		}
-		if (sgf_node.C != undefined) {
+		if (sgf_node.props.C != undefined) {
 			if (game.game_tree != undefined && game.game_tree.root != undefined) {
-				game.game_tree.root.comments = sgf_node.C;
+				game.game_tree.root.comments = sgf_node.props.C;
 			}
 		}
 
 		// Hello polly from the future, here you can place new time systems...
 		// Generate timer config
 		var time_settings = {};
-		if (sgf_node.OT != undefined) {
-			if (/fischer/i.test(sgf_node.OT)) {
-				var bonus = sgf_node.OT.match(/\d+(\.\d+)?/);
+		if (sgf_node.props.OT != undefined) {
+			if (/fischer/i.test(sgf_node.props.OT)) {
+				var bonus = sgf_node.props.OT.match(/\d+(\.\d+)?/);
 				if (bonus) {
 					time_settings.name = "Fischer";
 					time_settings.settings = {
 						bonus: parseFloat(bonus[0]),
 					}
 				}
-			} else if (/hourglass/i.test(sgf_node.OT)) {
+			} else if (/hourglass/i.test(sgf_node.props.OT)) {
 				time_settings.name = "Hourglass";
 				time_settings.settings = {};
-			} else if (/byo-?yomi/i.test(sgf_node.OT)) {
-				var match = sgf_node.OT.match(/(\d+)[x\/](\d+)/i);
+			} else if (/byo-?yomi/i.test(sgf_node.props.OT)) {
+				var match = sgf_node.props.OT.match(/(\d+)[x\/](\d+)/i);
 				if (match[1] && match[2]) {
 					time_settings.name = "Byoyomi";
 					time_settings.settings = {
@@ -283,19 +300,19 @@ SGFParser.prototype = {
 			}
 		}
 		if (time_settings.name == undefined) {
-			if (sgf_node.TM != undefined) {
+			if (sgf_node.props.TM != undefined) {
 				time_settings.name = "Absolute";
 				time_settings.settings = {
-					main_time: parseFloat(sgf_node.TM),
+					main_time: parseFloat(sgf_node.props.TM),
 				}
 			} else {
 				time_settings.name = "Free";
 			}
 		} else {
-			if (sgf_node.TM == undefined) {
+			if (sgf_node.props.TM == undefined) {
 				time_settings.settings.main_time = 0;
 			} else {
-				time_settings.settings.main_time = parseFloat(sgf_node.TM);
+				time_settings.settings.main_time = parseFloat(sgf_node.props.TM);
 			}
 		}
 
@@ -303,20 +320,20 @@ SGFParser.prototype = {
 		//game.time = new GoTime(game, time_settings);
 		game.time.setup(time_settings);
 
-		if (sgf_node.AB != undefined || sgf_node.AW != undefined) {
+		if (sgf_node.props.AB != undefined || sgf_node.props.AW != undefined) {
 			var free = new FreePlay();
 			free.captured = {"B": 0, "W": 0};
 			game.game_tree.root.play = free;
-			if (sgf_node.AB != undefined) {
-				sgf_node.AB = [].concat(sgf_node.AB);
-				for (var key in sgf_node.AB) {
-					free.put.push(new Stone("B", sgf_node.AB[key].charCodeAt(1) - 97, sgf_node.AB[key].charCodeAt(0) - 97));
+			if (sgf_node.props.AB != undefined) {
+				sgf_node.props.AB = [].concat(sgf_node.props.AB);
+				for (var key in sgf_node.props.AB) {
+					free.put.push(new Stone("B", sgf_node.props.AB[key].charCodeAt(1) - 97, sgf_node.props.AB[key].charCodeAt(0) - 97));
 				}
 			}
-			if (sgf_node.AW != undefined) {
-				sgf_node.AW = [].concat(sgf_node.AW);
-				for (var key in sgf_node.AW) {
-					free.put.push(new Stone("W", sgf_node.AW[key].charCodeAt(1) - 97, sgf_node.AW[key].charCodeAt(0) - 97));
+			if (sgf_node.props.AW != undefined) {
+				sgf_node.props.AW = [].concat(sgf_node.props.AW);
+				for (var key in sgf_node.props.AW) {
+					free.put.push(new Stone("W", sgf_node.props.AW[key].charCodeAt(1) - 97, sgf_node.props.AW[key].charCodeAt(0) - 97));
 				}
 			}
 			game.board.make_play(free);
@@ -324,15 +341,15 @@ SGFParser.prototype = {
 				game.shower.draw_play(free);
 			}
 		}
-		if (sgf_node.HA != undefined) {
+		if (sgf_node.props.HA != undefined) {
 			game.game_tree.root.next_move = "W";
 		}
-		if (sgf_node.PL != undefined) {
-			game.game_tree.root.next_move = sgf_node.PL;
+		if (sgf_node.props.PL != undefined) {
+			game.game_tree.root.next_move = sgf_node.props.PL;
 		}
 	},
 
-	sgf_to_tree: function(game, sgf_node, tree_node, node_source) {
+	sgf_to_tree: function(game, sgf_node, tree_node, node_source, no_duplicate_branch) {
 		// Push roots to start "recursive-like" iteration.
 		var pend_sgf_node = [];
 		var pend_game_tree_node = [];
@@ -359,16 +376,16 @@ SGFParser.prototype = {
 			*/
 		// do: play sgf_node contents at game point in game.
 			// FIXME: quisiera ver cuál es la mejor manera de validar que el sgf hizo la jugada correcta sin tener que confiar en next_move que podría romperse
-			if (sgf_node.B != undefined || sgf_node.W != undefined) {
-				if (game.get_next_move() == "B" && sgf_node.B != undefined) {
-					move = sgf_node.B;
-					time_left = this.get_time_from_node(game.time.clock, sgf_node.BL, sgf_node.OB);
-				} else if (game.get_next_move() == "W" && sgf_node.W != undefined) {
-					move = sgf_node.W;
-					time_left = this.get_time_from_node(game.time.clock, sgf_node.WL, sgf_node.OW);
+			if (sgf_node.props.B != undefined || sgf_node.props.W != undefined) {
+				if (game.get_next_move() == "B" && sgf_node.props.B != undefined) {
+					move = sgf_node.props.B;
+					time_left = this.get_time_from_node(game.time.clock, sgf_node.props.BL, sgf_node.props.OB);
+				} else if (game.get_next_move() == "W" && sgf_node.props.W != undefined) {
+					move = sgf_node.props.W;
+					time_left = this.get_time_from_node(game.time.clock, sgf_node.props.WL, sgf_node.props.OW);
 				} else {
 					this.status = SGFPARSER_ST_ERROR;
-					this.error = "Turn and Play mismatch";
+					this.error = "Turn and Play mismatch: " + game.get_next_move() + "'s turn, node: " + sgf_node;
 					return false;
 				}
 				if (move == "" || (game.board.size < 20 && move == "tt")) {
@@ -378,22 +395,27 @@ SGFParser.prototype = {
 					tmp = game.setup_play(move.charCodeAt(1) - 97, move.charCodeAt(0) - 97);
 					if (!tmp) {
 						this.status = SGFPARSER_ST_ERROR;
-						this.error = "Illegal move or such...";
+						this.error = "Illegal move or such... sgf_node: " + sgf_node;
 						return false;
 					}
 				}
 				tmp.time_left = time_left;
-				this.moves_loaded += ";" + tmp.put.color + "[" + move + "]";
-				game.game_tree.append(new GameNode(tmp, node_source, sgf_node.C));
-				game.board.make_play(tmp);
-				if (time_left != undefined && !isNaN(time_left) && game.time.clock != undefined) {
-					var rmn = {};
-					rmn[tmp.put.color] = time_left;
-					game.time.clock.set_remain(rmn);
+
+				var index = false;
+				if (no_duplicate_branch) {
+					index = game.game_tree.actual_move.search_next_play(tmp);
 				}
-				if (tmp instanceof Play || tmp instanceof Pass) {
-					// TODO: turn count sucks monkey ass
-					game.turn_count++;
+
+				if (index !== false) {
+					game.next(index, true);
+				} else {
+					game.game_tree.append(new GameNode(tmp, node_source, sgf_node.props.C));
+					game.board.make_play(tmp);
+					if (time_left != undefined && !isNaN(time_left) && game.time.clock != undefined) {
+						var rmn = {};
+						rmn[tmp.put.color] = time_left;
+						game.time.clock.set_remain(rmn);
+					}
 				}
 			}
 		// do: push actual_node to pend_game_tree_node
@@ -422,9 +444,9 @@ SGFParser.prototype = {
 
 	same_move: function(sgf_node, tree_node) {
 		var move;
-		//if (sgf_node.B != undefined || sgf_node.W != undefined) {
+		//if (sgf_node.props.B != undefined || sgf_node.props.W != undefined) {
 		if (tree_node.play != undefined && tree_node.play.put != undefined && tree_node.play.put.color != undefined) {
-			move = sgf_node[tree_node.play.put.color];
+			move = sgf_node.props[tree_node.play.put.color];
 			if (tree_node.play instanceof Pass) {
 				if (move != "") {
 					return false;
@@ -486,7 +508,15 @@ SGFParser.prototype = {
 						reconstruct = true;
 					} else {
 						if (!this.same_move(sgf_node.next[i], tree_node.next[i])) {
-							throw new Error("Different moves loaded in the same place...\n\nLoaded: " + this.moves_loaded + "\n\nNew: " + moves);
+							var s = "";
+							s += "Different moves loaded in the same place...<br /><br />";
+							s += "<b>Loaded:</b> " + this.moves_loaded + "<br />";
+							s += "<b>New:</b> " + moves + "<br />";
+							s += "<b>Conflict:</b><br />";
+							s += "&nbsp;&nbsp;&nbsp;&nbsp;<b>loaded:</b> " + tree_node.next[i].play.to_sgf();
+							s += " (" + node_source_verbose(tree_node.next[i].source) + ")<br />";
+							s += "<b>new:</b> " + sgf_node.next[i];
+							throw new Error(s);
 						}
 						tmp_sgf_stash.unshift(sgf_node.next[i]);
 						tmp_tree_stash.unshift(tree_node.next[i]);
@@ -616,8 +646,8 @@ SGFParser.prototype = {
 		// XXX TODO FIXME Maybe this validation is way too hard.
 		if (clock != undefined) {
 			switch(clock.system.name) {
-			        case "Free":
-                                    return undefined;
+				case "Free":
+					return undefined;
 				break;
 				case "Absolute":
 				case "Fischer":
@@ -630,17 +660,28 @@ SGFParser.prototype = {
 					};
 				break;
 				case "Byoyomi":
-					if (time_left == undefined) {
-						time_left = clock.system.main_time;
-					}
+					var tmp_res;
 					if (overtime_periods == undefined) {
 						overtime_periods = clock.system.periods;
+						if (time_left == undefined) {
+							time_left = clock.system.main_time;
+						}
+						tmp_res = {
+							'main_time': parseFloat(time_left),
+							'periods': parseInt(overtime_periods, 10),
+							'period_time': clock.system.period_time,
+						};
+					} else {
+						if (time_left == undefined) {
+							time_left = clock.system.period_time;
+						}
+						tmp_res = {
+							'main_time': 0,
+							'periods': parseInt(overtime_periods, 10),
+							'period_time': parseFloat(time_left),
+						};
 					}
-					return {
-						'main_time': parseFloat(time_left),
-						'periods': parseInt(overtime_periods, 10),
-						'period_time': clock.system.period_time,
-					};
+					return tmp_res;
 				break;
 			}
 		} else {
@@ -650,3 +691,22 @@ SGFParser.prototype = {
 	},
 }
 
+function node_source_verbose(src) {
+	switch(src) {
+		case NODE_SGF:
+			return "NODE_SGF";
+		break;
+		case NODE_ONLINE:
+			return "NODE_ONLINE";
+		break;
+		case NODE_OFFLINE:
+			return "NODE_OFFLINE";
+		break;
+		case NODE_VARIATION:
+			return "NODE_VARIATION";
+		break;
+		default:
+			return "NO_SOURCE";
+		break;
+	}
+}
