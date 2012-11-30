@@ -22,6 +22,16 @@ def mock_grid
   gridboard
 end
 
+test "should raise error #Bugcase" do
+
+  sgf = SGF::Parser.parse("mocks/error_sgf.sgf")
+
+  assert_raise(Validator::Japanese::RuleError) do
+    gridboard= GridBoard.create_from_sgf(sgf, sgf.focus_to_code)
+  end
+
+end
+
 test "GridBoard can be loaded or created" do
 
   gridboard = GridBoard.new
@@ -328,3 +338,32 @@ test "should wipe ko on pass too" do
 
   assert_equal grid.get_pos(1,1), nil
 end
+
+def error_grid
+[
+  [nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil],
+  [nil, nil, nil, nil, nil, nil, nil, nil, "W", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil],
+  [nil, nil, nil, nil, "B", "W", nil, nil, nil, nil, nil, nil, nil, nil, "W", "W", "B", nil, nil],
+  [nil, nil, nil, "B", nil, "W", nil, nil, "B", nil, nil, nil, nil, "W", nil, "B", nil, nil, nil],
+  [nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil],
+  [nil, nil, "B", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, "B", nil, nil, nil],
+  [nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil],
+  [nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil],
+  [nil, nil, "B", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil],
+  [nil, nil, nil, nil, nil, nil, nil, nil, "B", nil, nil, nil, nil, "B", "B", "B", nil, nil, nil],
+  [nil, nil, "W", nil, "B", nil, nil, nil, nil, nil, nil, nil, nil, nil, "W", "W", "W", nil, nil],
+  [nil, nil, nil, nil, nil, nil, "B", nil, "W", "W", nil, nil, nil, nil, "W", "B", "W", nil, nil],
+  [nil, nil, "W", nil, "B", nil, nil, "W", nil, "B", "W", "W", nil, nil, nil, "B", "B", nil, nil],
+  [nil, nil, nil, nil, nil, nil, "W", nil, nil, "B", "B", nil, nil, nil, nil, "B", nil, nil, nil],
+  [nil, nil, nil, nil, nil, "B", "W", "B", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil],
+  [nil, "W", nil, "B", nil, "B", "W", nil, nil, "B", nil, "W", nil, nil, nil, "B", nil, nil, nil],
+  [nil, nil, nil, nil, "B", "W", nil, "W", nil, nil, "W", nil, nil, "W", nil, nil, "B", nil, nil],
+  [nil, nil, nil, nil, "B", "W", nil, nil, "B", nil, nil, nil, nil, nil, "W", "W", "B", nil, nil],
+  [nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil]
+
+]
+
+end
+
+
+
