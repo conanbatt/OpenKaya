@@ -543,73 +543,6 @@ SGFParser.prototype = {
 		return new_moves;
 	},
 
-	add_moves: function(game, sgf, no_rewind) {
-		var only_moves = this.parse_only_moves(sgf);
-		var only_moves_loaded;
-		// Check if the moves we have already loaded are the same that have arrived.
-		if (only_moves.length == this.moves_loaded.length) {
-			if (only_moves[only_moves.length - 1] == this.moves_loaded[this.moves_loaded.length - 1]) {
-				game.confirm_play();
-				return true;
-			} else {
-				//throw new Error("Same move count but different plays...");
-				return false;
-			}
-			// Here could be the script that confirms the stone positioning to the last player.
-		} else if (only_moves.length > this.moves_loaded.length) {
-			// If we have been asked to load more moves than the set that we have already loaded.
-			only_moves_loaded = only_moves.substring(0, this.moves_loaded.length);
-			only_moves = only_moves.substring(this.moves_loaded.length);
-		} else {
-			//throw new Error("WTF, less info than loaded!");
-			return false;
-		}
-		if (only_moves_loaded != this.moves_loaded) {
-			//throw new Error("Loaded data mismatch!");
-			return false;
-		}
-		var new_moves_count = only_moves.match(/;/g).length;
-		var pos = sgf.length;
-		for (var i = 0; i < new_moves_count; ++i) {
-			pos = sgf.lastIndexOf(";", pos - 1);
-		}
-		var new_moves = sgf.substring(pos); // XXX Suposes that the sgf we received ends with a node and not with a ')'
-
-		// Parse new sgf data after last node of the actually parsed sgf tree.
-		var tmp_pointer = this.last_node;
-		this.pointer = tmp_pointer;
-		for (var i = 0, li = new_moves.length; i < li; ++i) {
-			i += this.sgf_handle_node(new_moves, i + 1);
-		}
-
-		// Move the pointer of the sgf parsed tree to the first of the new parsed moves.
-		// XXX if I had variations, this might break (?)
-		this.pointer = tmp_pointer.last_next;
-		/*
-		this.pointer = this.last_node;
-		for (i = 1; i < new_moves_count; i++) {
-			this.pointer = this.pointer.prev;
-		}
-		*/
-
-		// Copy the new sgf tree branch to the game tree.
-		if (!this.sgf_to_tree(game, this.pointer, game.game_tree.actual_move, NODE_ONLINE)) {
-			return false;
-		}
-		var res = game.game_tree.actual_move;
-
-		// Rewind game so goto_end method can draw it.
-		// XXX depending on user focus this could be wrong, maybe the correct is rewind until you reach the user focus.
-		// XXX in fact, depending on the focus i might have to rewind before all this loading...
-
-		// XXX Added condition, maybe helps...
-		if (!no_rewind) {
-			this.rewind_game(game, new_moves_count);
-		}
-
-		return res;
-	},
-
 	parse_only_moves: function(sgf) {
 		var tmp = sgf.match(/;(B|W)\[([a-z]{2})?\]/g);
 		if (tmp) {
@@ -617,29 +550,6 @@ SGFParser.prototype = {
 		} else {
 			return "";
 		}
-	},
-
-	sgf_to_data: function() {
-		var sRes = "";
-		if (this.root != null) {
-			var prop = "";
-			var oNode = this.root;
-			var end = false;
-			while(!end) {
-				for (var e in oNode.properties) {
-					prop = oNode.properties[e].prop;
-					if (prop == "B" || prop == "W") {
-						val = oNode.properties[e].val.toUpperCase();
-						sRes += val[0] + "-" + (val.charCodeAt(1) - 65) + ",";
-					}
-				}
-				oNode = oNode.last_next;
-				if (oNode == null) {
-					end = true;
-				}
-			}
-		}
-		return sRes;
 	},
 
 	get_time_from_node: function(clock, time_left, overtime_periods) {
