@@ -54,7 +54,7 @@ class GridBoard
 
   #def initialize(:grid => [], :size => 19)
   def initialize(options = {})
-    @size = options[:size] || 19
+    @size = options[:size] || (options[:grid] && options[:grid].size) || 19
     @grid = options[:grid] || Array.new(size) {Array.new(size)}
     if grid.size != size
       raise "invalid grid size"
@@ -64,12 +64,11 @@ class GridBoard
 
   def self.create_from_sgf(sgf, focus_code)
     grid = GridBoard.new(:size => sgf.property(:size).to_i)
-
     #Setup handicap stones
-    grid.setup_handicap(sgf.property(:handicap).to_i) 
+    grid.setup_handicap(sgf.property("AB")) if sgf.property("AB")
 
     temp_focus = sgf.root
-    return if focus_code == "root"
+    return grid if focus_code == "root"
     focus_code.split("-").each do |branch|
       node = temp_focus.children[branch.to_i]
       raise "There is no node here! #{focus_code}" unless node
@@ -270,63 +269,9 @@ class GridBoard
   end
 
   def setup_handicap(stones)
-
-    case stones.to_i
-
-      when 2
-        put_stone("B",3,15)
-        put_stone("B",15,3)
-      when 3
-        put_stone("B",3,15)
-        put_stone("B",15,3)
-        put_stone("B",15,15)
-      when 4
-        put_stone("B",3,15)
-        put_stone("B",15,3)
-        put_stone("B",15,15)
-        put_stone("B",3,3)
-      when 5
-        put_stone("B",3,15)
-        put_stone("B",15,3)
-        put_stone("B",15,15)
-        put_stone("B",3,3)
-        put_stone("B",9,9)
-      when 6
-        put_stone("B",3,15)
-        put_stone("B",15,3)
-        put_stone("B",15,15)
-        put_stone("B",3,3)
-        put_stone("B",9,3)
-        put_stone("B",9,15)
-      when 7
-        put_stone("B",3,15)
-        put_stone("B",15,3)
-        put_stone("B",15,15)
-        put_stone("B",3,3)
-        put_stone("B",9,9)
-        put_stone("B",9,3)
-        put_stone("B",9,15)
-      when 8
-        put_stone("B",3,15)
-        put_stone("B",15,3)
-        put_stone("B",15,15)
-        put_stone("B",3,3)
-        put_stone("B",15,9)
-        put_stone("B",3,9)
-        put_stone("B",9,15)
-        put_stone("B",9,3)
-        put_stone("B",9,9)
-      when 9
-        put_stone("B",3,15)
-        put_stone("B",15,3)
-        put_stone("B",15,15)
-        put_stone("B",3,3)
-        put_stone("B",15,9)
-        put_stone("B",3,9)
-        put_stone("B",9,15)
-        put_stone("B",9,3)
-        put_stone("B",9,9)
-      end
+    stones.each do |stone|
+      put_stone("B",stone[1].ord - 97,stone[0].ord - 97)
+    end
   end  
 
 private

@@ -22,6 +22,42 @@ def mock_grid
   gridboard
 end
 
+
+test "should load handicap from sgf, not hardcoded" do
+
+  sgf = SGF::Parser.parse("mocks/funky_handi.sgf")
+  gridboard = GridBoard.create_from_sgf(sgf, sgf.focus_to_code)
+
+  assert_equal gridboard.get_pos(0,0) , "B"
+  assert_equal gridboard.get_pos(1,0) , "B"
+  assert_equal gridboard.get_pos(2,0) , "B"
+  assert_equal gridboard.get_pos(3,0) , "B"
+  assert_equal gridboard.get_pos(4,0) , "B"
+  assert_equal gridboard.get_pos(5,0) , "B"
+  assert_equal gridboard.get_pos(6,0) , "B"
+
+end
+
+test "shold not raise error" do
+
+  sgf = SGF::Parser.parse("mocks/conanbatt-Amadeo.sgf")
+  gridboard= GridBoard.create_from_sgf(sgf, sgf.focus_to_code)
+
+  #this is what happened in the bug case, but it doesnt fail in the library!
+  gridboard.validate!("W",9,15)
+end
+
+test "should not raise error" do
+
+  #Guys couldnt play tengen 
+  sgf = SGF::Parser.parse("mocks/fly-dfunkt.sgf")
+  gridboard= GridBoard.create_from_sgf(sgf, sgf.focus_to_code)
+
+  gridboard.validate!("W",9,9)
+
+
+end
+
 test "should raise error #Bugcase" do
 
   sgf = SGF::Parser.parse("mocks/error_sgf.sgf")
@@ -31,6 +67,7 @@ test "should raise error #Bugcase" do
   end
 
 end
+
 
 test "GridBoard can be loaded or created" do
 
