@@ -1,4 +1,6 @@
-This section includes only the sgf parser from the Gospeed board, open sourced for collaboration and improvements.
+This section includes the sgf parser from the Gospeed board, open sourced for collaboration and improvements.
+
+The purpose of this section is specif improvements, plug-ins or extra functionality that can be added to Gospeed. 
 
 All improvements on the parser require working tests for them.
 
@@ -23,4 +25,15 @@ There is a basic scheme for adding patterns. Its extremely basic and right now t
 
 It should also list the shapes as they were played, with coordinates, for easy drawing on the board by Gospeed.
 
+Touch mechanism:
 
+Gospeed right now functions with only clicks, but touch devices are not so good for using clicks exclusively.
+Demoing several systems can be a thorough approach.
+
+Gospeed is still not available to prove the merging, so the prototype has to be rather abstract. If it requires some drawing, prototype it and then the GoSpeed Core team(dp :P) will work on it.
+
+Objectives:
+
+- Being safe from misclicks. This is the number one issue with touch devices and clicks.
+- Be clear/quick to use. Most touch devices involve placing the finger on the same position he wants to play, blocking the view with the finger. Maybe this can be fixed.
+- Be cool.
