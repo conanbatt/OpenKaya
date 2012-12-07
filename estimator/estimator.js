@@ -783,6 +783,7 @@ function extendClass(childClass, parClass) {
 0.5.0: isAloneInTerritory, minDistanceFromSameColorInTerritory
 0.6.0: findDeadGroups
 1.0.0: territoryCoordsToToggle, fixed findConnection3 to avoid dead groups
+1.1.0: fix bug throwing an exception (BoardExactAnalysis.prototype.checkMultipleEyes needed to test if some vars are undefined))
 */
 
 /**
@@ -1964,6 +1965,9 @@ BoardExactAnalysis.prototype.checkMultipleEyes = function() {
 			var i1 = map[key2Ar[i]][1];
 			var j0 = map[key2Ar[j]][0];
 			var j1 = map[key2Ar[j]][1];
+			if(i0 == undefined || i1 == undefined) {//this map entry may have been cleared below (if already found matching eyes)
+				continue;
+			}
 			if( (i0 == j0 && i1 == j1) || (i0 == j1 && i1 == j0) ) {//two eyes, connect i0 and i1, mark as alive
 				var metagroupName = this.metagroupName[i0];
 				this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_IS_ALIVE] = true;	
@@ -1972,6 +1976,7 @@ BoardExactAnalysis.prototype.checkMultipleEyes = function() {
 				var color = this.metagroupProperties[metagroupName][BoardExactAnalysis.PROPERTY_METAGROUP_COLOR];
 				this.markTerritory(key2Ar[i], color);
 				this.markTerritory(key2Ar[j], color);
+				//clear map entry
 				map[key2Ar[i]] = [];
 				map[key2Ar[j]] = [];
 			}
