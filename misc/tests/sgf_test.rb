@@ -9,6 +9,17 @@ require 'ruby-debug'
 setup do
 
 end
+
+
+test "Parsing should read different props" do
+
+  node = Node.new
+
+  sgf = SGF::Parser.parse("mocks/markers.sgf")
+  string = sgf.to_s
+
+end
+
 test "Parsing shold be bi-directional" do
 
   sgf = SGF::Parser.parse("mocks/full_parse.sgf")

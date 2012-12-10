@@ -65,7 +65,7 @@ class GridBoard
   def self.create_from_sgf(sgf, focus_code)
     grid = GridBoard.new(:size => sgf.property(:size).to_i)
     #Setup handicap stones
-    grid.setup_handicap(sgf.property("AB")) if sgf.property("AB")
+    grid.setup_handicap(sgf.property("AB"))
 
     temp_focus = sgf.root
     return grid if focus_code == "root"
@@ -269,6 +269,7 @@ class GridBoard
   end
 
   def setup_handicap(stones)
+    return unless stones
     stones.each do |stone|
       put_stone("B",stone[1].ord - 97,stone[0].ord - 97)
     end

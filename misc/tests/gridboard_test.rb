@@ -22,6 +22,14 @@ def mock_grid
   gridboard
 end
 
+test "should not load the latest move(#bugcase)" do
+
+  sgf = SGF::Parser.parse("mocks/undo_grid.sgf")
+  gridboard = GridBoard.create_from_sgf(sgf, "0-0-0-0-0-0-0-0-0-0-0-0")
+
+  assert_equal gridboard.get_pos(6,17), nil
+
+end
 
 test "should load handicap from sgf, not hardcoded" do
 

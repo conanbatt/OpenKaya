@@ -38,7 +38,7 @@ class SGF
   def add_move(raw_node, rewrite=true) #TODO objetify node
 
     if rewrite
-      @focus = Node.new(:properties=> parse_kaya_raw_node(raw_node), :parent => @focus) 
+      @focus = Node.new(:properties=> KayaInterface::parse_raw_node(raw_node), :parent => @focus) 
     else
       found_repeated_node = false
       @focus.children.each do |child|
@@ -48,30 +48,9 @@ class SGF
         end
       end
       unless found_repeated_node
-        @focus = Node.new(:properties => parse_kaya_raw_node(raw_node), :parent => @focus) #only create a new node if there is no children with the same coordinate
+        @focus = Node.new(:properties => KayaInterface::parse_raw_node(raw_node), :parent => @focus) #only create a new node if there is no children with the same coordinate
       end
     end
-  end
-
-
-  def parse_kaya_raw_node(node)
-    res = {}
-    play_color = node.match(/;([BW])\[(|[a-z][a-z])\]/)
-    raise "#{node} is invalid node format" unless play_color
-
-    res[play_color[1]] = play_color[2]
-
-    if node.include?("BL") || node.include?("WL")
-      time_color = node.match(/([BW]L)\[(\d{0,6}.\d{3})\]/)
-      raise "#{node} is invalid node format" unless time_color
-      res[time_color[1]] = time_color[2]
-    end
-    if node.include?("OW") || node.include?("OB")
-      periods = node.match(/(O[BW])\[(\d{1,2})\]/)
-      raise "#{node} is invalid node format" unless periods
-      res[periods[1]] = periods[2]
-    end
-    res  
   end
 
   def valid_focus?(focus_code)

@@ -1,6 +1,26 @@
 
 module KayaInterface
 
+  def self.parse_raw_node(node)
+    res = {}
+    play_color = node.match(/;([BW])\[(|[a-z][a-z])\]/)
+    raise "#{node} is invalid node format" unless play_color
+
+    res[play_color[1]] = play_color[2]
+
+    if node.include?("BL") || node.include?("WL")
+      time_color = node.match(/([BW]L)\[(\d{0,6}.\d{3})\]/)
+      raise "#{node} is invalid node format" unless time_color
+      res[time_color[1]] = time_color[2]
+    end
+    if node.include?("OW") || node.include?("OB")
+      periods = node.match(/(O[BW])\[(\d{1,2})\]/)
+      raise "#{node} is invalid node format" unless periods
+      res[periods[1]] = periods[2]
+    end
+    res
+  end
+
   def color
     if @properties["B"]
       return "B"
@@ -24,6 +44,7 @@ module KayaInterface
     @properties[color].empty?
   end
 
+  #Old and probably better to eliminate. 
   def validate_node_format(node)
     valid = node.match(/;[BW]\[(|[a-z][a-z])\]/)
     if node.include?("BL") || node.include?("WL")
@@ -51,7 +72,6 @@ class Node
     @properties = options[:properties] || {}
 
     @node_text = play_node
-    validate_node_format(@node_text) if options[:parent]
     @children = []
     @parent = options[:parent] 
     @parent.add_child(self) if parent
