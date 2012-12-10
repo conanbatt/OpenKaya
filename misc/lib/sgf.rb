@@ -272,9 +272,9 @@ class SGF
       when 5
         return {:add_black =>"cc][gg][cg][gc][ee"}
       when 6
-        return {:add_black =>"cc][gg][cg][gc][ee][ge"}
+        return {:add_black =>"cc][gg][cg][gc][ce][ge"}
       when 7
-        return {:add_black =>"cc][gg][cg][gc][ee][ge][ee"}
+        return {:add_black =>"cc][gg][cg][gc][ce][ge][ee"}
       when 8
         return {:add_black =>"cc][gc][cg][gg][ce][ge][ec][eg"}
       when 9

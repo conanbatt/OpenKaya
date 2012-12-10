@@ -82,9 +82,11 @@ class Node
     if(@properties["B"])
       node_text = ";B[#{@properties["B"]}]"
       node_text << "BL[#{@properties["BL"]}]" if @properties["BL"]
+      node_text << "OB[#{@properties["OB"]}]" if @properties["OB"]
     elsif(@properties["W"])
       node_text = ";W[#{@properties["W"]}]"
       node_text << "WL[#{@properties["WL"]}]" if @properties["WL"]
+      node_text << "OW[#{@properties["OW"]}]" if @properties["OW"]
     end
     node_text
   end
