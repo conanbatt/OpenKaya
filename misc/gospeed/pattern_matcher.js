@@ -1,23 +1,10 @@
+
 function make2dArray(size) {
     var a = new Array(size);
     for(var i = 0; i < a.length; i++) {
 	a[i] = new Array(a.length);
     }
     return a;
-}
-
-var emptyTriangle = [["B","B"],["B","E"]];
-
-var a = make2dArray(9);
-fill2dArray(a);
-play(a,3,3,"W");
-play(a,3,4,"W");
-play(a,4,4,"W");
-printOut2dArray(a);
-print();
-
-for(var i = 0;i < 1;++i) {
-    testShape(emptyTriangle,a,4,4);
 }
 
 function testShape(shape,board,x,y) {
@@ -143,21 +130,21 @@ function play(array,x,y,move) {
 
 }
 
-function printOut2dArray(array) {
-    var out;
-    out = "";
-    for(var i = 0; i < array.length;++i) {
-	for(var x = 0; x < array.length;++x) {
+// function printOut2dArray(array) { // For rhino onlu
+//     var out;
+//     out = "";
+//     for(var i = 0; i < array.length;++i) {
+// 	for(var x = 0; x < array.length;++x) {
 	    
-	    out += array[i][x];
-	    if(x != (array.length - 1)) {
-		out += ",";
-	    }
-	}
-	print(out);
-	out = "";
-    }
-}
+// 	    out += array[i][x];
+// 	    if(x != (array.length - 1)) {
+// 		out += ",";
+// 	    }
+// 	}
+// 	print(out);
+// 	out = "";
+//     }
+// }
 
 function fill2dArray(array) {
     var out;
