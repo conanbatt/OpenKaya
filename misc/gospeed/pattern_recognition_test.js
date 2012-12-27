@@ -56,7 +56,6 @@ test("Should be able to recognize shapes based on last move.", function(){
 
     //TODO Using a function so open like this is bad practice. Use an object like in pattern_matcher js. Also rename testShape to "match" as in PatternRecognizer.match(pattern)
 
-    equal(
     equal(PatternRecognizer.testShape(emptyTriangle,board1,4,4), true);
     equal(PatternRecognizer.testShape(ponnuki,board2,4,4), true);
 
@@ -77,6 +76,12 @@ test("Should have a libarry of patterns", function(){
     ok(PatternRecognizer.patterns["ponnuki"]);
 
 });
+test("See when shapes no longer apply", function(){
+    
+    play(board1,3,4,"B");
+    equal(testShape(emptyTriangle,board1,3,4), false);
+    play(board2,4,5,"B");
+    equal(testShape(ponnuki,board2,4,5), false);
 
 test("Should match all patterns in the loaded library given a position", function(){
 
